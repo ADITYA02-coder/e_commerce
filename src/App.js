@@ -1,24 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './style.css';
+import { Header } from './Header';
+import {Product} from './Product';
+import { Footer } from './Footer';
+import { Routes } from 'react-router';
+import { Route } from 'react-router';
+import { Account } from './Account';
+import OrderDetails from './OrderDetails';
+import Sign from './Sign';
+import Error from './Error';
+import UserForm from './UserForm';
+import { ProductCopy } from './ProductCopy';
+import Mobile from './Mobile';
+import MobileData from './MobileData';
+import Category from './Category';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header/>
+      <Routes>
+        <Route path = "/" element={<Product/>}/>
+        <Route path = "/home" element={<Product/>}/>
+        <Route path='/product' element={<Account/>}/>
+        <Route path='/orderDetails' element={<OrderDetails/>}/>
+        <Route path='/sign' element={<UserForm/>}/>
+        <Route path = "*" element={<Error/>}/>
+        <Route path = "/mobile" element={<Mobile/>}/>
+        <Route path = "/category/:categoryName" element={<Category/>}/>
+        <Route path = "/category/:mobiledata" element={<MobileData/>}/>
+
+        
+      </Routes>
+      <Footer/>
+    </>
+    
   );
 }
 

@@ -1,0 +1,36 @@
+.body{
+    background-color: aqua;
+}
+.footer{
+    background-color: rgb(129, 236, 129);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.shopping{
+    background-color: aquamarine;
+}
+.item{
+    width: 80%;
+}
+.shop{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footercopyright{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footerlist{
+    list-style-type: none;
+}
+.nh{
+    background-color: rgb(184, 243, 243);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
