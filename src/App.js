@@ -11,10 +11,10 @@ import OrderDetails from './OrderDetails';
 import Sign from './Sign';
 import Error from './Error';
 import UserForm from './UserForm';
-import { ProductCopy } from './ProductCopy';
 import Mobile from './Mobile';
 import MobileData from './MobileData';
 import Category from './Category';
+import Cart from './Cart';
 
 
 function App() {
@@ -30,7 +30,8 @@ function App() {
         <Route path = "*" element={<Error/>}/>
         <Route path = "/mobile" element={<Mobile/>}/>
         <Route path = "/category/:categoryName" element={<Category/>}/>
-        <Route path = "/category/:mobiledata" element={<MobileData/>}/>
+        <Route path = "/mobiledata" element={<MobileData/>}/>
+        <Route path='/cart' element={<Cart/>}/>
 
         
       </Routes>

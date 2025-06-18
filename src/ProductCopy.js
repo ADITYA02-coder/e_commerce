@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
-import { searchData } from "./Header";
+import { data } from "react-router";
 export var products = [
   {
     id: 1,
@@ -318,7 +318,7 @@ export const ProductCopy = () => {
           </Col>
         </Row>
         <Row className="row">
-          {searchData.map((data) => (
+          {data.map((data) => (
             <Col sm={12} md={3}>
               <Card className="shop" style={{ width: "100%" }}>
                 <Card.Img variant="top" src={data.image} className="item" />
