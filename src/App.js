@@ -15,6 +15,9 @@ import Mobile from './Mobile';
 import MobileData from './MobileData';
 import Category from './Category';
 import Cart from './Cart';
+import MyComponent from './MyComponent';
+import ProductForm from './ProductForm';
+import LoginPage from './LoginPage';
 
 
 function App() {
@@ -22,16 +25,21 @@ function App() {
     <>
       <Header/>
       <Routes>
-        <Route path = "/" element={<Product/>}/>
+        <Route path = "/" element={<LoginPage/>}/>
         <Route path = "/home" element={<Product/>}/>
         <Route path='/product' element={<Account/>}/>
         <Route path='/orderDetails' element={<OrderDetails/>}/>
         <Route path='/sign' element={<UserForm/>}/>
-        <Route path = "*" element={<Error/>}/>
         <Route path = "/mobile" element={<Mobile/>}/>
         <Route path = "/category/:categoryName" element={<Category/>}/>
         <Route path = "/mobiledata" element={<MobileData/>}/>
-        <Route path='/cart' element={<Cart/>}/>
+        {/* <Route path='/cart' element={<Cart/>}/> */}
+        <Route path='/cart' element={<MyComponent/>}/>
+        <Route path='/xyz' element={<ProductForm/>}/>
+
+
+        
+        <Route path = "*" element={<Error/>}/>
 
         
       </Routes>

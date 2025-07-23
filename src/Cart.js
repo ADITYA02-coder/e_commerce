@@ -10,6 +10,7 @@ import { Card } from "react-bootstrap";
 import { Link } from "react-router";
 import {Button} from "react-bootstrap";
 import { Plus } from "react-bootstrap-icons";
+import { BackToTop } from "./BackToTop";
 
 const Cart = () => {
   const [cart, setCart] = useState(selectedItems);
@@ -66,7 +67,14 @@ const Cart = () => {
             )}
             
           </Col>
-          <Col></Col>
+          <Col>
+            
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <BackToTop />
+          </Col>
         </Row>
       </Container>
     </div>

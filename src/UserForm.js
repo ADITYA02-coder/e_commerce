@@ -2,6 +2,7 @@ import React from "react";
 // import Form from "react-bootstrap/Form";
 import { Formik, Form, Field } from "formik";
 import { InputMask } from "@react-input/mask";
+import { useState } from "react";
 import * as Yup from "yup";
 import { Facebook, Github, Google, TwitterX } from "react-bootstrap-icons";
 const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -11,7 +12,7 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
     .required("Required"),
   email: Yup.string().email("Invalid email").required("Required"),
   mobile: Yup.string().length(10, "Too Long!").required("Required"),
-  aadhar: Yup.string().length(12, "Too long!").required("Required"),
+  address: Yup.string().required("Required"),
   pincode: Yup.string().length(6, "Too Long!").required("Required"),
 });
 const UserForm = () => {
@@ -24,15 +25,33 @@ const UserForm = () => {
     }
     return error;
   }
+
+  const [login, setLogin] = useState(true);
+  const register= () => {
+    
+  }
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [address, setAddress] = useState("");
+  const [pincode, setPincode] = useState("");
   return (
-    <div>
+    <div
+      style={{
+        width: "500px",
+        background: "limegreen",
+        padding: "20px",
+        borderRadius: "10px",
+        margin: "20px auto",
+      }}
+    >
       <h1>Signup</h1>
       <Formik
         initialValues={{
           username: "",
           email: "",
           mobile: "",
-          aadhar: "",
+          address: "",
           pincode: "",
         }}
         validationSchema={DisplayingErrorMessagesSchema}
@@ -42,14 +61,15 @@ const UserForm = () => {
         }}
       >
         {({ errors, touched }) => (
-          <div>
+          <div className="LoginContainer">
             <ul
               class="nav nav-pills nav-justified mb-3"
               id="ex1"
               role="tablist"
             >
               <li class="nav-item" role="presentation">
-                <a
+                <p
+                  onClick={() => setLogin(true)}
                   class="nav-link active"
                   id="tab-login"
                   data-mdb-pill-init
@@ -59,10 +79,11 @@ const UserForm = () => {
                   aria-selected="true"
                 >
                   Login
-                </a>
+                </p>
               </li>
               <li class="nav-item" role="presentation">
-                <a
+                <p
+                  onClick={() => setLogin(false)}
                   class="nav-link"
                   id="tab-register"
                   data-mdb-pill-init
@@ -72,7 +93,7 @@ const UserForm = () => {
                   aria-selected="false"
                 >
                   Register
-                </a>
+                </p>
               </li>
             </ul>
 
@@ -92,7 +113,7 @@ const UserForm = () => {
                       data-mdb-ripple-init
                       class="btn btn-link btn-floating mx-1"
                     >
-                      <Facebook/>
+                      <Facebook />
                     </button>
 
                     <button
@@ -101,7 +122,7 @@ const UserForm = () => {
                       data-mdb-ripple-init
                       class="btn btn-link btn-floating mx-1"
                     >
-                      <Google/>
+                      <Google />
                     </button>
 
                     <button
@@ -110,7 +131,7 @@ const UserForm = () => {
                       data-mdb-ripple-init
                       class="btn btn-link btn-floating mx-1"
                     >
-                      <TwitterX/>
+                      <TwitterX />
                     </button>
 
                     <button
@@ -119,28 +140,103 @@ const UserForm = () => {
                       data-mdb-ripple-init
                       class="btn btn-link btn-floating mx-1"
                     >
-                      <Github/>
+                      <Github />
                     </button>
                   </div>
 
                   <p class="text-center">or:</p>
 
-                  <div data-mdb-input-init class="form-outline mb-4">
-                    <input type="email" id="loginName" class="form-control" />
-                    <label class="form-label" for="loginName">
-                      Email or username
-                    </label>
-                  </div>
+                  <div>
+                    {login ? (
+                      <div>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input
+                            type="email"
+                            id="loginName"
+                            class="form-control"
+                          />
+                          <label class="form-label" for="loginName">
+                            Email or username
+                          </label>
+                        </div>
 
-                  <div data-mdb-input-init class="form-outline mb-4">
-                    <input
-                      type="password"
-                      id="loginPassword"
-                      class="form-control"
-                    />
-                    <label class="form-label" for="loginPassword">
-                      Password
-                    </label>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input
+                            type="password"
+                            id="loginPassword"
+                            class="form-control"
+                          />
+                          <label class="form-label" for="loginPassword">
+                            Password
+                          </label>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input
+                            type="email"
+                            id="loginName"
+                            class="form-control"
+                          />
+                          <label class="form-label" for="loginName">
+                            Email or username
+                          </label>
+                        </div>
+
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input
+                            type="password"
+                            id="loginPassword"
+                            class="form-control"
+                          />
+                          <label class="form-label" for="loginPassword">
+                            Password
+                          </label>
+                        </div>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          <input
+                            type="password"
+                            id="loginPassword"
+                            class="form-control"
+                          />
+                          <label class="form-label" for="mobileNumber">
+                            mobile
+                          </label>
+                          <InputMask
+                            mask="9999999999"
+                            id="mobileNumber"
+                            class="form-control"
+                            value={mobile}
+                            onChange={(e) => setMobile(e.target.value)}
+                          />
+                        </div>
+                        <div data-mdb-input-init class="form-outline mb-4">
+                          
+                          <label class="form-label" for="address">
+                            Address
+                          </label>
+                          <input
+                            type="text"
+                            id="address"
+                            class="form-control"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                          />
+                          <label class="form-label" for="pincode">
+                            Pincode
+                          </label>
+                          <input
+                            type="text"
+                            id="pincode"
+                            class="form-control"
+                            value={pincode}
+                            onChange={(e) => setPincode(e.target.value)}
+                          />
+
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div class="row mb-4">
