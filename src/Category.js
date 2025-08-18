@@ -630,7 +630,6 @@ const Category = () => {
     <div className="shopping">
       <Container fluid>
         <Row className="row">
-          {/* {products.map((data) => ( */}
           {products
             .filter((d) => d.category === categoryName)
             .map((data) => (

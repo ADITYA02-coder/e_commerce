@@ -9,6 +9,7 @@ import { Amazon } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import { Cart} from "react-bootstrap-icons";
 import Sidebar from "./Sidebar";
+// import navigate  from "react-router-dom";
 
 
 

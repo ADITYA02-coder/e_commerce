@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import './style.css';
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -8,6 +8,7 @@ import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
 import { data } from "react-router";
 import { BackToTop } from "./BackToTop";
+import { json } from "body-parser";
 export var products = [
   {
     id: 1,
@@ -617,6 +618,7 @@ export var products = [
 export var selectedItems=[]
 export const Product = () => {
 
+
   const [productValue,setProductValue] = useState(products)
 
   const[value,setValue] = useState('xyz')
@@ -625,9 +627,9 @@ export const Product = () => {
     console.log(filterdata)
     setProductValue(filterdata)
   }
-  function addItems(item){
-    selectedItems.push(item)
-    localStorage.setItem("cartItems",JSON.stringify(selectedItems))//this store data in ls.
+  function buyNow(items){
+    selectedItems.push(items)
+    localStorage.setItem("BuyItems",JSON.stringify(selectedItems))//this store data in ls.
     console.log(selectedItems)
   }
   return (
@@ -660,12 +662,12 @@ export const Product = () => {
                       : data.price}
                   </Card.Text>
                  <div className="buttons">
-                   <Button variant="primary" onClick={()=>{
-                      addItems(data.id)
-                    }}>
-                    <Plus /> Add Item{" "}
+                   <Button variant="primary">
+                    <Plus /> Add to Cart{" "}
                   </Button>
-                  <Button variant="primary">
+                  <Button variant="primary" onClick={()=>{
+                      buyNow(data.id)
+                    }}>
                     <Cart /> Buy Now
                   </Button>
                  </div>

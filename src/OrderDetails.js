@@ -16,7 +16,7 @@ const OrderDetails = () => {
         <Row>
           <Col>
             <p>
-              <a href="Account.js">Your Account</a> >Your Orders
+              <a href="Account.js">Your Account</a> Your Orders
             </p>
           </Col>
         </Row>
