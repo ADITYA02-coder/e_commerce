@@ -1,14 +1,15 @@
-import React, { useState,useEffect } from "react";
-import './style.css';
+import React, { useState, useEffect } from "react";
+import "./style.css";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
-import { data } from "react-router";
 import { BackToTop } from "./BackToTop";
-import { json } from "body-parser";
+
+// Assuming products are imported from a separate file
+// import { products } from "./products"; // <-- change this if needed
 export var products = [
   {
     id: 1,
@@ -20,7 +21,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.7 inches",
     camera: "48MP Main, 12MP Ultra-Wide, 12MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41lQuD3zXhL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41lQuD3zXhL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 2,
@@ -33,7 +35,8 @@ export var products = [
     screen_size: "6.8 inches",
     camera:
       "200MP Main, 12MP Ultra-Wide, 10MP Telephoto (x2), 10MP Telephoto (x5)",
-    image_url: "https://m.media-amazon.com/images/I/41Vc86yXS3L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41Vc86yXS3L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 3,
@@ -57,7 +60,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.82 inches",
     camera: "50MP Main, 48MP Ultra-Wide, 64MP Periscope Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41J4+TiUz6L._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41J4+TiUz6L._SY300_SX300_.jpg",
   },
   {
     id: 5,
@@ -69,7 +73,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.73 inches",
     camera: "50MP Quad Camera with Leica Optics",
-    image_url: "https://m.media-amazon.com/images/I/41EQfoH+qFL._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41EQfoH+qFL._SY300_SX300_.jpg",
   },
   {
     id: 6,
@@ -81,7 +86,8 @@ export var products = [
     category: "mobiles",
     screen_size: "4.7 inches",
     camera: "12MP Wide",
-    image_url: "https://m.media-amazon.com/images/I/41BKXZLpc1L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41BKXZLpc1L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 7,
@@ -93,7 +99,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.6 inches",
     camera: "50MP Main, 12MP Ultra-Wide, 5MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/41uR6Pme6NL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41uR6Pme6NL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 8,
@@ -105,7 +112,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.1 inches",
     camera: "64MP Main, 13MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/41YW3WpZ2ML._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41YW3WpZ2ML._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 9,
@@ -117,7 +125,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.67 inches",
     camera: "200MP Main, 8MP Ultra-Wide, 2MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/3170zY4OGWL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/3170zY4OGWL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 10,
@@ -129,7 +138,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.7 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 64MP Periscope Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41EcfoaB4+L._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41EcfoaB4+L._SY300_SX300_.jpg",
   },
   {
     id: 11,
@@ -141,7 +151,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.7 inches",
     camera: "50MP Main, 13MP Ultra-Wide, 10MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41qtPl1QeHL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41qtPl1QeHL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 12,
@@ -166,7 +177,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.78 inches",
     camera: "50MP Main, 13MP Ultra-Wide, 32MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41Safi-Gx1L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41Safi-Gx1L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 14,
@@ -178,7 +190,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.5 inches",
     camera: "48MP Main, 12MP Ultra-Wide, 12MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41xJv6S3G6L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41xJv6S3G6L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 15,
@@ -190,7 +203,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.78 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 50MP Periscope Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41C5enOglKL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41C5enOglKL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 16,
@@ -202,7 +216,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.82 inches",
     camera: "50MP Quad Camera with HyperTone",
-    image_url: "https://m.media-amazon.com/images/I/41toJG9uWkL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41toJG9uWkL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 17,
@@ -214,7 +229,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.8 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 180MP Periscope Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41YapxuVy9L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41YapxuVy9L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 18,
@@ -250,7 +266,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.78 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 2MP Depth",
-    image_url: "https://m.media-amazon.com/images/I/41cHIrr45WL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41cHIrr45WL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 21,
@@ -262,7 +279,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.1 inches",
     camera: "48MP Main, 12MP Ultra-Wide, 12MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/31VjlrbE3bL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/31VjlrbE3bL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 22,
@@ -274,7 +292,8 @@ export var products = [
     category: "mobiles",
     screen_size: "7.6 inches (unfolded)",
     camera: "50MP Main, 12MP Ultra-Wide, 10MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41aNCS-I0bL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41aNCS-I0bL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 23,
@@ -298,7 +317,8 @@ export var products = [
     category: "mobiles",
     screen_size: "7.82 inches (unfolded)",
     camera: "48MP Main, 48MP Ultra-Wide, 64MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/51VuJpFmjrL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/51VuJpFmjrL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 25,
@@ -310,7 +330,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.9 inches (unfolded)",
     camera: "12MP Main, 13MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/31dRswun9WL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/31dRswun9WL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 26,
@@ -322,7 +343,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.7 inches (unfolded)",
     camera: "12MP Main, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/3114411coLL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/3114411coLL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 27,
@@ -334,7 +356,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.1 inches",
     camera: "48MP Main, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/31KxpX7Xk7L._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/31KxpX7Xk7L._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 28,
@@ -346,7 +369,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.7 inches",
     camera: "50MP Main, 12MP Ultra-Wide, 10MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41h2alWH8ML._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41h2alWH8ML._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 29,
@@ -358,7 +382,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.2 inches",
     camera: "50MP Main, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/417PLOtA3HL._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/417PLOtA3HL._SY300_SX300_.jpg",
   },
   {
     id: 30,
@@ -370,7 +395,8 @@ export var products = [
     category: "mobiles",
     screen_size: "6.78 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 2MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/41uPss3u3eL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41uPss3u3eL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 31,
@@ -382,7 +408,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.36 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 50MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/4166f5DXEEL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/4166f5DXEEL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 32,
@@ -394,7 +421,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.78 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 50MP Periscope Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41WpAGDeZyL._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41WpAGDeZyL._SY300_SX300_.jpg",
   },
   {
     id: 33,
@@ -406,7 +434,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.55 inches",
     camera: "50MP Main, 13MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/41EhFsqRCLL._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41EhFsqRCLL._SY300_SX300_.jpg",
   },
   {
     id: 34,
@@ -443,7 +472,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.1 inches",
     camera: "48MP Main, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/51fVh90niWL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/51fVh90niWL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 37,
@@ -455,7 +485,8 @@ export var products = [
     category: "Gaming Phone",
     screen_size: "6.78 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 64MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/410smqMKxcL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/410smqMKxcL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 38,
@@ -467,7 +498,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.7 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 32MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41Fvm7HOJML._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41Fvm7HOJML._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 39,
@@ -479,7 +511,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.7 inches",
     camera: "200MP Main, 12MP Ultra-Wide, 2MP Depth",
-    image_url: "https://m.media-amazon.com/images/I/419+MoEqpzL._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/419+MoEqpzL._SY300_SX300_.jpg",
   },
   {
     id: 40,
@@ -503,7 +536,8 @@ export var products = [
     category: "Compact Smartphone",
     screen_size: "5.4 inches",
     camera: "12MP Wide, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/71l5PwrKmUL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/71l5PwrKmUL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 42,
@@ -515,7 +549,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.6 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 5MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/51VfGGh7quL._SX300_SY300_QL70_FMwebp_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/51VfGGh7quL._SX300_SY300_QL70_FMwebp_.jpg",
   },
   {
     id: 43,
@@ -527,7 +562,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.3 inches",
     camera: "50MP Main, 12MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/71l5wYFiuTL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/71l5wYFiuTL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 44,
@@ -539,7 +575,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.67 inches",
     camera: "108MP Main, 8MP Ultra-Wide, 2MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/71VW8LmqqPL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/71VW8LmqqPL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 45,
@@ -551,7 +588,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.67 inches",
     camera: "50MP Main, 8MP Ultra-Wide, 2MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/81tjPdhxKoL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/81tjPdhxKoL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 46,
@@ -563,7 +601,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.7 inches",
     camera: "50MP Main, 8MP Ultra-Wide",
-    image_url: "https://m.media-amazon.com/images/I/31Ag98vEupL._AC_UY416_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/31Ag98vEupL._AC_UY416_FMwebp_QL65_.jpg",
   },
   {
     id: 47,
@@ -575,7 +614,8 @@ export var products = [
     category: "Gaming Phone",
     screen_size: "6.67 inches",
     camera: "64MP Main, 8MP Ultra-Wide, 2MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/61MOQVWuJaL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/61MOQVWuJaL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 48,
@@ -587,7 +627,8 @@ export var products = [
     category: "Gaming Phone",
     screen_size: "6.78 inches",
     camera: "50MP Main, 13MP Ultra-Wide, 5MP Macro",
-    image_url: "https://m.media-amazon.com/images/I/51nOny-S5bL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/51nOny-S5bL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 49,
@@ -599,7 +640,8 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.1 inches",
     camera: "48MP Main, 8MP Ultra-Wide, 8MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/71IIxHUk3pL._AC_UY436_FMwebp_QL65_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/71IIxHUk3pL._AC_UY436_FMwebp_QL65_.jpg",
   },
   {
     id: 50,
@@ -611,74 +653,134 @@ export var products = [
     category: "Smartphone",
     screen_size: "6.78 inches",
     camera: "50MP Main, 50MP Ultra-Wide, 50MP Telephoto",
-    image_url: "https://m.media-amazon.com/images/I/41jRBb+Gw-L._SY300_SX300_.jpg",
+    image_url:
+      "https://m.media-amazon.com/images/I/41jRBb+Gw-L._SY300_SX300_.jpg",
   },
 ];
 
-export var selectedItems=[]
 export const Product = () => {
+  const [productValue, setProductValue] = useState(products);
+  const [selectedItems, setSelectedItems] = useState(() => {
+    const saved = localStorage.getItem("BuyItems");
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  const [filterBrand, setFilterBrand] = useState(null);
 
-  const [productValue,setProductValue] = useState(products)
+  useEffect(() => {
+    if (filterBrand) {
+      const filtered = products.filter(
+        (product) => product.brand === filterBrand
+      );
+      setProductValue(filtered);
+    } else {
+      setProductValue(products);
+    }
+  }, [filterBrand]);
 
-  const[value,setValue] = useState('xyz')
-  function filterData(){
-    const filterdata = products.filter((data)=>data.id ===value)
-    console.log(filterdata)
-    setProductValue(filterdata)
-  }
-  function buyNow(items){
-    selectedItems.push(items)
-    localStorage.setItem("BuyItems",JSON.stringify(selectedItems))//this store data in ls.
-    console.log(selectedItems)
-  }
+  const buyNow = (item) => {
+    const updatedItems = [...selectedItems, item];
+    setSelectedItems(updatedItems);
+    localStorage.setItem("BuyItems", JSON.stringify(updatedItems));
+    console.log("Selected Items:", updatedItems);
+  };
+
+  // Unique brands for simple filtering
+  const brands = [...new Set(products.map((p) => p.brand))];
+
+  const handleProductsInCart =  (userId,{item}) => {
+    try {
+      fetch("http://localhost:8090/api/carts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          items: [
+            {
+              productId:item.pId,
+              quantity: 2,
+              price: 19.99,
+            },
+          ],
+          active: true,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("items added in carts ",data);
+        });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
   return (
     <div className="shopping">
       <Container fluid>
-        <Row className="row">
-          {/* <Col>
-            
-            <div>
-              {products.map((node) => (
-                 <label>{node.brand}
-                 <input className="w-100" type="checkbox" onChange={(e)=>{setValue(node.id)}} onClick={filterData} value ={value} key={products.name}/></label>
-
+        <Row className="mb-3">
+          <Col>
+            <h5>Filter by Brand:</h5>
+            <div className="d-flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setFilterBrand(null)}
+              >
+                All
+              </Button>
+              {brands.map((brand) => (
+                <Button
+                  key={brand}
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => setFilterBrand(brand)}
+                >
+                  {brand}
+                </Button>
               ))}
-              
             </div>
-          </Col> */}
+          </Col>
+        </Row>
 
-          {productValue.map((data) => (
-            <Col sm={12} md={3}>
+        <Row className="row">
+          {products.map((data) => (
+            <Col sm={12} md={3} key={data.id} className="mb-4">
               <Card className="shop" style={{ width: "100%" }}>
                 <Card.Img variant="top" src={data.image_url} className="item" />
                 <Card.Body>
                   <Card.Title>{data.name}</Card.Title>
                   <Card.Text>{data.brand}</Card.Text>
                   <Card.Text>
-                    Price:
-                    {data.price >= parseFloat(100.0)
-                      ? (data.price * 20) / 100
+                    Price: $
+                    {data.price >= 100
+                      ? data.price - (data.price * 20) / 100
                       : data.price}
                   </Card.Text>
-                 <div className="buttons">
-                   <Button variant="primary">
-                    <Plus /> Add to Cart{" "}
-                  </Button>
-                  <Button variant="primary" onClick={()=>{
-                      buyNow(data.id)
+                  <div className="buttons d-flex gap-2">
+                    <Button variant="primary" onClick={()=>{
+                      handleProductsInCart("6879b7a4309ff405f12ab47a",{
+                        pId:"686c99be01e05ccfc30e9594",
+                        quantity:1,
+                        price:data.price
+                      })
                     }}>
-                    <Cart /> Buy Now
-                  </Button>
-                 </div>
+                      <Plus /> Add to Cart
+                    </Button>
+                    <Button variant="success" onClick={() => buyNow(data)}>
+                      <Cart /> Buy Now
+                    </Button>
+                  </div>
                 </Card.Body>
               </Card>
             </Col>
           ))}
         </Row>
+
         <Row className="nh">
           <Col className="w-100">
-            <BackToTop/>
+            <BackToTop />
           </Col>
         </Row>
       </Container>
