@@ -659,7 +659,8 @@ export var products = [
 ];
 
 export const Product = () => {
-  const [productValue, setProductValue] = useState(products);
+  // eslint-disable-next-line no-unused-vars
+  const [productValue, setProductValue] = useState();
   const [selectedItems, setSelectedItems] = useState(() => {
     const saved = localStorage.getItem("BuyItems");
     return saved ? JSON.parse(saved) : [];
@@ -687,6 +688,29 @@ export const Product = () => {
 
   // Unique brands for simple filtering
   const brands = [...new Set(products.map((p) => p.brand))];
+
+  const productsEndpoint = () => {
+    try {
+      fetch("http://localhost:8090/api/products", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Products fetched from backend:", data);
+          // You can set the fetched data to state if needed
+          setProductValue(data); // Uncomment if you want to replace local products with fetched data
+        });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  useEffect(() => {
+    productsEndpoint(); 
+  }, []);
+
 
   const handleProductsInCart =  (userId,{item}) => {
     try {

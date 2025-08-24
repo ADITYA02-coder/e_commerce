@@ -83,6 +83,14 @@ export const Header = () => {
               <Link to ="/cart"><Cart/></Link>
             </Nav>
           </Navbar.Collapse>
+          <Nav>
+            <Nav.Link href="/signup" >
+              sign-up
+            </Nav.Link>
+            <Nav.Link href="/login">
+              Login
+            </Nav.Link>
+          </Nav>
         </Container>
       </Navbar>
     </>

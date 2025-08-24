@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Header } from "./Header";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 const ProductForm = () => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -15,10 +17,29 @@ const ProductForm = () => {
   const [rom, setRom] = useState("");
   const [camera, setCamera] = useState("");
   const [screenSize, setScreenSize] = useState("");
+
+  const { user: currentUser } = useSelector((state) => state.auth);
+
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  // fetch current user data
+  // const [username, setUsername] = useState("Anonymous user");
+
+  // useEffect(() => {
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   // setUsername(user.username);
+  //   console.log("Current user:", user.username);
+  //   // console.log("Current user:", username);
+  // }, []);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(price)
     const product = {
+      
       name: name,
       category: category,
       price: price,
@@ -41,6 +62,9 @@ const ProductForm = () => {
       formData.append("rom", rom);
       formData.append("camera", camera);
       formData.append("screen_size", screenSize);
+      formData.append("userId", localStorage.getItem("userId"));
+
+      console.log(...formData);
       const response = await fetch("http://localhost:8090/api/products/", {
         method: "POST",
         body: formData,
@@ -82,6 +106,9 @@ const ProductForm = () => {
       <div className="product-form-container">
       
       <h2>Add New Product</h2>
+      <p>
+        <strong>Id:</strong> {currentUser.id}
+      </p>
       <p>Please fill in the details below to add a new product.</p>
       <Form encType="multipart/form" onSubmit={handleSubmit}>
         <Row className="mb-3">

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Header } from "./Header";
 
 import { login } from "./slices/auth";
 import { clearMessage } from "./slices/message";
@@ -40,7 +39,7 @@ const Login = () => {
       .unwrap()
       .then(() => {
         navigate("/profile");
-        window.location.reload();
+        console.log("successfully logged in");
       })
       .catch(() => {
         setLoading(false);
@@ -48,12 +47,13 @@ const Login = () => {
   };
 
   if (isLoggedIn) {
-    return <Navigate to="/profile" />;
+    // return <Navigate to="/profile" />;
+    console.log("logged in");
+    //
   }
 
   return (
     <div className="col-md-12 login-form">
-        
       <div className="card card-container">
         <img
           src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"

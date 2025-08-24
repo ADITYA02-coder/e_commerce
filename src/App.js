@@ -29,6 +29,7 @@ function App() {
       <Header/>
       <Routes>
         <Route path = "/" element={<LoginPage/>}/>
+        <Route path='/login' element={<Login/>}/>
         <Route path = "/home" element={<Product/>}/>
         <Route path='/product' element={<Account/>}/>
         <Route path='/orderDetails' element={<OrderDetails/>}/>
@@ -41,7 +42,7 @@ function App() {
         <Route path='/addProduct' element={<ProductForm/>}/>
         {/* <Route path='/Seller' element={<Seller_Dashboard/>}/> */}
         <Route path='/sellerOrders' element={<SellerOrders/>}/>
-        <Route path='/login' element={<Login/>}/>
+        
 
 
         
