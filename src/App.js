@@ -15,12 +15,13 @@ import Mobile from './Mobile';
 import MobileData from './MobileData';
 import Category from './Category';
 import Cart from './Cart';
-import MyComponent from './MyComponent';
 import ProductForm from './ProductForm';
 import LoginPage from './LoginPage';
 import SellerOrders from './Seller_Orders';
 import Seller_Dashboard from './Seller_Dashboard.js';
 import Login from './Login.js';
+import Profile from './Profile.js';
+import ProductListing from './ProductListing.js';
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
       <Routes>
         <Route path = "/" element={<LoginPage/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/profile' element={<Profile/>}/>
         <Route path = "/home" element={<Product/>}/>
         <Route path='/product' element={<Account/>}/>
         <Route path='/orderDetails' element={<OrderDetails/>}/>
@@ -38,7 +40,7 @@ function App() {
         <Route path = "/category/:categoryName" element={<Category/>}/>
         <Route path = "/mobiledata" element={<MobileData/>}/>
         <Route path='/cart' element={<Cart/>}/>
-        <Route path='/abc' element={<MyComponent/>}/>
+        <Route path='/abc' element={<ProductListing/>}/>
         <Route path='/addProduct' element={<ProductForm/>}/>
         {/* <Route path='/Seller' element={<Seller_Dashboard/>}/> */}
         <Route path='/sellerOrders' element={<SellerOrders/>}/>

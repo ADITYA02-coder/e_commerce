@@ -84,7 +84,7 @@ export const Header = () => {
             </Nav>
           </Navbar.Collapse>
           <Nav>
-            <Nav.Link href="/signup" >
+            <Nav.Link href="/" >
               sign-up
             </Nav.Link>
             <Nav.Link href="/login">
