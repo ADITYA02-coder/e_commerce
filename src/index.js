@@ -7,6 +7,7 @@ import store from "./store";
 import * as serviceWorker from "./serviceWorker";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router";
+import 'semantic-ui-css/semantic.min.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -15,7 +16,6 @@ root.render(
       <Provider store={store}>
         <App />
       </Provider>
-
     </React.StrictMode>
   </BrowserRouter>
 );

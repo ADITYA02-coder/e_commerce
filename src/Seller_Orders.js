@@ -9,6 +9,34 @@ const Seller_Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // post the order update to the backend
+  const updateOrder = async (orderId, updatedData) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8090/api/orders/${orderId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const jsonData = await response.json();
+      setrowData((prevData) =>
+        prevData.map((item) => (item.id === orderId ? jsonData : item))
+      );
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -30,48 +58,47 @@ const Seller_Orders = () => {
   }, []);
   if (loading) return <div>Loading.....</div>;
   if (error) return <div>Error: {error.message}</div>;
+  const handleClose = () => {
+    setShow(false);
+    setSelectedOrder(null);
+  };
+  const handleShow = (order) => {
+    setSelectedOrder(order);
+    setShow(true);
+  };
+  const handleChange = () => {
+    const selectedOption = document.querySelector("select").value;
+    const paymentOption = document.querySelectorAll("select")[1].value;
+    const updatedData = {
+      orderStatus: selectedOption,
+      paymentStatus: paymentOption,
+      // Include any other fields you want to update
+    };
+    if (selectedOrder) {
+      updateOrder(selectedOrder.id, updatedData);
 
-  
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+      alert("Status Updated Successfully");
+      setShow(false);
+      setSelectedOrder(null);
+    }
+  };
 
   return (
     <div>
       <h1>Users Orders</h1>
-      {rowdata.map((data) => (
-        <>
-          <h3>Order Id : {data.id}</h3>
-          <p>Payment Status : {data.paymentStatus}</p>
-          <p>Total Order Value : {data.totalAmount}</p>
-          <p>Order Date: {data.createdAt}</p>
-          <p>Order Status: {data.orderStatus}
-            <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
-
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{data.orderStatus}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-          </p>
+      {rowdata.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((data, idx) => (
+        <div key={idx}>
           <Table striped bordered hover size="sm">
             <thead>
               <tr>
                 <th>S_No.</th>
                 <th>Product Name</th>
-                <th>Unit Price</th>
+                <th>Price</th>
                 <th>Quantity</th>
                 <th>Total Price</th>
+                <th>Total Amount</th>
+                <th>Payment Status</th>
+                <th>Order Status</th>
               </tr>
             </thead>
             <tbody>
@@ -83,23 +110,66 @@ const Seller_Orders = () => {
                     <td>{item.price}</td>
                     <td>{item.quantity}</td>
                     <td>{item.price * item.quantity}</td>
+                    <td>{data.totalAmount}</td>
+                    <td>{data.paymentStatus}</td>
+                    <td>{data.orderStatus}</td>
                   </tr>
                 );
               })}
-              {/* <tr>
-          <td>1</td>
-          <td></td>
-          <td>{data.items.quantity}</td>
-          <td>{data.totalAmount}</td>
-          <td>{data.paymentStatus}</td>
-          <td>{data.orderStatus}</td>
-        </tr> */}
             </tbody>
           </Table>
-        </>
+          <Button variant="primary" onClick={() => handleShow(data)}>
+            Update Status
+          </Button>
+          <Modal
+            show={show && selectedOrder && selectedOrder.id === data.id}
+            onHide={handleClose}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Update Status</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                Order Status: {selectedOrder ? selectedOrder.orderStatus : ""}
+              </p>
+              <select
+                defaultValue={
+                  selectedOrder ? selectedOrder.orderStatus : "Pending"
+                }
+              >
+                <option value="Pending">Pending</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+              <p>Order Update::</p>
+              <textarea rows={2} />
+
+              {/* update payment status too */}
+              <p>
+                Payment Status: {selectedOrder ? selectedOrder.paymentStatus : ""}
+              </p>
+              <select
+                defaultValue={
+                  selectedOrder ? selectedOrder.paymentStatus : "Pending"
+                }
+              >
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="success" onClick={handleChange}>
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
       ))}
     </div>
   );
 };
-
 export default Seller_Orders;

@@ -7,8 +7,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
 import { BackToTop } from "./BackToTop";
-import { current } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 
 // Assuming products are imported from a separate file
@@ -665,11 +665,16 @@ export const Product = () => {
   // eslint-disable-next-line no-unused-vars
   const [productValue, setProductValue] = useState();
   const[products,setProducts]=useState([]);
-  const [selectedItems, setSelectedItems] = useState(() => {
-    const saved = localStorage.getItem("BuyItems");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [selectedItems, setSelectedItems] = useState([]);
+  // select a product and get its id and redirect to mobile details page
+  const handleProductSelect = (id) => {
+    localStorage.setItem('selectedProductId', id);
+    console.log('Selected Product ID:', id);
 
+    // Redirect to mobile details page with the selected product id
+    
+    window.location.href = `http://localhost:3000/mobiledata/${id}`;
+  };
 
   const handleproducts = ()=>{
     fetch("http://localhost:8090/api/products")
@@ -699,13 +704,25 @@ export const Product = () => {
     handleproducts();
   }, [filterBrand]);
 
-  const { user: currentUser } = useSelector((state) => state.auth);
+  
+  // Function to handle "Buy Now" action  
 
-  const buyNow = (item) => {
-    const updatedItems = [...selectedItems, item];
+  const buyNow = (data) => {
+    const updatedItems = [...selectedItems, data];
     setSelectedItems(updatedItems);
-    localStorage.setItem("BuyItems", JSON.stringify(updatedItems));
     console.log("Selected Items:", updatedItems);
+     //add the updated items to cart in backend
+    handleAddToCart({
+      userId: currentUser.id,
+      items: updatedItems.map((it) => ({
+        productId: it.id,
+        price: it.price,
+        quantity: 1,
+      })),
+      active: true,
+    });
+    window.location.href = "/address"; // Redirect to address page
+   
   };
   const handleAddToCart = (item) => {
     fetch("http://localhost:8090/api/carts", {
@@ -751,7 +768,10 @@ export const Product = () => {
   useEffect(() => {
     productsEndpoint(); 
   }, []);
-
+  const { user: currentUser } = useSelector((state) => state.auth);
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <div className="shopping">
@@ -784,14 +804,14 @@ export const Product = () => {
         <Row className="row">
           {products.map((data) => (
             <Col sm={12} md={3} key={data.id} className="mb-4">
-              <Card className="shop" style={{ width: "100%" }}>
+              <Card className="shop" style={{ width: "100%" }} onClick={() => handleProductSelect(data.id)}>
                 {/* <Card.Img variant="top" src={'http://localhost:8090/uploads/${data.image}'} className="item" /> */}
                 <Card.Img variant="top" src={`http://localhost:8090/uploads/${data.image}`} className="item" />
                 <Card.Body>
                   <Card.Title>{data.name}</Card.Title>
                   <Card.Text>{data.brand}</Card.Text>
                   <Card.Text>
-                    Price: $
+                    Price: Rs.
                     {data.price >= 100
                       ? data.price - (data.price * 20) / 100
                       : data.price}

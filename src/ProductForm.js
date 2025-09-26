@@ -158,13 +158,23 @@ const ProductForm = () => {
                 required
               >
                 <option value="">Select Brand *</option>
+                <option value="google">Google</option>
                 <option value="samsung">Samsung</option>
                 <option value="apple">Apple</option>
+                <option value="motorola">Motorola</option>
+                <option value="nokia">Nokia</option>
+                <option value="sony">Sony</option>
+                <option value="lg">LG</option>
+                <option value="htc">HTC</option>
+                <option value="huawei">Huawei</option>
+                <option value="lenovo">Lenovo</option>
+                <option value="asus">Asus</option>
                 <option value="oneplus">OnePlus</option>
                 <option value="vivo">Vivo</option>
                 <option value="oppo">Oppo</option>
                 <option value="xiaomi">Xiaomi</option>
                 <option value="realme">Realme</option>
+                <option value="nothing">Nothing</option>
               </Form.Select>
             </Col>
           </Row>
@@ -192,6 +202,9 @@ const ProductForm = () => {
                 <option value="6">6 GB</option>
                 <option value="8">8 GB</option>
                 <option value="12">12 GB</option>
+                <option value="16">16 GB</option>
+                <option value="24">24 GB</option>
+                <option value="32">32 GB</option>
               </Form.Select>
             </Col>
           </Row>

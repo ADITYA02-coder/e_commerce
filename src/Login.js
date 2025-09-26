@@ -6,6 +6,7 @@ import * as Yup from "yup";
 
 import { login } from "./slices/auth";
 import { clearMessage } from "./slices/message";
+import { TestModule } from "./TestModule";
 
 const Login = () => {
   let navigate = useNavigate();

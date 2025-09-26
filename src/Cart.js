@@ -10,7 +10,7 @@ import Badge from "react-bootstrap/Badge";
 import { Link } from "react-router-dom";
 import { BackToTop } from "./BackToTop";
 import { useSelector } from "react-redux";
-import "./Cart.css"; // Import custom CSS
+import "./Cart.css";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -79,7 +79,7 @@ const Cart = () => {
     };
 
     fetchCartAndProducts();
-  }, []);
+  }, [currentUser.id]);
 
   // Handle remove item (from state only - temporary removal)
   const handleRemove = (id) => {
@@ -127,13 +127,6 @@ const Cart = () => {
     }, 0).toFixed(2);
   };
 
-  // Handle checkout
-  const handleCheckout = () => {
-    // Add your checkout logic here
-    console.log("Proceeding to checkout with items:", cartItems);
-    alert("Checkout functionality will be implemented here!");
-  };
-
   // Loading state
   if (loading) {
     return (
@@ -152,12 +145,8 @@ const Cart = () => {
   if (error) {
     return (
       <Container className="py-4">
-        <Alert variant="danger" className="text-center">
-          <Alert.Heading>Oops! Something went wrong</Alert.Heading>
-          <p>{error}</p>
-          <Button variant="outline-danger" onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
+        <Alert variant="success" className="text-center">
+          <Alert.Heading>Cart does not have any items</Alert.Heading>
         </Alert>
       </Container>
     );
@@ -231,6 +220,7 @@ const Cart = () => {
                       e.target.src = '/placeholder-image.png'; // Fallback image
                     }}
                   />
+
                   <div className="quantity-badge">
                     Qty: {item.quantity}
                   </div>
@@ -330,7 +320,7 @@ const Cart = () => {
               <Button 
                 variant="primary" 
                 size="lg" 
-                onClick={handleCheckout}
+                onClick={() => window.location.href = '/address'}
                 className="checkout-btn"
               >
                 Proceed to Checkout

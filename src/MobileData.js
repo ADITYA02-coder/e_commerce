@@ -1,35 +1,114 @@
-import React from 'react'
-import { Container } from 'react-bootstrap'
-import {Row} from 'react-bootstrap'
-import {Col} from 'react-bootstrap'
+import React from "react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { Plus, Cart } from "react-bootstrap-icons";
+import "./style.css";
 
 const MobileData = () => {
+  // fetch the product id from the url
+  const { id } = useParams();
+  // store this id in local storage
+  localStorage.setItem("selectedProductId", id);
+  console.log("Selected Product ID from URL:", id);
+  // get the current user from the redux store
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const [mobile, setMobile] = React.useState(null);
+  const [selectedItems, setSelectedItems] = React.useState([]);
+  const buyNow = (data) => {
+    const updatedItems = [...selectedItems, data];
+    setSelectedItems(updatedItems);
+    console.log("Selected Items:", updatedItems);
+    //add the updated items to cart in backend
+    handleAddToCart({
+      userId: currentUser.id,
+      items: updatedItems.map((it) => ({
+        productId: it.id,
+        price: it.price,
+        quantity: 1,
+      })),
+      active: true,
+    });
+    window.location.href = "/address"; // Redirect to address page
+  };
+  const handleAddToCart = (item) => {
+    fetch("http://localhost:8090/api/carts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Item added to cart:", data);
+        // Optionally, update cart state or provide user feedback here
+      })
+      .catch((error) => {
+        console.error("Error adding item to cart:", error);
+      });
+  };
+  React.useEffect(() => {
+    // Fetch mobile data from backend using the id
+    fetch('http://localhost:8090/api/products/:id')
+
+      .then((response) => response.json())
+      .then((data) => setMobile(data))
+      .catch((error) => console.error("Error fetching mobile data:", error));
+  }, [id]);
+
   return (
     <div>
-      <Container>
-        <Row>
-          <Col>
-            <img src='https://m.media-amazon.com/images/I/51tZWQnP4dL._SX679_.jpg' alt='i'/>
-          </Col>
-          <Col>
-            <div>
-              <h2>
-                Acer Super ZX 5G (Cosmic Green, 8GB RAM, 128GB Storage) | 120 Hz FHD+ Display | 5000 mAh Ultra-Thin Battery | Dimensity 6300 5G Processor | Sony 64MP AI Camera
-              </h2>
-              <div>
-                <h4>
-                  -45% ₹11,999
-                </h4>
-                <p>M.R.P.: ₹21,999</p>
-                
+      {/* Display mobile data fetched from backend */}
+      {mobile ? (
+        <div>
+          <Card className="shop" style={{ width: "100%" }}>
+            <Card.Img
+              variant="top"
+              src={`http://localhost:8090/uploads/${mobile.image}`}
+              className="item"
+            />
+            <Card.Body>
+              <Card.Title>{mobile.name}</Card.Title>
+              <Card.Text>{mobile.brand}</Card.Text>
+              <Card.Text>
+                Price: Rs.
+                {mobile.price >= 100
+                  ? mobile.price - (mobile.price * 20) / 100
+                  : mobile.price}
+              </Card.Text>
+              <div className="buttons d-flex gap-2">
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    handleAddToCart({
+                      userId: currentUser.id,
+                      items: [
+                        {
+                          productId: mobile.id,
+                          price: mobile.price,
+                          quantity: 1,
+                        },
+                      ],
+                      active: true,
+                    })
+                  }
+                >
+                  <Plus /> Add to Cart
+                </Button>
+                <Button variant="success" onClick={() => buyNow(mobile)}>
+                  <Cart /> Buy Now
+                </Button>
               </div>
-            </div>
-          </Col>
-        </Row>
-        
-      </Container>
+            </Card.Body>
+          </Card>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default MobileData
+export default MobileData;

@@ -64,7 +64,7 @@ export const Footer = () => {
             <p>
               Copyright 2025 <CCircle />
             </p>
-            <p>aniya company</p>
+            <p>anya company</p>
           </Col>
         </Row>
       </Container>

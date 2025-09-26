@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Seller_Dashboard = () => {
+const SellerDashboard = () => {
   return (
     <div>
         <h1>Seller Page</h1>
@@ -18,4 +18,4 @@ const Seller_Dashboard = () => {
   )
 }
 
-export default Seller_Dashboard
+export default SellerDashboard

@@ -1,5 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.js'
 import './style.css';
 import { Header } from './Header';
 import {Product} from './Product';
@@ -18,11 +19,15 @@ import Cart from './Cart';
 import ProductForm from './ProductForm';
 import LoginPage from './LoginPage';
 import SellerOrders from './Seller_Orders';
-import Seller_Dashboard from './Seller_Dashboard.js';
+import SellerDashboard from './SellerDashboard.js';
 import Login from './Login.js';
 import Profile from './Profile.js';
 import ProductListing from './ProductListing.js';
-
+import Address from './Address.js';
+import Payment from './Payment.js';
+import Order from './Order.js';
+import { TestModule } from './TestModule.js';
+import ViewProduct from './ViewProduct.js';
 
 function App() {
   return (
@@ -42,9 +47,14 @@ function App() {
         <Route path='/cart' element={<Cart/>}/>
         <Route path='/abc' element={<ProductListing/>}/>
         <Route path='/addProduct' element={<ProductForm/>}/>
-        {/* <Route path='/Seller' element={<Seller_Dashboard/>}/> */}
+        <Route path='/seller' element={<SellerDashboard/>}/>
         <Route path='/sellerOrders' element={<SellerOrders/>}/>
-        
+        <Route path='/address' element={ <Address/> }/>
+        <Route path='/payment' element={ <Payment/> }/>
+        <Route path='/order' element={ <Order/> }/>
+        <Route path='/test' element={ <TestModule/> }/>
+        <Route path='/view' element={<ViewProduct/>}/>
+
 
 
         
@@ -52,7 +62,7 @@ function App() {
 
         
       </Routes>
-      <Footer/>
+      {/* <Footer/> */}
     </>
     
   );
