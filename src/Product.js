@@ -666,16 +666,7 @@ export const Product = () => {
   const [productValue, setProductValue] = useState();
   const[products,setProducts]=useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  // select a product and get its id and redirect to mobile details page
-  const handleProductSelect = (id) => {
-    localStorage.setItem('selectedProductId', id);
-    console.log('Selected Product ID:', id);
-
-    // Redirect to mobile details page with the selected product id
-    
-    window.location.href = `http://localhost:3000/mobiledata/${id}`;
-  };
-
+ 
   const handleproducts = ()=>{
     fetch("http://localhost:8090/api/products")
   .then((response) => response.json())
@@ -689,20 +680,12 @@ export const Product = () => {
     return [];
   });
   }
-
-  const [filterBrand, setFilterBrand] = useState(null);
-
-  useEffect(() => {
-    // if (filterBrand) {
-    //   const filtered = products.filter(
-    //     (product) => product.brand === filterBrand
-    //   );
-    //   setProductValue(filtered);
-    // } else {
-    //   setProductValue(products);
-    // }
-    handleproducts();
-  }, [filterBrand]);
+   // Function to handle product selection and get its id
+   const handleProductSelect = (productId) => {
+    console.log("Selected Product ID:", productId);
+    // You can perform additional actions with the selected product ID here
+    window.location.href = `/mobiledata/${productId}`; // Redirect to product details page
+  };
 
   
   // Function to handle "Buy Now" action  
@@ -744,6 +727,27 @@ export const Product = () => {
 
   // Unique brands for simple filtering
   const brands = [...new Set(products.map((p) => p.brand))];
+
+  // show only products based on selected brand filter
+  const [filterBrand, setFilterBrand] = useState(null);
+  const filteredProducts = filterBrand
+    ? products.filter((p) => p.brand === filterBrand)
+    : products;
+  useEffect(() => {
+    handleproducts();
+  }, []);
+
+  useEffect(() => {
+    setProducts(filteredProducts);
+  }, [filterBrand, filteredProducts]);
+
+  // show all products when brand filter is cleared
+  useEffect(() => {
+    if (!filterBrand) {
+      handleproducts();
+    }
+  }, [filterBrand]);
+
 
   const productsEndpoint = () => {
     try {
@@ -792,7 +796,9 @@ export const Product = () => {
                   key={brand}
                   variant="outline-primary"
                   size="sm"
-                  onClick={() => setFilterBrand(brand)}
+                  onClick={() => setFilterBrand(brand) }
+                  active={filterBrand === brand}
+
                 >
                   {brand}
                 </Button>

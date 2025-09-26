@@ -1,14 +1,25 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Card } from "react-bootstrap";
-import { Button } from "react-bootstrap";
+import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { Plus, Cart } from "react-bootstrap-icons";
 import "./style.css";
 
 const MobileData = () => {
   // fetch the product id from the url
   const { id } = useParams();
+  React.useEffect(() => {
+    // Fetch mobile data from backend using the id
+    fetch(`http://localhost:8090/api/products/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setMobile(data))
+      .catch((error) => console.error("Error fetching mobile data:", error));
+  }, [id]);
   // store this id in local storage
   localStorage.setItem("selectedProductId", id);
   console.log("Selected Product ID from URL:", id);
@@ -49,60 +60,68 @@ const MobileData = () => {
         console.error("Error adding item to cart:", error);
       });
   };
-  React.useEffect(() => {
-    // Fetch mobile data from backend using the id
-    fetch('http://localhost:8090/api/products/:id')
-
-      .then((response) => response.json())
-      .then((data) => setMobile(data))
-      .catch((error) => console.error("Error fetching mobile data:", error));
-  }, [id]);
 
   return (
     <div>
       {/* Display mobile data fetched from backend */}
       {mobile ? (
         <div>
-          <Card className="shop" style={{ width: "100%" }}>
-            <Card.Img
-              variant="top"
-              src={`http://localhost:8090/uploads/${mobile.image}`}
-              className="item"
-            />
-            <Card.Body>
-              <Card.Title>{mobile.name}</Card.Title>
-              <Card.Text>{mobile.brand}</Card.Text>
-              <Card.Text>
-                Price: Rs.
-                {mobile.price >= 100
-                  ? mobile.price - (mobile.price * 20) / 100
-                  : mobile.price}
-              </Card.Text>
-              <div className="buttons d-flex gap-2">
-                <Button
-                  variant="primary"
-                  onClick={() =>
-                    handleAddToCart({
-                      userId: currentUser.id,
-                      items: [
-                        {
-                          productId: mobile.id,
-                          price: mobile.price,
-                          quantity: 1,
-                        },
-                      ],
-                      active: true,
-                    })
-                  }
-                >
-                  <Plus /> Add to Cart
-                </Button>
-                <Button variant="success" onClick={() => buyNow(mobile)}>
-                  <Cart /> Buy Now
-                </Button>
-              </div>
-            </Card.Body>
-          </Card>
+          <Container>
+            <Row>
+              <Col md={6}>
+                <Card className="shop" style={{ width: "100%" }}>
+                  <Card.Img
+                    variant="right"
+                    src={`http://localhost:8090/uploads/${mobile.image}`}
+                    className="item"
+                  />
+                </Card>
+              </Col>
+              <Col md={6}>
+                <Card className="shop" style={{ width: "100%" }}>
+                  <Card.Body>
+                    <Card.Title>{mobile.name}</Card.Title>
+                    <Card.Text>{mobile.brand}</Card.Text>
+                    <Card.Text>RAM: {mobile.ram}</Card.Text>
+                    <Card.Text>ROM: {mobile.rom}</Card.Text>
+                    <Card.Text>Screen Size: {mobile.screenSize}</Card.Text>
+                    <Card.Text>Camera: {mobile.camera}</Card.Text>
+                    <Card.Text>Battery: {mobile.battery}</Card.Text>
+                    <Card.Text>Processor: {mobile.processor}</Card.Text>
+                    <Card.Text>
+                      Price: Rs.
+                      {mobile.price >= 100
+                        ? mobile.price - (mobile.price * 20) / 100
+                        : mobile.price}
+                    </Card.Text>
+                    <div className="buttons d-flex gap-2">
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          handleAddToCart({
+                            userId: currentUser.id,
+                            items: [
+                              {
+                                productId: mobile.id,
+                                price: mobile.price,
+                                quantity: 1,
+                              },
+                            ],
+                            active: true,
+                          })
+                        }
+                      >
+                        <Plus /> Add to Cart
+                      </Button>
+                      <Button variant="success" onClick={() => buyNow(mobile)}>
+                        <Cart /> Buy Now
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
         </div>
       ) : (
         <p>Loading...</p>
@@ -110,5 +129,4 @@ const MobileData = () => {
     </div>
   );
 };
-
 export default MobileData;

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Header } from "./Header";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
@@ -17,6 +16,8 @@ const ProductForm = () => {
   const [rom, setRom] = useState("");
   const [camera, setCamera] = useState("");
   const [screenSize, setScreenSize] = useState("");
+  const [battery, setBattery] = useState("");
+  const [processor, setProcessor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -35,6 +36,8 @@ const ProductForm = () => {
     setRom("");
     setCamera("");
     setScreenSize("");
+    setBattery("");
+    setProcessor("");
   };
 
   const handleSubmit = async (e) => {
@@ -69,6 +72,8 @@ const ProductForm = () => {
       formData.append("rom", rom);
       formData.append("camera", camera);
       formData.append("screenSize", screenSize);
+      formData.append("battery", battery);
+      formData.append("processor", processor);
       
       // Get userId from Redux store instead of localStorage
       formData.append("userId", currentUser.id);
@@ -239,6 +244,22 @@ const ProductForm = () => {
                 placeholder="Screen Size (e.g., 6.1 inches)"
                 value={screenSize}
                 onChange={(e) => setScreenSize(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <Form.Control
+                placeholder="Battery Capacity (e.g., 4500mAh)"
+                value={battery}
+                onChange={(e) => setBattery(e.target.value)}
+              />
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col>
+              <Form.Control
+                placeholder="Processor (e.g., Snapdragon 888)"
+                value={processor}
+                onChange={(e) => setProcessor(e.target.value)}
               />
             </Col>
           </Row>

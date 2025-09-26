@@ -43,7 +43,7 @@ function App() {
         <Route path='/sign' element={<UserForm/>}/>
         <Route path = "/mobile" element={<Mobile/>}/>
         <Route path = "/category/:categoryName" element={<Category/>}/>
-        <Route path = "/mobiledata" element={<MobileData/>}/>
+        <Route path = "/mobiledata/:id" element={<MobileData/>}/>
         <Route path='/cart' element={<Cart/>}/>
         <Route path='/abc' element={<ProductListing/>}/>
         <Route path='/addProduct' element={<ProductForm/>}/>
