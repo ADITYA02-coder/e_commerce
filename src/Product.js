@@ -818,9 +818,7 @@ export const Product = () => {
                   <Card.Text>{data.brand}</Card.Text>
                   <Card.Text>
                     Price: Rs.
-                    {data.price >= 100
-                      ? data.price - (data.price * 20) / 100
-                      : data.price}
+                    {data.price}
                   </Card.Text>
                   <div className="buttons d-flex gap-2">
                     <Button variant="primary" onClick={() => handleAddToCart({

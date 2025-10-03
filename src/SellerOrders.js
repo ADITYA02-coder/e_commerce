@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
-const Seller_Orders = () => {
+const SellerOrders = () => {
   const [rowdata, setrowData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -172,4 +172,4 @@ const Seller_Orders = () => {
     </div>
   );
 };
-export default Seller_Orders;
+export default SellerOrders;

@@ -18,7 +18,7 @@ import Category from './Category';
 import Cart from './Cart';
 import ProductForm from './ProductForm';
 import LoginPage from './LoginPage';
-import SellerOrders from './Seller_Orders';
+import SellerOrders from './SellerOrders.js';
 import SellerDashboard from './SellerDashboard.js';
 import Login from './Login.js';
 import Profile from './Profile.js';
@@ -28,24 +28,24 @@ import Payment from './Payment.js';
 import Order from './Order.js';
 import { TestModule } from './TestModule.js';
 import ViewProduct from './ViewProduct.js';
+import Home from './Home.js';
 
 function App() {
   return (
     <>
       <Header/>
       <Routes>
-        <Route path = "/" element={<LoginPage/>}/>
+        <Route path = "/" element={<Home/>}/>
+        <Route path = "/signup" element={<LoginPage/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/profile' element={<Profile/>}/>
-        <Route path = "/home" element={<Product/>}/>
-        <Route path='/product' element={<Account/>}/>
+        <Route path='/product' element={<Product/>}/>
+        <Route path='/account' element={<Account/>}/>
         <Route path='/orderDetails' element={<OrderDetails/>}/>
-        <Route path='/sign' element={<UserForm/>}/>
-        <Route path = "/mobile" element={<Mobile/>}/>
         <Route path = "/category/:categoryName" element={<Category/>}/>
         <Route path = "/mobiledata/:id" element={<MobileData/>}/>
         <Route path='/cart' element={<Cart/>}/>
-        <Route path='/abc' element={<ProductListing/>}/>
+        <Route path='/viewProducts' element={<ProductListing/>}/>
         <Route path='/addProduct' element={<ProductForm/>}/>
         <Route path='/seller' element={<SellerDashboard/>}/>
         <Route path='/sellerOrders' element={<SellerOrders/>}/>

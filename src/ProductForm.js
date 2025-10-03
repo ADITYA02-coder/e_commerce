@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { 
+  useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -18,6 +19,7 @@ const ProductForm = () => {
   const [screenSize, setScreenSize] = useState("");
   const [battery, setBattery] = useState("");
   const [processor, setProcessor] = useState("");
+  const [color, setColor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -38,6 +40,7 @@ const ProductForm = () => {
     setScreenSize("");
     setBattery("");
     setProcessor("");
+    setColor("");
   };
 
   const handleSubmit = async (e) => {
@@ -74,7 +77,8 @@ const ProductForm = () => {
       formData.append("screenSize", screenSize);
       formData.append("battery", battery);
       formData.append("processor", processor);
-      
+      formData.append("color", color);
+
       // Get userId from Redux store instead of localStorage
       formData.append("userId", currentUser.id);
 
@@ -260,6 +264,13 @@ const ProductForm = () => {
                 placeholder="Processor (e.g., Snapdragon 888)"
                 value={processor}
                 onChange={(e) => setProcessor(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <Form.Control
+                placeholder="Color (e.g., Black)"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
               />
             </Col>
           </Row>

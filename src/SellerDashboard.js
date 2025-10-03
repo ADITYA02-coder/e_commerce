@@ -7,7 +7,7 @@ const SellerDashboard = () => {
         <p>Welcome to the seller's dashboard. Here you can manage your products, view orders, and update your profile.</p>
         <ul>
             <li><a href="http://localhost:3000/addProduct">Add New Product</a></li>
-            <li><a href="http://localhost:3000/abc">View Products</a></li>
+            <li><a href="http://localhost:3000/viewProducts">View Added Products</a></li>
             <li><a href="http://localhost:3000/sellerOrders">View Orders</a></li>
             <li><a href="/updateProfile">Update Profile</a></li>
         </ul>

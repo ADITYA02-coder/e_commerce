@@ -88,11 +88,10 @@ const MobileData = () => {
                     <Card.Text>Camera: {mobile.camera}</Card.Text>
                     <Card.Text>Battery: {mobile.battery}</Card.Text>
                     <Card.Text>Processor: {mobile.processor}</Card.Text>
+                    <Card.Text>Color: {mobile.color}</Card.Text>
                     <Card.Text>
                       Price: Rs.
-                      {mobile.price >= 100
-                        ? mobile.price - (mobile.price * 20) / 100
-                        : mobile.price}
+                      {mobile.price}
                     </Card.Text>
                     <div className="buttons d-flex gap-2">
                       <Button
