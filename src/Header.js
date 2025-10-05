@@ -20,8 +20,8 @@ export const Header = () => {
 
   return (
     <>
-      <Navbar expand="lg" className="body" id="header">
-        <Container fluid style={{}}>
+      <Navbar expand="lg" className="header">
+        <Container fluid>
           <Amazon />
           <Navbar.Brand href="">
             <button onClick={handleToggle}>

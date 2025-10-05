@@ -9,10 +9,7 @@ import { Routes } from 'react-router';
 import { Route } from 'react-router';
 import { Account } from './Account';
 import OrderDetails from './OrderDetails';
-// import Sign from './Sign';
 import Error from './Error';
-import UserForm from './UserForm';
-import Mobile from './Mobile';
 import MobileData from './MobileData';
 import Category from './Category';
 import Cart from './Cart';
@@ -62,7 +59,7 @@ function App() {
 
         
       </Routes>
-      {/* <Footer/> */}
+      <Footer/>
     </>
     
   );

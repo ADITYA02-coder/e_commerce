@@ -1,5 +1,8 @@
 .body {
-  background-color: aqua;
+  background-color: white;
+}
+#header{
+  text-decoration-color: whitesmoke;
 }
 .footer {
   background-color: rgb(129, 236, 129);

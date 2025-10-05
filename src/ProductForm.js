@@ -172,11 +172,13 @@ const ProductForm = () => {
                 <option value="apple">Apple</option>
                 <option value="motorola">Motorola</option>
                 <option value="nokia">Nokia</option>
+                <option value="iqoo">IQOO</option>
+                <option value="infinix">Infinix</option>
                 <option value="sony">Sony</option>
-                <option value="lg">LG</option>
-                <option value="htc">HTC</option>
-                <option value="huawei">Huawei</option>
-                <option value="lenovo">Lenovo</option>
+                <option value="lava">Lava</option>
+                <option value="poco">Poco</option>
+                <option value="tecno">Tecno</option>
+                <option value="honor">Honor</option>
                 <option value="asus">Asus</option>
                 <option value="oneplus">OnePlus</option>
                 <option value="vivo">Vivo</option>

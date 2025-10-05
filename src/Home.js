@@ -15,25 +15,23 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // You may need headers for RapidAPI key
-  const axiosConfig = {
-    headers: {
-      'X-RapidAPI-Key': 'YOUR_RAPIDAPI_KEY',
-      'X-RapidAPI-Host': 'azharimm-phone-specs.p.rapidapi.com',
-    }
-  };
-
   // Fetch all phones initially or on empty search
   const fetchPhones = async () => {
-    setLoading(true);
     try {
-      const resp = await axios.get(`${API_BASE}/phones`, axiosConfig);
-      setPhones(resp.data);  // Assuming resp.data is an array
-    } catch (err) {
-      console.error('Error fetching phones:', err);
-      message.error('Failed to fetch phones');
-    } finally {
-      setLoading(false);
+      fetch("http://localhost:8090/api/products", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Products fetched from backend:", data);
+          // You can set the fetched data to state if needed
+          setPhones(data)
+        });
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -41,7 +39,7 @@ const Home = () => {
   const searchPhones = async (keyword) => {
     setLoading(true);
     try {
-      const resp = await axios.get(`${API_BASE}/phones/search/${encodeURIComponent(keyword)}`, axiosConfig);
+      const resp = await axios.get(`${API_BASE}`);
       setPhones(resp.data);
     } catch (err) {
       console.error('Error searching phones:', err);
@@ -63,6 +61,7 @@ const Home = () => {
       searchPhones(value.trim());
     }
   };
+  
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -95,8 +94,11 @@ const Home = () => {
                     hoverable
                     cover={
                       <img
-                        src={phone.image_url || phone.image || 'https://via.placeholder.com/200'}
-                        alt={phone.phone_name || phone.model || 'Phone'}
+                        src={`http://localhost:8090/uploads/${phone.image}`}
+                        alt={phone.name || phone.model || 'Phone'}
+                        height={"257px"}
+                        
+                        style={{margin:"0 auto", width:"185px"}}
                       />
                     }
                     actions={[
@@ -104,8 +106,8 @@ const Home = () => {
                     ]}
                   >
                     <Meta
-                      title={phone.phone_name || phone.model}
-                      description={`Brand: ${phone.brand || 'N/A'}`}
+                      title={phone.name || phone.model}
+                      description={`Brand: ${phone.brand || 'N/A'} | Price: ${phone.price || 'N/A'}`}
                     />
                   </Card>
                 </Col>
