@@ -1,8 +1,28 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Card, Col, Row, Container, Button, Alert, Spinner, Badge } from "react-bootstrap";
+import {
+  Card,
+  Col,
+  Row,
+  Container,
+  Button,
+  Alert,
+  Spinner,
+  Badge,
+} from "react-bootstrap";
 import { Plus, ShoppingCart, Trash, Star, Heart } from "lucide-react";
+import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const ProductListing = () => {
+  let navigate = useNavigate();
+  const { user: currentUser } = useSelector((state) => state.auth);
+  if (currentUser) {
+    if (currentUser.roles[0] !== "ROLE_ADMIN") {
+      navigate("/login");
+    }
+  } else {
+    navigate("/login");
+  }
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,166 +34,166 @@ const ProductListing = () => {
   // Custom styles
   const styles = {
     container: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      minHeight: '100vh',
-      padding: '2rem 0'
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      minHeight: "100vh",
+      padding: "2rem 0",
     },
     productCard: {
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(20px)',
-      border: 'none',
-      borderRadius: '20px',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      overflow: 'hidden',
-      position: 'relative'
+      background: "rgba(255, 255, 255, 0.95)",
+      backdropFilter: "blur(20px)",
+      border: "none",
+      borderRadius: "20px",
+      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      overflow: "hidden",
+      position: "relative",
     },
     productCardHover: {
-      transform: 'translateY(-10px)',
-      boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2)'
+      transform: "translateY(-10px)",
+      boxShadow: "0 30px 60px rgba(0, 0, 0, 0.2)",
     },
     productImage: {
-      height: '300px',
-      objectFit: 'cover',
-      borderRadius: '20px 0 0 20px',
-      transition: 'transform 0.3s ease'
+      height: "300px",
+      objectFit: "cover",
+      borderRadius: "20px 0 0 20px",
+      transition: "transform 0.3s ease",
     },
     productImageHover: {
-      transform: 'scale(1.05)'
+      transform: "scale(1.05)",
     },
     cardBody: {
-      background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
-      padding: '2rem'
+      background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)",
+      padding: "2rem",
     },
     productTitle: {
-      fontSize: '1.5rem',
-      fontWeight: '700',
-      color: '#2d3748',
-      textDecoration: 'none',
-      transition: 'color 0.3s ease'
+      fontSize: "1.5rem",
+      fontWeight: "700",
+      color: "#2d3748",
+      textDecoration: "none",
+      transition: "color 0.3s ease",
     },
     productTitleHover: {
-      color: '#667eea'
+      color: "#667eea",
     },
     specItem: {
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: '0.75rem',
-      padding: '0.5rem',
-      background: 'rgba(102, 126, 234, 0.05)',
-      borderRadius: '10px',
-      border: '1px solid rgba(102, 126, 234, 0.1)'
+      display: "flex",
+      alignItems: "center",
+      marginBottom: "0.75rem",
+      padding: "0.5rem",
+      background: "rgba(102, 126, 234, 0.05)",
+      borderRadius: "10px",
+      border: "1px solid rgba(102, 126, 234, 0.1)",
     },
     specLabel: {
-      fontWeight: '600',
-      color: '#4a5568',
-      minWidth: '80px'
+      fontWeight: "600",
+      color: "#4a5568",
+      minWidth: "80px",
     },
     specValue: {
-      color: '#2d3748',
-      fontWeight: '500'
+      color: "#2d3748",
+      fontWeight: "500",
     },
     priceContainer: {
-      background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
-      padding: '1rem',
-      borderRadius: '15px',
-      marginBottom: '1.5rem',
-      textAlign: 'center'
+      background: "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
+      padding: "1rem",
+      borderRadius: "15px",
+      marginBottom: "1.5rem",
+      textAlign: "center",
     },
     currentPrice: {
-      fontSize: '2rem',
-      fontWeight: '800',
-      color: 'white',
-      textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+      fontSize: "2rem",
+      fontWeight: "800",
+      color: "white",
+      textShadow: "0 2px 4px rgba(0,0,0,0.3)",
     },
     originalPrice: {
-      fontSize: '1.2rem',
-      color: 'rgba(255,255,255,0.8)',
-      textDecoration: 'line-through'
+      fontSize: "1.2rem",
+      color: "rgba(255,255,255,0.8)",
+      textDecoration: "line-through",
     },
     discountBadge: {
-      position: 'absolute',
-      top: '1rem',
-      right: '1rem',
-      background: 'linear-gradient(135deg, #ed64a6 0%, #d53f8c 100%)',
-      color: 'white',
-      fontWeight: '700',
-      fontSize: '0.9rem',
-      padding: '0.5rem 1rem',
-      borderRadius: '25px',
-      boxShadow: '0 4px 15px rgba(237, 100, 166, 0.4)'
+      position: "absolute",
+      top: "1rem",
+      right: "1rem",
+      background: "linear-gradient(135deg, #ed64a6 0%, #d53f8c 100%)",
+      color: "white",
+      fontWeight: "700",
+      fontSize: "0.9rem",
+      padding: "0.5rem 1rem",
+      borderRadius: "25px",
+      boxShadow: "0 4px 15px rgba(237, 100, 166, 0.4)",
     },
     buttonGroup: {
-      display: 'flex',
-      gap: '0.75rem',
-      flexWrap: 'wrap'
+      display: "flex",
+      gap: "0.75rem",
+      flexWrap: "wrap",
     },
     primaryButton: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      border: 'none',
-      borderRadius: '12px',
-      padding: '0.75rem 1.5rem',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-      flex: '1'
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      border: "none",
+      borderRadius: "12px",
+      padding: "0.75rem 1.5rem",
+      fontWeight: "600",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+      flex: "1",
     },
     secondaryButton: {
-      background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
-      border: 'none',
-      borderRadius: '12px',
-      padding: '0.75rem 1.5rem',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(72, 187, 120, 0.3)',
-      flex: '1'
+      background: "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
+      border: "none",
+      borderRadius: "12px",
+      padding: "0.75rem 1.5rem",
+      fontWeight: "600",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 15px rgba(72, 187, 120, 0.3)",
+      flex: "1",
     },
     dangerButton: {
-      background: 'linear-gradient(135deg, #fc8181 0%, #e53e3e 100%)',
-      border: 'none',
-      borderRadius: '12px',
-      padding: '0.75rem 1rem',
-      fontWeight: '600',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(252, 129, 129, 0.3)'
+      background: "linear-gradient(135deg, #fc8181 0%, #e53e3e 100%)",
+      border: "none",
+      borderRadius: "12px",
+      padding: "0.75rem 1rem",
+      fontWeight: "600",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 15px rgba(252, 129, 129, 0.3)",
     },
     favoriteButton: {
-      position: 'absolute',
-      top: '1rem',
-      left: '1rem',
-      background: 'rgba(255, 255, 255, 0.9)',
-      border: 'none',
-      borderRadius: '50%',
-      width: '45px',
-      height: '45px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+      position: "absolute",
+      top: "1rem",
+      left: "1rem",
+      background: "rgba(255, 255, 255, 0.9)",
+      border: "none",
+      borderRadius: "50%",
+      width: "45px",
+      height: "45px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
     },
     rating: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      marginBottom: '1rem'
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5rem",
+      marginBottom: "1rem",
     },
     loadingSpinner: {
-      background: 'rgba(255, 255, 255, 0.95)',
-      borderRadius: '20px',
-      padding: '3rem',
-      textAlign: 'center',
-      backdropFilter: 'blur(20px)',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
+      background: "rgba(255, 255, 255, 0.95)",
+      borderRadius: "20px",
+      padding: "3rem",
+      textAlign: "center",
+      backdropFilter: "blur(20px)",
+      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
     },
     headerTitle: {
-      textAlign: 'center',
-      color: 'white',
-      fontSize: '3rem',
-      fontWeight: '800',
-      marginBottom: '3rem',
-      textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-    }
+      textAlign: "center",
+      color: "white",
+      fontSize: "3rem",
+      fontWeight: "800",
+      marginBottom: "3rem",
+      textShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+    },
   };
 
   const fetchProducts = useCallback(async () => {
@@ -194,7 +214,9 @@ const ProductListing = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this product?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
     if (!confirmed) return;
 
     try {
@@ -210,7 +232,9 @@ const ProductListing = () => {
         throw new Error("Failed to delete product");
       }
 
-      setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
     } catch (err) {
       console.error("Error deleting product:", err);
       alert("Failed to delete product. Please try again.");
@@ -246,7 +270,7 @@ const ProductListing = () => {
   };
 
   const toggleFavorite = (productId) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(productId)) {
         newFavorites.delete(productId);
@@ -266,8 +290,17 @@ const ProductListing = () => {
       <div style={styles.container}>
         <Container>
           <div style={styles.loadingSpinner}>
-            <Spinner animation="border" role="status" style={{ color: '#667eea' }} />
-            <div className="mt-3" style={{ color: '#4a5568', fontSize: '1.2rem' }}>Loading amazing products...</div>
+            <Spinner
+              animation="border"
+              role="status"
+              style={{ color: "#667eea" }}
+            />
+            <div
+              className="mt-3"
+              style={{ color: "#4a5568", fontSize: "1.2rem" }}
+            >
+              Loading amazing products...
+            </div>
           </div>
         </Container>
       </div>
@@ -278,11 +311,14 @@ const ProductListing = () => {
     return (
       <div style={styles.container}>
         <Container>
-          <Alert variant="danger" style={{ ...styles.productCard, color: '#e53e3e' }}>
+          <Alert
+            variant="danger"
+            style={{ ...styles.productCard, color: "#e53e3e" }}
+          >
             <Alert.Heading>Oops! Something went wrong</Alert.Heading>
             <p>{error}</p>
-            <Button 
-              variant="outline-danger" 
+            <Button
+              variant="outline-danger"
               onClick={fetchProducts}
               style={styles.dangerButton}
             >
@@ -314,18 +350,19 @@ const ProductListing = () => {
         <Row>
           {products.map((product) => (
             <Col key={product.id} xs={12} className="mb-5">
-              <Card 
+              <Card
                 style={styles.productCard}
                 onMouseEnter={(e) => {
                   Object.assign(e.currentTarget.style, styles.productCardHover);
-                  const img = e.currentTarget.querySelector('img');
+                  const img = e.currentTarget.querySelector("img");
                   if (img) Object.assign(img.style, styles.productImageHover);
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
-                  const img = e.currentTarget.querySelector('img');
-                  if (img) img.style.transform = 'scale(1)';
+                  e.currentTarget.style.transform = "translateY(0px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 20px 40px rgba(0, 0, 0, 0.1)";
+                  const img = e.currentTarget.querySelector("img");
+                  if (img) img.style.transform = "scale(1)";
                 }}
               >
                 {getDiscountPercentage(product.price) > 0 && (
@@ -333,22 +370,27 @@ const ProductListing = () => {
                     {getDiscountPercentage(product.price)}% OFF
                   </Badge>
                 )}
-                
+
                 <Button
                   style={{
                     ...styles.favoriteButton,
-                    color: favorites.has(product.id) ? '#e53e3e' : '#a0aec0'
+                    color: favorites.has(product.id) ? "#e53e3e" : "#a0aec0",
                   }}
                   onClick={() => toggleFavorite(product.id)}
                 >
-                  <Heart size={20} fill={favorites.has(product.id) ? 'currentColor' : 'none'} />
+                  <Heart
+                    size={20}
+                    fill={favorites.has(product.id) ? "currentColor" : "none"}
+                  />
                 </Button>
 
                 <Row className="g-0">
                   <Col md={5}>
                     <Card.Img
                       variant="center"
-                      src={`${API_BASE_URL.replace('/api', '')}/uploads/${product.image}`}
+                      src={`${API_BASE_URL.replace("/api", "")}/uploads/${
+                        product.image
+                      }`}
                       alt={product.name}
                       style={styles.productImage}
                     />
@@ -357,22 +399,36 @@ const ProductListing = () => {
                     <Card.Body style={styles.cardBody}>
                       <div style={styles.rating}>
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={16} fill="#ffd700" color="#ffd700" />
+                          <Star
+                            key={i}
+                            size={16}
+                            fill="#ffd700"
+                            color="#ffd700"
+                          />
                         ))}
-                        <span style={{ color: '#4a5568', fontSize: '0.9rem' }}>(4.8)</span>
+                        <span style={{ color: "#4a5568", fontSize: "0.9rem" }}>
+                          (4.8)
+                        </span>
                       </div>
 
                       <Card.Title>
-                        <a 
-                          href="/category/mobiles/mobiledata" 
+                        <a
+                          href="/mobiledata"
                           style={styles.productTitle}
-                          onMouseEnter={(e) => Object.assign(e.target.style, styles.productTitleHover)}
-                          onMouseLeave={(e) => e.target.style.color = '#2d3748'}
+                          onMouseEnter={(e) =>
+                            Object.assign(
+                              e.target.style,
+                              styles.productTitleHover
+                            )
+                          }
+                          onMouseLeave={(e) =>
+                            (e.target.style.color = "#2d3748")
+                          }
                         >
                           {product.name}
                         </a>
                       </Card.Title>
-                      
+
                       <div className="mb-4">
                         <div style={styles.specItem}>
                           <span style={styles.specLabel}>Brand:</span>
@@ -392,7 +448,27 @@ const ProductListing = () => {
                         </div>
                         <div style={styles.specItem}>
                           <span style={styles.specLabel}>Screen:</span>
-                          <span style={styles.specValue}>{product.screenSize}</span>
+                          <span style={styles.specValue}>
+                            {product.screenSize}
+                          </span>
+                        </div>
+                        <div style={styles.specItem}>
+                          <span style={styles.specLabel}>Processor:</span>
+                          <span style={styles.specValue}>
+                            {product.processor}
+                          </span>
+                        </div>
+                        <div style={styles.specItem}>
+                          <span style={styles.specLabel}>Battery:</span>
+                          <span style={styles.specValue}>
+                            {product.battery}
+                          </span>
+                        </div>
+                        <div style={styles.specItem}>
+                          <span style={styles.specLabel}>Colour:</span>
+                          <span style={styles.specValue}>
+                            {product.color}
+                          </span>
                         </div>
                       </div>
 
@@ -406,33 +482,37 @@ const ProductListing = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       <div style={styles.buttonGroup}>
-                        <Button 
+                        <Button
                           style={styles.primaryButton}
                           onClick={() => handleAddToCart(product)}
                           onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.5)';
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow =
+                              "0 8px 25px rgba(102, 126, 234, 0.5)";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0px)';
-                            e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
+                            e.target.style.transform = "translateY(0px)";
+                            e.target.style.boxShadow =
+                              "0 4px 15px rgba(102, 126, 234, 0.3)";
                           }}
                         >
                           <Plus size={18} className="me-2" />
                           Add to Cart
                         </Button>
-                        <Button 
+                        <Button
                           style={styles.secondaryButton}
                           onClick={() => handleBuyNow(product)}
                           onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 8px 25px rgba(72, 187, 120, 0.5)';
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow =
+                              "0 8px 25px rgba(72, 187, 120, 0.5)";
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0px)';
-                            e.target.style.boxShadow = '0 4px 15px rgba(72, 187, 120, 0.3)';
+                            e.target.style.transform = "translateY(0px)";
+                            e.target.style.boxShadow =
+                              "0 4px 15px rgba(72, 187, 120, 0.3)";
                           }}
                         >
                           <ShoppingCart size={18} className="me-2" />
@@ -444,14 +524,16 @@ const ProductListing = () => {
                           disabled={deleteLoading === product.id}
                           onMouseEnter={(e) => {
                             if (!e.target.disabled) {
-                              e.target.style.transform = 'translateY(-2px)';
-                              e.target.style.boxShadow = '0 8px 25px rgba(252, 129, 129, 0.5)';
+                              e.target.style.transform = "translateY(-2px)";
+                              e.target.style.boxShadow =
+                                "0 8px 25px rgba(252, 129, 129, 0.5)";
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (!e.target.disabled) {
-                              e.target.style.transform = 'translateY(0px)';
-                              e.target.style.boxShadow = '0 4px 15px rgba(252, 129, 129, 0.3)';
+                              e.target.style.transform = "translateY(0px)";
+                              e.target.style.boxShadow =
+                                "0 4px 15px rgba(252, 129, 129, 0.3)";
                             }
                           }}
                         >
@@ -478,44 +560,6 @@ const ProductListing = () => {
 };
 
 export default ProductListing;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { Card, Col } from "react-bootstrap";
@@ -621,7 +665,7 @@ export default ProductListing;
 //             </Col>
 //           </Card>
 //         </Row>
-//       </Container> 
+//       </Container>
 //       ))}
 //     </div>
 //   );

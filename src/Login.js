@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
@@ -15,7 +15,7 @@ const Login = () => {
 
   const { isLoggedIn } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
-
+  const { user: currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,19 +39,22 @@ const Login = () => {
     dispatch(login({ username, password }))
       .unwrap()
       .then(() => {
-        navigate("/profile");
+        
+        if (currentUser.roles[0] === "ROLE_ADMIN") {
+          console.log("TEst");
+          console.log(currentUser);
+          navigate("/seller");
+        }
+         else {
+          console.log(currentUser);
+          navigate("/profile");
+        }
         console.log("successfully logged in");
       })
       .catch(() => {
         setLoading(false);
       });
   };
-
-  if (isLoggedIn) {
-    // return <Navigate to="/profile" />;
-    console.log("logged in");
-    //
-  }
 
   return (
     <div className="col-md-12 login-form">
@@ -88,7 +91,11 @@ const Login = () => {
             </div>
 
             <div className="form-group">
-              <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={loading}
+              >
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}

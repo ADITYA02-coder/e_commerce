@@ -5,7 +5,8 @@ import * as Yup from "yup";
 
 import { register } from "./slices/auth";
 import { clearMessage } from "./slices/message";
-import { href } from "react-router";
+
+const availableRoles = ["user", "admin", "moderator"];
 
 const LoginPage = () => {
   const [successful, setSuccessful] = useState(false);
@@ -21,7 +22,7 @@ const LoginPage = () => {
     username: "",
     email: "",
     password: "",
-
+    roles: [""],
   };
 
   const validationSchema = Yup.object().shape({
@@ -30,9 +31,7 @@ const LoginPage = () => {
         "len",
         "The username must be between 3 and 20 characters.",
         (val) =>
-          val &&
-          val.toString().length >= 3 &&
-          val.toString().length <= 20
+          val && val.toString().length >= 3 && val.toString().length <= 20
       )
       .required("This field is required!"),
     email: Yup.string()
@@ -43,20 +42,20 @@ const LoginPage = () => {
         "len",
         "The password must be between 6 and 40 characters.",
         (val) =>
-          val &&
-          val.toString().length >= 6 &&
-          val.toString().length <= 40
+          val && val.toString().length >= 6 && val.toString().length <= 40
       )
       .required("This field is required!"),
-    
+    roles: Yup.array()
+      .min(1, "At least one role must be selected")
+      .of(Yup.string().required("This field is required!")),
   });
 
   const handleRegister = (formValue) => {
-    const { username, email, password,} = formValue;
+    const { username, email, password, roles } = formValue;
 
     setSuccessful(false);
 
-    dispatch(register({ username, email, password,}))
+    dispatch(register({ username, email, password, roles }))
       .unwrap()
       .then(() => {
         setSuccessful(true);
@@ -115,8 +114,20 @@ const LoginPage = () => {
                     className="alert alert-danger"
                   />
                 </div>
-                
-                
+                <div>
+                  <label>Roles</label>
+                  {availableRoles.map((role) => (
+                    <div key={role}>
+                      <Field type="checkbox" name="roles" value={role} />
+                      <label>{role}</label>
+                    </div>
+                  ))}
+                  <ErrorMessage
+                    name="roles"
+                    component="div"
+                    className="error"
+                  />
+                </div>
 
                 <div className="social-icons">
                   <img
@@ -134,7 +145,13 @@ const LoginPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <button type="submit" className="btn btn-primary btn-block" href="/login" >Sign Up</button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-block"
+                    href="/login"
+                  >
+                    Sign Up
+                  </button>
                 </div>
               </div>
             )}
@@ -145,7 +162,9 @@ const LoginPage = () => {
       {message && (
         <div className="form-group">
           <div
-            className={successful ? "alert alert-success" : "alert alert-danger"}
+            className={
+              successful ? "alert alert-success" : "alert alert-danger"
+            }
             role="alert"
           >
             {message}

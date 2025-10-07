@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./header.css";
 import Container from "react-bootstrap/Container";
 import { List } from "react-bootstrap-icons";
@@ -10,13 +10,27 @@ import { Link } from "react-router";
 import { Cart } from "react-bootstrap-icons";
 import Sidebar from "./Sidebar";
 // import navigate  from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate } from "react-router";
+import { logout } from "./slices/auth";
 
 export const Header = () => {
+   const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
+const { user: currentUser } = useSelector((state) => state.auth);
 
+
+ 
   const handleToggle = () => {
     setOpen(!open);
   };
+  
+  
+  const handleLogout = () => {
+      dispatch(logout());
+      // navigate('/login'); // Redirect to login page
+      window.location.reload();
+    };
 
   return (
     <>
@@ -72,8 +86,18 @@ export const Header = () => {
             </Nav>
           </Navbar.Collapse>
           <Nav>
-            <Nav.Link href="/signup">sign-up</Nav.Link>
+            {
+              !currentUser ? 
+              <>
+               <Nav.Link href="/signup">sign-up</Nav.Link>
             <Nav.Link href="/login">Login</Nav.Link>
+              </>
+              :
+              <>
+              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              </>
+            }
+           
           </Nav>
         </Container>
       </Navbar>

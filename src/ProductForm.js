@@ -1,13 +1,21 @@
-import React, { 
-  useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const ProductForm = () => {
+  let navigate = useNavigate();
+  const { user: currentUser } = useSelector((state) => state.auth);
+  if (currentUser) {
+    if (currentUser.roles[0] !== "ROLE_ADMIN") {
+      navigate("/login");
+    }
+  } else {
+    navigate("/login");
+  }
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
@@ -21,12 +29,6 @@ const ProductForm = () => {
   const [processor, setProcessor] = useState("");
   const [color, setColor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { user: currentUser } = useSelector((state) => state.auth);
-
-  if (!currentUser) {
-    return <Navigate to="/login" />;
-  }
 
   const resetForm = () => {
     setName("");
@@ -45,7 +47,7 @@ const ProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!name || !category || !price || !brand) {
       alert("Please fill in all required fields");
@@ -65,12 +67,12 @@ const ProductForm = () => {
       formData.append("category", category);
       formData.append("price", price);
       formData.append("brand", brand);
-      
+
       // Only append file if it exists
       if (image) {
         formData.append("file", image);
       }
-      
+
       formData.append("ram", ram);
       formData.append("rom", rom);
       formData.append("camera", camera);
@@ -89,16 +91,17 @@ const ProductForm = () => {
       // console.log(formData);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
       console.log("Product submitted successfully:", data);
-      
+
       // Reset form fields on success
       resetForm();
       alert("Product submitted successfully!");
-      
     } catch (err) {
       console.error("Error submitting product:", err);
       alert(`Error submitting product: ${err.message}`);
@@ -115,7 +118,7 @@ const ProductForm = () => {
           <strong>User ID:</strong> {currentUser.id}
         </p>
         <p>Please fill in the details below to add a new product.</p>
-        
+
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3">
             <Col>
@@ -141,7 +144,7 @@ const ProductForm = () => {
               </Form.Select>
             </Col>
           </Row>
-          
+
           <Row className="mb-3">
             <Col>
               <Form.Label>Price: ₹{price || 0}</Form.Label>
@@ -153,11 +156,11 @@ const ProductForm = () => {
                 min="1"
                 required
               />
-              <Form.Range 
-                value={price || 400} 
-                min={400} 
-                max={500000} 
-                onChange={(e) => setPrice(e.target.value)} 
+              <Form.Range
+                value={price || 400}
+                min={400}
+                max={500000}
+                onChange={(e) => setPrice(e.target.value)}
               />
             </Col>
             <Col>
@@ -189,7 +192,7 @@ const ProductForm = () => {
               </Form.Select>
             </Col>
           </Row>
-          
+
           <Row className="mb-3">
             <Col>
               <Form.Control
@@ -202,10 +205,7 @@ const ProductForm = () => {
               </Form.Text>
             </Col>
             <Col>
-              <Form.Select
-                value={ram}
-                onChange={(e) => setRam(e.target.value)}
-              >
+              <Form.Select value={ram} onChange={(e) => setRam(e.target.value)}>
                 <option value="">Select RAM</option>
                 <option value="2">2 GB</option>
                 <option value="3">3 GB</option>
@@ -219,13 +219,10 @@ const ProductForm = () => {
               </Form.Select>
             </Col>
           </Row>
-          
+
           <Row className="mb-3">
             <Col>
-              <Form.Select
-                value={rom}
-                onChange={(e) => setRom(e.target.value)}
-              >
+              <Form.Select value={rom} onChange={(e) => setRom(e.target.value)}>
                 <option value="">Select Storage</option>
                 <option value="32">32 GB</option>
                 <option value="64">64 GB</option>
@@ -243,7 +240,7 @@ const ProductForm = () => {
               />
             </Col>
           </Row>
-          
+
           <Row className="mb-3">
             <Col>
               <Form.Control
@@ -278,11 +275,7 @@ const ProductForm = () => {
           </Row>
 
           <div className="d-flex gap-2">
-            <Button 
-              variant="primary" 
-              type="submit" 
-              disabled={isSubmitting}
-            >
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Adding Product..." : "Add Product"}
             </Button>
             <Button
