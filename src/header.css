@@ -3,7 +3,7 @@ body, html, #root {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: sans-serif;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
 .app {
@@ -20,14 +20,15 @@ body, html, #root {
   border: none;
   cursor: pointer;
   z-index: 2;
+  color: var(--text);
 }
 
 .sidebar {
   width: 0;
   overflow-x: hidden;
   transition: width 0.6s;
-  background-color: pink;
-  color: white;
+  background-color: #2b201b;
+  color: #f8f3ee;
   padding-top: 60px;
   position: fixed;
   height: 100%;
@@ -48,15 +49,67 @@ body, html, #root {
 }
 
 .sidebar nav ul li a {
-  color: white;
+  color: #f8f3ee;
   text-decoration: none;
+}
+
+.sidebar nav ul li a:hover {
+  color: #f0b58b;
 }
 
 .content {
   flex-grow: 1;
   margin-left: 60px;
   padding: 20px;
+  background: var(--bg);
 }
 .header{
-  background-color: blanchedalmond;
+  background-color: #2b201b;
+  border-bottom: 1px solid #3b2b24;
+}
+
+.header .navbar-brand,
+.header .nav-link,
+.header a,
+.header svg {
+  color: #f8f3ee;
+}
+
+.header .nav-link:hover,
+.header a:hover {
+  color: #f0b58b;
+}
+
+.header button {
+  background: transparent;
+  border: 1px solid #3b2b24;
+  color: #f8f3ee;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.header button:hover {
+  border-color: #f0b58b;
+}
+
+.header .dropdown-menu {
+  background: #fff7ef;
+  border: 1px solid #e6d5c6;
+}
+
+.header .dropdown-item,
+.header .dropdown-item a {
+  color: #2b201b;
+}
+
+.header .dropdown-item a {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.header .dropdown-item:hover,
+.header .dropdown-item:focus {
+  background: #f6e2d2;
+  color: #2b201b;
 }

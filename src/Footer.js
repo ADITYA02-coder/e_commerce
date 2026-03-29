@@ -3,21 +3,25 @@ import { Container } from "react-bootstrap";
 import { Row } from "react-bootstrap";
 import { Col } from "react-bootstrap";
 import { CCircle } from "react-bootstrap-icons";
+import "./style.css";
+
 export const Footer = () => {
   return (
-    <div className="footer">
+    <footer className="footer">
       <Container fluid>
         <Row>
           <Col>
-            <h5>Get to Know Us</h5>
+            <h5 className="footerTitle">Get to Know Us</h5>
           </Col>
           <Col>
-            <h5>Connect with Us</h5>
+            <h5 className="footerTitle">Connect with Us</h5>
           </Col>
           <Col>
-            <h5>Make Money with Us</h5>
+            <h5 className="footerTitle">Make Money with Us</h5>
           </Col>
-          <Col><h5>Let Us Help You</h5></Col>
+          <Col>
+            <h5 className="footerTitle">Let Us Help You</h5>
+          </Col>
         </Row>
         <Row>
           <Col>
@@ -60,14 +64,15 @@ export const Footer = () => {
           </Col>
         </Row>
         <Row>
-          <Col className="footercopyright">
+          <Col className="footercopyright" col={12}>
             <p>
-              Copyright 2025 <CCircle />
+              Copyright 2025 <CCircle /> ecommerce company
             </p>
-            <p>anya company</p>
           </Col>
         </Row>
       </Container>
-    </div>
+    </footer>
   );
 };
+
+

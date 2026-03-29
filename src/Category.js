@@ -6,12 +6,14 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { BackToTop } from "./BackToTop";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import "./Category.css";
 
 const Category = () => {
+  const navigate = useNavigate();
   const [productValue, setProductValue] = useState();
   const [products, setProducts] = useState([]);
   const [selectedItems, setSelectedItems] = useState(() => {
@@ -48,6 +50,14 @@ const Category = () => {
   }, [products, filterBrand]);
 
   const { user: currentUser } = useSelector((state) => state.auth);
+
+  const requireLogin = () => {
+    if (!currentUser) {
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return false;
+    }
+    return true;
+  };
 
   const buyNow = (item) => {
     const updatedItems = [...selectedItems, item];
@@ -101,16 +111,27 @@ const Category = () => {
   const { categoryName } = useParams();
   console.log("value comes from parameters ", categoryName);
   return (
-    <div className="shopping">
+    <div className="category-page">
       <Container fluid>
+        <div className="category-hero">
+          <span className="category-badge">Shop by Category</span>
+          <h2 className="category-title">{categoryName}</h2>
+          <p className="category-subtitle">
+            Discover trending picks, compare specs, and add favorites to your cart.
+          </p>
+        </div>
         <Row className="mb-3">
           <Col>
-            <h5>Filter by Brand:</h5>
-            <div className="d-flex flex-wrap gap-2">
+            <div className="category-filter-header">
+              <h5>Filter by Brand</h5>
+              <span>{products.length} items</span>
+            </div>
+            <div className="category-filter-chips">
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => setFilterBrand(null)}
+                className="category-chip"
               >
                 All
               </Button>
@@ -120,6 +141,7 @@ const Category = () => {
                   variant="outline-primary"
                   size="sm"
                   onClick={() => setFilterBrand(brand)}
+                  className="category-chip"
                 >
                   {brand}
                 </Button>
@@ -127,43 +149,86 @@ const Category = () => {
             </div>
           </Col>
         </Row>
-        <Row className="row">
-          {products.filter((d) => d.category === categoryName).map((data) => (
-            <Col sm={12} md={3} key={data.id} className="mb-4">
-              <Card className="shop" style={{ width: "100%" }}>
+        <Row className="category-grid">
+          {products.filter((d) => d.category === categoryName).map((data) => {
+            const ratingValue = Number(data.rating || data.ratings || data.ratingValue || 0);
+            const stockValue = Number(data.stock || data.quantity || data.available || 0);
+            return (
+            <Col sm={12} md={6} lg={4} xl={3} key={data.id} className="mb-4">
+              <Card className="category-card">
                 {/* <Card.Img variant="top" src={'http://localhost:8090/uploads/${data.image}'} className="item" /> */}
-                <Card.Img variant="top" src={`http://localhost:8090/uploads/${data.image}`} className="item" />
+                <div className="category-card__image">
+                  <Card.Img
+                    variant="top"
+                    src={`http://localhost:8090/uploads/${data.image}`}
+                  />
+                </div>
                 <Card.Body>
-                  <Card.Title>{data.name}</Card.Title>
-                  <Card.Text>{data.brand}</Card.Text>
-                  <Card.Text>
-                    Price: $
-                    {data.price >= 100
-                      ? data.price - (data.price * 20) / 100
-                      : data.price}
-                  </Card.Text>
-                  <div className="buttons d-flex gap-2">
-                    <Button variant="primary" onClick={() => handleAddToCart({
-                      userId: currentUser.id,
-                      items:[
-                        {
-                          productId: data.id,
-                          price: data.price,
-                          quantity: 1
-                        }
-                      ],
-                      active: true
-                    })}>
+                  <Card.Title className="category-card__title">
+                    {data.name}
+                  </Card.Title>
+                  <div className="category-card__meta-row">
+                    <span className="category-card__rating">
+                      {"★".repeat(Math.max(0, Math.min(5, Math.round(ratingValue || 4))))}
+                      <span>{(ratingValue || 4).toFixed(1)}</span>
+                    </span>
+                    <span
+                      className={`category-card__stock ${
+                        stockValue > 0 ? "in-stock" : "out-stock"
+                      }`}
+                    >
+                      {stockValue > 0 ? "In stock" : "Out of stock"}
+                    </span>
+                  </div>
+                  <div className="category-card__meta">
+                    <span>{data.brand}</span>
+                    <span className="category-card__price">
+                      ₹
+                      {data.price >= 100
+                        ? data.price - (data.price * 20) / 100
+                        : data.price}
+                    </span>
+                  </div>
+                  <div className="category-card__actions">
+                    <Button
+                      variant="primary"
+                      className="category-btn category-btn--primary"
+                      onClick={() => {
+                        if (!requireLogin()) return;
+                        if (stockValue <= 0) return;
+                        handleAddToCart({
+                          userId: currentUser.id,
+                          items: [
+                            {
+                              productId: data.id,
+                              price: data.price,
+                              quantity: 1,
+                            },
+                          ],
+                          active: true,
+                        });
+                      }}
+                      disabled={stockValue <= 0}
+                    >
                       <Plus /> Add to Cart
                     </Button>
-                    <Button variant="success" onClick={() => buyNow(data)}>
+                    <Button
+                      variant="success"
+                      className="category-btn category-btn--secondary"
+                      onClick={() => {
+                        if (!requireLogin()) return;
+                        if (stockValue <= 0) return;
+                        buyNow(data);
+                      }}
+                      disabled={stockValue <= 0}
+                    >
                       <Cart /> Buy Now
                     </Button>
                   </div>
                 </Card.Body>
               </Card>
             </Col>
-          ))}
+          )})}
         </Row>
         <Row className="nh">
           <Col className="w-100">

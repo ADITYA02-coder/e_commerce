@@ -4,18 +4,11 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router-dom";
+import "./ProductForm.css";
 
 const ProductForm = () => {
-  let navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
-  if (currentUser) {
-    if (currentUser.roles[0] !== "ROLE_ADMIN") {
-      navigate("/login");
-    }
-  } else {
-    navigate("/login");
-  }
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
@@ -29,6 +22,10 @@ const ProductForm = () => {
   const [processor, setProcessor] = useState("");
   const [color, setColor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+    return <Navigate to="/" />;
+  }
 
   const resetForm = () => {
     setName("");
@@ -111,13 +108,19 @@ const ProductForm = () => {
   };
 
   return (
-    <div>
+    <div className="seller-form-page">
       <div className="product-form-container">
-        <h2>Add New Product</h2>
-        <p>
-          <strong>User ID:</strong> {currentUser.id}
-        </p>
-        <p>Please fill in the details below to add a new product.</p>
+        <div className="seller-form-header">
+          <div>
+            <span className="seller-form-badge">Seller Console</span>
+            <h2>Add New Product</h2>
+            <p>Please fill in the details below to add a new product.</p>
+          </div>
+          <div className="seller-form-meta">
+            <span>Seller ID</span>
+            <strong>{currentUser.id}</strong>
+          </div>
+        </div>
 
         <Form onSubmit={handleSubmit}>
           <Row className="mb-3">

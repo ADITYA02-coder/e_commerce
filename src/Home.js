@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Input, Card, Row, Col, Spin, message } from 'antd';
-import { ShoppingCartOutlined, UserOutlined, MobileOutlined, SearchOutlined } from '@ant-design/icons';
+import { Layout, Input, Card, Row, Col, Spin, message, Button } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const { Header, Content, Footer } = Layout;
+const { Content } = Layout;
 const { Meta } = Card;
 const { Search } = Input;
 
@@ -14,24 +15,22 @@ const Home = () => {
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   // Fetch all phones initially or on empty search
   const fetchPhones = async () => {
+    setLoading(true);
     try {
-      fetch("http://localhost:8090/api/products", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Products fetched from backend:", data);
-          // You can set the fetched data to state if needed
-          setPhones(data)
-        });
+      const resp = await axios.get(API_BASE);
+      const data = Array.isArray(resp.data) ? resp.data : [];
+      console.log("Products fetched from backend:", data);
+      setPhones(data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      message.error("Failed to load products");
+      setPhones([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,11 +38,20 @@ const Home = () => {
   const searchPhones = async (keyword) => {
     setLoading(true);
     try {
-      const resp = await axios.get(`${API_BASE}`);
-      setPhones(resp.data);
+      const resp = await axios.get(API_BASE);
+      const data = Array.isArray(resp.data) ? resp.data : [];
+      const k = keyword.toLowerCase();
+      const filtered = data.filter((phone) => {
+        const name = (phone.name || "").toLowerCase();
+        const model = (phone.model || "").toLowerCase();
+        const brand = (phone.brand || "").toLowerCase();
+        return name.includes(k) || model.includes(k) || brand.includes(k);
+      });
+      setPhones(filtered);
     } catch (err) {
       console.error('Error searching phones:', err);
       message.error('Search failed');
+      setPhones([]);
     } finally {
       setLoading(false);
     }
@@ -63,68 +71,127 @@ const Home = () => {
   };
   
 
-  return (
-    <Layout style={{ minHeight: '100vh' }}>
-      {/* Content */}
-      <Content style={{ padding: '0 16px', marginTop: '16px' }}>
-        {/* Search Bar */}
-        <div style={{ maxWidth: 400, margin: '0 auto 24px' }}>
-          <Search
-            placeholder="Search phones..."
-            enterButton={<SearchOutlined />}
-            onSearch={onSearch}
-            allowClear
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+  const brands = Array.from(new Set(phones.map((p) => p.brand).filter(Boolean))).slice(0, 8);
+  const featuredPhones = phones.slice(0, 6);
 
-        {/* Loading state */}
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '50px 0' }}>
-            <Spin size="large" />
+  return (
+    <Layout className="home-layout">
+      <Content className="home-content">
+        <section className="home-hero">
+          <div className="home-hero-text">
+            <span className="home-eyebrow">Discover • Compare • Buy</span>
+            <h1>Premium Mobiles. Smarter Deals.</h1>
+            <p>
+              Find the best phones across top brands, compare specs instantly, and buy with confidence.
+            </p>
+            <div className="home-hero-actions">
+              <Button type="primary" size="large" onClick={() => navigate('/product')}>
+                Browse Products
+              </Button>
+              <Button size="large" onClick={() => navigate('/category/mobiles')}>
+                Shop Mobiles
+              </Button>
+            </div>
+            <div className="home-stats">
+              <div>
+                <strong>{phones.length || '150+'}</strong>
+                <span>Models</span>
+              </div>
+              <div>
+                <strong>24/7</strong>
+                <span>Support</span>
+              </div>
+              <div>
+                <strong>Fast</strong>
+                <span>Delivery</span>
+              </div>
+            </div>
           </div>
-        ) : (
-          // Phone cards grid
-          <Row gutter={[16, 16]} justify="center">
-            {phones.length > 0 ? (
-              phones.map((phone, idx) => (
-                <Col xs={24} sm={12} md={8} key={idx}>
-                  <Card
-                    hoverable
-                    cover={
-                      <img
-                        src={`http://localhost:8090/uploads/${phone.image}`}
-                        alt={phone.name || phone.model || 'Phone'}
-                        height={"257px"}
-                        
-                        style={{margin:"0 auto", width:"185px"}}
-                      />
-                    }
-                    actions={[
-                      <span key="add">Add to Cart</span>
-                    ]}
-                  >
-                    <Meta
-                      title={phone.name || phone.model}
-                      description={`Brand: ${phone.brand || 'N/A'} | Price: ${phone.price || 'N/A'}`}
-                    />
-                  </Card>
-                </Col>
+          <div className="home-hero-card">
+            <div className="hero-card-inner">
+              <h3>Smart Picks</h3>
+              <p>Curated phones with the best value today.</p>
+              <Button onClick={() => navigate('/product')}>See Picks</Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="home-search-section">
+          <div className="home-search">
+            <Search
+              placeholder="Search by brand, model, or feature..."
+              enterButton={<SearchOutlined />}
+              onSearch={onSearch}
+              allowClear
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              size="large"
+            />
+          </div>
+        </section>
+
+        <section className="home-brands">
+          <h2>Top Brands</h2>
+          <div className="brand-grid">
+            {brands.length > 0 ? (
+              brands.map((brand) => (
+                <button
+                  key={brand}
+                  className="brand-chip"
+                  onClick={() => onSearch(brand)}
+                >
+                  {brand}
+                </button>
               ))
             ) : (
-              <div style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
-                No phones found.
-              </div>
+              <div className="home-empty">No brands available.</div>
             )}
-          </Row>
-        )}
-      </Content>
+          </div>
+        </section>
 
-      {/* Footer */}
-      <Footer style={{ textAlign: 'center' }}>
-        © 2025 PhoneStore. All rights reserved.
-      </Footer>
+        <section className="home-featured">
+          <div className="section-header">
+            <h2>Featured Phones</h2>
+            <Button type="link" onClick={() => navigate('/product')}>View all</Button>
+          </div>
+          {loading ? (
+            <div className="home-loading">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <Row gutter={[16, 16]} justify="center" className="home-grid">
+              {featuredPhones.length > 0 ? (
+                featuredPhones.map((phone) => (
+                  <Col xs={24} sm={12} md={8} key={phone.id || phone._id}>
+                    <Card
+                      hoverable
+                      className="home-card"
+                      onClick={() => navigate(`/mobiledata/${phone.id || phone._id}`)}
+                      cover={
+                        <img
+                          src={`http://localhost:8090/uploads/${phone.image}`}
+                          alt={phone.name || phone.model || 'Phone'}
+                          className="home-card-image"
+                        />
+                      }
+                    >
+                      <Meta
+                        title={phone.name || phone.model}
+                        description={`Brand: ${phone.brand || 'N/A'} • Price: Rs. ${phone.price || 'N/A'}`}
+                      />
+                      <div className="home-card-cta">View Details</div>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <div className="home-empty">
+                  No phones found.
+                </div>
+              )}
+            </Row>
+          )}
+        </section>
+      </Content>
     </Layout>
   );
 };

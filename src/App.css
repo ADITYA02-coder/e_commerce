@@ -2,6 +2,17 @@
   
 }
 
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.app-main {
+  flex: 1;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -14,18 +25,18 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--surface-2);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--text);
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--accent);
 }
 
 @keyframes App-logo-spin {
@@ -39,6 +50,7 @@
 label {
   display: block;
   margin-top: 10px;
+  color: var(--text);
 }
 
 .login-form,
@@ -48,16 +60,17 @@ label {
 }
 
 .card {
-  background-color: #f7f7f7;
+  background-color: var(--surface);
   padding: 20px 25px 30px;
   margin: 0 auto 25px;
   margin-top: 50px;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  border-radius: 2px;
-  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  -moz-box-shadow: 0px 6px 16px rgba(58, 42, 34, 0.12);
+  -webkit-box-shadow: 0px 6px 16px rgba(58, 42, 34, 0.12);
+  box-shadow: 0px 6px 16px rgba(58, 42, 34, 0.12);
 }
 
 .profile-img-card {

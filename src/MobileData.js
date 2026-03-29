@@ -1,11 +1,14 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { Plus, Cart } from "react-bootstrap-icons";
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 import "./style.css";
 
 const MobileData = () => {
+  const navigate = useNavigate();
   // fetch the product id from the url
   const { id } = useParams();
   React.useEffect(() => {
@@ -27,6 +30,15 @@ const MobileData = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const [mobile, setMobile] = React.useState(null);
   const [selectedItems, setSelectedItems] = React.useState([]);
+  const [toast, setToast] = React.useState({ show: false, message: "", variant: "success" });
+  const requireLogin = () => {
+    if (!currentUser) {
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return false;
+    }
+    return true;
+  };
+
   const buyNow = (data) => {
     const updatedItems = [...selectedItems, data];
     setSelectedItems(updatedItems);
@@ -54,10 +66,11 @@ const MobileData = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Item added to cart:", data);
-        // Optionally, update cart state or provide user feedback here
+        setToast({ show: true, message: "Item added to cart", variant: "success" });
       })
       .catch((error) => {
         console.error("Error adding item to cart:", error);
+        setToast({ show: true, message: "Failed to add item", variant: "danger" });
       });
   };
 
@@ -96,7 +109,8 @@ const MobileData = () => {
                     <div className="buttons d-flex gap-2">
                       <Button
                         variant="primary"
-                        onClick={() =>
+                        onClick={() => {
+                          if (!requireLogin()) return;
                           handleAddToCart({
                             userId: currentUser.id,
                             items: [
@@ -107,12 +121,18 @@ const MobileData = () => {
                               },
                             ],
                             active: true,
-                          })
-                        }
+                          });
+                        }}
                       >
                         <Plus /> Add to Cart
                       </Button>
-                      <Button variant="success" onClick={() => buyNow(mobile)}>
+                      <Button
+                        variant="success"
+                        onClick={() => {
+                          if (!requireLogin()) return;
+                          buyNow(mobile);
+                        }}
+                      >
                         <Cart /> Buy Now
                       </Button>
                     </div>
@@ -120,6 +140,17 @@ const MobileData = () => {
                 </Card>
               </Col>
             </Row>
+            <ToastContainer position="bottom-end" className="p-3">
+              <Toast
+                bg={toast.variant}
+                show={toast.show}
+                onClose={() => setToast({ ...toast, show: false })}
+                delay={2000}
+                autohide
+              >
+                <Toast.Body className="text-white">{toast.message}</Toast.Body>
+              </Toast>
+            </ToastContainer>
           </Container>
         </div>
       ) : (

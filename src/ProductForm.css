@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+.seller-form-page {
+  min-height: 100vh;
+  padding: 48px 6vw 64px;
+  background: radial-gradient(circle at top, #f8efe6 0%, #f3e6da 35%, #efe1d4 100%);
+  color: #2f241f;
+}
+
+.product-form-container {
+  max-width: 980px;
+  margin: 0 auto;
+  background: #fff7ef;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 18px 40px rgba(62, 38, 24, 0.16);
+  border: 1px solid rgba(143, 63, 40, 0.12);
+  animation: sellerFormRise 0.7s ease both;
+}
+
+.seller-form-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.seller-form-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(194, 91, 51, 0.15);
+  color: #8f3f28;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.product-form-container h2 {
+  font-family: "Fraunces", "Times New Roman", serif;
+  margin: 0 0 8px;
+  color: #2c1e18;
+}
+
+.product-form-container p {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  margin: 0;
+  color: #50372c;
+}
+
+.seller-form-meta {
+  background: #fff3ea;
+  border-radius: 16px;
+  padding: 14px 18px;
+  text-align: right;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: #6a4b3b;
+  box-shadow: inset 0 0 0 1px rgba(194, 91, 51, 0.15);
+}
+
+.seller-form-meta strong {
+  display: block;
+  font-size: 18px;
+  color: #2f241f;
+}
+
+.product-form-container .form-control,
+.product-form-container .form-select,
+.product-form-container .form-range {
+  border-radius: 12px;
+  border: 1px solid rgba(143, 63, 40, 0.2);
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+.product-form-container .form-control:focus,
+.product-form-container .form-select:focus {
+  border-color: #c25b33;
+  box-shadow: 0 0 0 0.2rem rgba(194, 91, 51, 0.2);
+}
+
+.product-form-container .form-text {
+  color: #7b5a4a !important;
+}
+
+.product-form-container .btn-primary {
+  background: #c25b33;
+  border-color: #c25b33;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+}
+
+.product-form-container .btn-primary:hover {
+  background: #b24e2a;
+  border-color: #b24e2a;
+}
+
+.product-form-container .btn-secondary {
+  background: #fff5ee;
+  border-color: rgba(194, 91, 51, 0.3);
+  color: #8f3f28;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+}
+
+.product-form-container .btn-secondary:hover {
+  background: #f6e2d2;
+  color: #8f3f28;
+}
+
+@keyframes sellerFormRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .seller-form-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .seller-form-meta {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 720px) {
+  .seller-form-page {
+    padding: 36px 20px 48px;
+  }
+
+  .product-form-container {
+    padding: 24px;
+  }
+}

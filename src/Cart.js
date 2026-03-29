@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Alert from "react-bootstrap/Alert";
 import Badge from "react-bootstrap/Badge";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { BackToTop } from "./BackToTop";
 import { useSelector } from "react-redux";
 import "./Cart.css";
@@ -25,6 +25,10 @@ const Cart = () => {
   useEffect(() => {
     const fetchCartAndProducts = async () => {
       try {
+        if (!currentUser) {
+          setLoading(false);
+          return;
+        }
         setLoading(true);
         setError(null);
         
@@ -79,46 +83,15 @@ const Cart = () => {
     };
 
     fetchCartAndProducts();
-  }, [currentUser.id]);
+  }, [currentUser?.id]);
+
+  const getItemKey = (item) => item?._id || item?.id || item?.productId;
 
   // Handle remove item (from state only - temporary removal)
-  const handleRemove = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
+  const handleRemove = (itemKey) => {
+    setCartItems((prevItems) => prevItems.filter((item) => getItemKey(item) !== itemKey));
   };
 
-  // Handle delete item (from backend and then state - permanent removal)
-  const handleDelete = async (id) => {
-    if (deletingItems.has(id)) return; // Prevent multiple delete requests
-    
-    setDeletingItems(prev => new Set(prev).add(id));
-    
-    try {
-      const response = await fetch(`http://localhost:8090/api/carts/item/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to delete item: ${response.status}`);
-      }
-      
-      // Remove from local state on successful delete
-      handleRemove(id);
-    } catch (err) {
-      console.error("Delete error:", err);
-      setError("Failed to delete item. Please try again.");
-      // Re-fetch cart to ensure consistency
-      setTimeout(() => setError(null), 3000);
-    } finally {
-      setDeletingItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
-    }
-  };
 
   // Calculate total cart value
   const calculateTotal = () => {
@@ -126,6 +99,15 @@ const Cart = () => {
       return total + (item.price * item.quantity);
     }, 0).toFixed(2);
   };
+
+
+  if (!currentUser) {
+    return (
+      <Navigate
+        to={`/login?redirect=${encodeURIComponent(window.location.pathname)}`}
+      />
+    );
+  }
 
   // Loading state
   if (loading) {
@@ -208,7 +190,7 @@ const Cart = () => {
         {/* Cart Items */}
         <Row>
           {cartItems.map((item) => (
-            <Col key={item._id} xs={12} md={6} lg={4} className="mb-4">
+            <Col key={getItemKey(item)} xs={12} md={6} lg={4} className="mb-4">
               <Card className="cart-item-card h-100">
                 <div className="card-image-container">
                   <Card.Img
@@ -243,33 +225,11 @@ const Cart = () => {
                     <Button
                       variant="outline-warning"
                       size="sm"
-                      onClick={() => handleRemove(item._id)}
+                      onClick={() => handleRemove(getItemKey(item))}
                       className="me-2"
-                      disabled={deletingItems.has(item._id)}
+                      disabled={deletingItems.has(getItemKey(item))}
                     >
                       Remove
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => handleDelete(item._id)}
-                      disabled={deletingItems.has(item._id)}
-                    >
-                      {deletingItems.has(item._id) ? (
-                        <>
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                            className="me-1"
-                          />
-                          Deleting...
-                        </>
-                      ) : (
-                        'Delete'
-                      )}
                     </Button>
                   </div>
                 </Card.Body>

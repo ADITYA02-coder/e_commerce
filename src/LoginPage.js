@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { register } from "./slices/auth";
 import { clearMessage } from "./slices/message";
 
-const availableRoles = ["user", "admin", "moderator"];
-
 const LoginPage = () => {
   const [successful, setSuccessful] = useState(false);
+  const navigate = useNavigate();
 
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
@@ -22,43 +22,39 @@ const LoginPage = () => {
     username: "",
     email: "",
     password: "",
-    roles: [""],
   };
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
-      .test(
-        "len",
-        "The username must be between 3 and 20 characters.",
-        (val) =>
-          val && val.toString().length >= 3 && val.toString().length <= 20
-      )
-      .required("This field is required!"),
+      .trim()
+      .min(3, "Username must be at least 3 characters.")
+      .max(30, "Username must be at most 30 characters.")
+      .required("Username is required!"),
     email: Yup.string()
+      .trim()
       .email("This is not a valid email.")
-      .required("This field is required!"),
+      .max(80, "Email is too long.")
+      .required("Email is required!"),
     password: Yup.string()
-      .test(
-        "len",
-        "The password must be between 6 and 40 characters.",
-        (val) =>
-          val && val.toString().length >= 6 && val.toString().length <= 40
-      )
-      .required("This field is required!"),
-    roles: Yup.array()
-      .min(1, "At least one role must be selected")
-      .of(Yup.string().required("This field is required!")),
+      .min(8, "Password must be at least 8 characters.")
+      .max(128, "Password is too long.")
+      .matches(/[A-Z]/, "Password must include at least one uppercase letter.")
+      .matches(/[a-z]/, "Password must include at least one lowercase letter.")
+      .matches(/[0-9]/, "Password must include at least one number.")
+      .matches(/[^A-Za-z0-9]/, "Password must include at least one symbol.")
+      .required("Password is required!"),
   });
 
   const handleRegister = (formValue) => {
-    const { username, email, password, roles } = formValue;
+    const { username, email, password } = formValue;
 
     setSuccessful(false);
 
-    dispatch(register({ username, email, password, roles }))
+    dispatch(register({ username, email, password }))
       .unwrap()
       .then(() => {
         setSuccessful(true);
+        setTimeout(() => navigate("/login"), 800);
       })
       .catch(() => {
         setSuccessful(false);
@@ -114,21 +110,6 @@ const LoginPage = () => {
                     className="alert alert-danger"
                   />
                 </div>
-                <div>
-                  <label>Roles</label>
-                  {availableRoles.map((role) => (
-                    <div key={role}>
-                      <Field type="checkbox" name="roles" value={role} />
-                      <label>{role}</label>
-                    </div>
-                  ))}
-                  <ErrorMessage
-                    name="roles"
-                    component="div"
-                    className="error"
-                  />
-                </div>
-
                 <div className="social-icons">
                   <img
                     src="https://img.icons8.com/color/48/google-logo.png"

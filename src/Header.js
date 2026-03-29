@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./header.css";
 import Container from "react-bootstrap/Container";
 import { List } from "react-bootstrap-icons";
@@ -11,26 +12,22 @@ import { Cart } from "react-bootstrap-icons";
 import Sidebar from "./Sidebar";
 // import navigate  from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Navigate } from "react-router";
 import { logout } from "./slices/auth";
-
 export const Header = () => {
-   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
-const { user: currentUser } = useSelector((state) => state.auth);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
-
- 
   const handleToggle = () => {
     setOpen(!open);
   };
-  
-  
+
   const handleLogout = () => {
-      dispatch(logout());
-      // navigate('/login'); // Redirect to login page
-      window.location.reload();
-    };
+    dispatch(logout());
+    navigate('/login'); // Redirect to login page
+    window.location.reload();
+  };
 
   return (
     <>
@@ -86,18 +83,16 @@ const { user: currentUser } = useSelector((state) => state.auth);
             </Nav>
           </Navbar.Collapse>
           <Nav>
-            {
-              !currentUser ? 
+            {!currentUser ? (
               <>
-               <Nav.Link href="/signup">sign-up</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link href="/signup">sign-up</Nav.Link>
+                <Nav.Link href="/login">Login</Nav.Link>
               </>
-              :
+            ) : (
               <>
-              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </>
-            }
-           
+            )}
           </Nav>
         </Container>
       </Navbar>

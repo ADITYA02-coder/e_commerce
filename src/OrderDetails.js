@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import "./OrderDetails.css";
 
 const OrderDetails = () => {
   const [orders, setOrders] = useState([]);
@@ -53,24 +54,62 @@ const OrderDetails = () => {
     setProducts(productMap);
   };
 
-  if (loading) return <div>Loading orders...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const userOrders = useMemo(() => {
+    if (!currentUser) return orders;
+    const id = currentUser.id;
+    return orders.filter(
+      (order) =>
+        order.userId === id ||
+        order.userId === String(id) ||
+        order.user?.id === id ||
+        order.user?.id === String(id)
+    );
+  }, [orders, currentUser]);
+
+  if (loading) return <div className="order-details__state">Loading orders...</div>;
+  if (error) return <div className="order-details__state">Error: {error}</div>;
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h2>Order History</h2>
-      {orders.length === 0 ? (
-        <p>No orders found.</p>
+    <div className="order-details">
+      <div className="order-details__header">
+        <span className="order-details__badge">My Orders</span>
+        <h2>Order History</h2>
+        <p>Track delivery progress and updated status from the seller.</p>
+      </div>
+      {userOrders.length === 0 ? (
+        <p className="order-details__empty">No orders found.</p>
       ) : (
-        orders.map((order, index) => (
-          <div key={order.id} style={{ border: '1px solid #ddd', padding: '1rem', marginBottom: '1.5rem' }}>
-            <h4>Order #{index + 1}</h4>
-            <p><strong>User ID:</strong> {currentUser.id}</p>
-            <p><strong>Order ID:</strong> {order.id}</p>
-            <p><strong>Order placed on:</strong> {new Date(order.createdAt).toLocaleString()}</p>
-            <p><strong>Status:</strong> {order.orderStatus}</p>
-            <p><strong>Payment:</strong> {order.paymentStatus}</p>
-            <p><strong>Total:</strong> ₹{order.totalAmount}</p>
+        userOrders.map((order, index) => (
+          <div key={order.id} className="order-card">
+            <div className="order-card__header">
+              <div>
+                <h4>Order #{index + 1}</h4>
+                <p><strong>Order ID:</strong> {order.id}</p>
+                <p><strong>Placed:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+              </div>
+              <div className="order-card__summary">
+                <span>Total</span>
+                <strong>₹{order.totalAmount}</strong>
+              </div>
+            </div>
+
+            <div className="order-card__status">
+              <div>
+                <span>Order Status</span>
+                <strong>{order.orderStatus}</strong>
+              </div>
+              <div>
+                <span>Payment Status</span>
+                <strong>{order.paymentStatus}</strong>
+              </div>
+            </div>
+
+            {order.note && (
+              <div className="order-card__note">
+                <span>Admin Note</span>
+                <p>{order.note}</p>
+              </div>
+            )}
 
             {order.addressLine1 && (
               <>
@@ -82,13 +121,16 @@ const OrderDetails = () => {
             )}
 
             <h5>Items:</h5>
-            <ul>
+            <ul className="order-card__items">
               {order.items.map((item, idx) => {
-                const product = products[item.productId] || { name: "Loading...", imageUrl: "" };
+                const product = products[item.productId] || { name: "Loading...", image: "" };
                 return (
-                  <li key={item._id || idx} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
-                    {product.imageUrl && (
-                      <img src={`http://localhost:8090/uploads/${item.product.image}`} alt={product.name} style={{ width: 50, height: 50, marginRight: 10 }} />
+                  <li key={item._id || idx} className="order-card__item">
+                    {product.image && (
+                      <img
+                        src={`http://localhost:8090/uploads/${product.image}`}
+                        alt={product.name}
+                      />
                     )}
                     <div>
                       <p><strong>{product.name}</strong></p>

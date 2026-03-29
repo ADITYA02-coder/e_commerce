@@ -5,10 +5,8 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Cart, Plus } from "react-bootstrap-icons";
 import { BackToTop } from "./BackToTop";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+
 
 
 // Assuming products are imported from a separate file
@@ -665,7 +663,7 @@ export const Product = () => {
   // eslint-disable-next-line no-unused-vars
   const [productValue, setProductValue] = useState();
   const[products,setProducts]=useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const[allProducts,setAllProducts]=useState([]);
  
   const handleproducts = ()=>{
     fetch("http://localhost:8090/api/products")
@@ -673,6 +671,7 @@ export const Product = () => {
   .then((data) => {
     console.log("Fetched products:", data);
     setProducts(data);
+    setAllProducts(data);
     return data;
   })
   .catch((error) => {
@@ -690,63 +689,33 @@ export const Product = () => {
   
   // Function to handle "Buy Now" action  
 
-  const buyNow = (data) => {
-    const updatedItems = [...selectedItems, data];
-    setSelectedItems(updatedItems);
-    console.log("Selected Items:", updatedItems);
-     //add the updated items to cart in backend
-    handleAddToCart({
-      userId: currentUser.id,
-      items: updatedItems.map((it) => ({
-        productId: it.id,
-        price: it.price,
-        quantity: 1,
-      })),
-      active: true,
-    });
-    window.location.href = "/address"; // Redirect to address page
-   
-  };
-  const handleAddToCart = (item) => {
-    fetch("http://localhost:8090/api/carts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Item added to cart:", data);
-        // Optionally, update cart state or provide user feedback here
-      })
-      .catch((error) => {
-        console.error("Error adding item to cart:", error);
-      });
-    }
-
   // Unique brands for simple filtering
-  const brands = [...new Set(products.map((p) => p.brand))];
+  const brands = [...new Set(allProducts.map((p) => p.brand))];
 
   // show only products based on selected brand filter
   const [filterBrand, setFilterBrand] = useState(null);
-  const filteredProducts = filterBrand
-    ? products.filter((p) => p.brand === filterBrand)
-    : products;
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [minRating, setMinRating] = useState(0);
+  const [inStockOnly, setInStockOnly] = useState(false);
+
+  const filteredProducts = allProducts.filter((p) => {
+    const brandMatch = filterBrand ? p.brand === filterBrand : true;
+    const price = Number(p.price || 0);
+    const minOk = priceRange.min === "" ? true : price >= Number(priceRange.min);
+    const maxOk = priceRange.max === "" ? true : price <= Number(priceRange.max);
+    const ratingValue = Number(p.rating || p.ratings || p.ratingValue || 0);
+    const ratingOk = minRating ? ratingValue >= minRating : true;
+    const stockValue = Number(p.stock || p.quantity || p.available || 1);
+    const stockOk = inStockOnly ? stockValue > 0 : true;
+    return brandMatch && minOk && maxOk && ratingOk && stockOk;
+  });
   useEffect(() => {
     handleproducts();
   }, []);
 
   useEffect(() => {
     setProducts(filteredProducts);
-  }, [filterBrand, filteredProducts]);
-
-  // show all products when brand filter is cleared
-  useEffect(() => {
-    if (!filterBrand) {
-      handleproducts();
-    }
-  }, [filterBrand]);
+  }, [filteredProducts]);
 
 
   const productsEndpoint = () => {
@@ -772,76 +741,102 @@ export const Product = () => {
   useEffect(() => {
     productsEndpoint(); 
   }, []);
-  const { user: currentUser } = useSelector((state) => state.auth);
-  if (!currentUser) {
-    return <Navigate to="/login" />;
-  }
-
   return (
-    <div className="shopping">
-      <Container fluid>
-        <Row className="mb-3">
-          <Col>
-            <h5>Filter by Brand:</h5>
-            <div className="d-flex flex-wrap gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setFilterBrand(null)}
-              >
-                All
-              </Button>
-              {brands.map((brand) => (
+    <div className="shopping product-page">
+      <Container fluid className="product-layout">
+        <Row className="product-grid">
+          <Col lg={3} md={4} sm={12} className="product-filters">
+            <div className="filters-panel">
+              <div className="filters-header">
+                <h5>Filter by Brand</h5>
+              </div>
+              <div className="filters-body">
                 <Button
-                  key={brand}
-                  variant="outline-primary"
+                  className="filter-chip"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => setFilterBrand(brand) }
-                  active={filterBrand === brand}
-
+                  onClick={() => setFilterBrand(null)}
+                  active={!filterBrand}
                 >
-                  {brand}
+                  All Brands
                 </Button>
-              ))}
+                {brands.map((brand) => (
+                  <Button
+                    key={brand}
+                    className="filter-chip"
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => setFilterBrand(brand)}
+                    active={filterBrand === brand}
+                  >
+                    {brand}
+                  </Button>
+                ))}
+                <div className="filter-group">
+                  <label className="filter-label">Price Range (Rs.)</label>
+                  <div className="filter-row">
+                    <input
+                      type="number"
+                      className="filter-input"
+                      placeholder="Min"
+                      value={priceRange.min}
+                      onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      className="filter-input"
+                      placeholder="Max"
+                      value={priceRange.max}
+                      onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="filter-group">
+                  <label className="filter-label">Customer Rating</label>
+                  <select
+                    className="filter-select"
+                    value={minRating}
+                    onChange={(e) => setMinRating(Number(e.target.value))}
+                  >
+                    <option value={0}>All Ratings</option>
+                    <option value={4}>4★ & up</option>
+                    <option value={3}>3★ & up</option>
+                    <option value={2}>2★ & up</option>
+                  </select>
+                </div>
+                <div className="filter-group">
+                  <label className="filter-check">
+                    <input
+                      type="checkbox"
+                      checked={inStockOnly}
+                      onChange={(e) => setInStockOnly(e.target.checked)}
+                    />
+                    In Stock Only
+                  </label>
+                </div>
+              </div>
             </div>
           </Col>
-        </Row>
 
-        <Row className="row">
-          {products.map((data) => (
-            <Col sm={12} md={3} key={data.id} className="mb-4">
-              <Card className="shop" style={{ width: "100%" }} onClick={() => handleProductSelect(data.id)}>
-                {/* <Card.Img variant="top" src={'http://localhost:8090/uploads/${data.image}'} className="item" /> */}
-                <Card.Img variant="top" src={`http://localhost:8090/uploads/${data.image}`} className="item" />
-                <Card.Body>
-                  <Card.Title>{data.name}</Card.Title>
-                  <Card.Text>{data.brand}</Card.Text>
-                  <Card.Text>
-                    Price: Rs.
-                    {data.price}
-                  </Card.Text>
-                  <div className="buttons d-flex gap-2">
-                    <Button variant="primary" onClick={() => handleAddToCart({
-                      userId: currentUser.id,
-                      items:[
-                        {
-                          productId: data.id,
-                          price: data.price,
-                          quantity: 1
-                        }
-                      ],
-                      active: true
-                    })}>
-                      <Plus /> Add to Cart
-                    </Button>
-                    <Button variant="success" onClick={() => buyNow(data)}>
-                      <Cart /> Buy Now
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+          <Col lg={9} md={8} sm={12} className="product-list">
+            <Row className="g-3">
+              {products.map((data) => (
+                <Col sm={12} md={6} lg={4} key={data.id}>
+                  <Card className="shop product-card" onClick={() => handleProductSelect(data.id)}>
+                    <Card.Img variant="top" src={`http://localhost:8090/uploads/${data.image}`} className="item product-image" />
+                    <Card.Body>
+                      <Card.Title className="product-title">{data.name}</Card.Title>
+                      <Card.Text className="product-brand">{data.brand}</Card.Text>
+                      <Card.Text className="product-price">Price: Rs. {data.price}</Card.Text>
+                      <div className="product-card-cta">
+                        View Details
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Col>
         </Row>
 
         <Row className="nh">

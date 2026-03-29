@@ -10,191 +10,19 @@ import {
   Badge,
 } from "react-bootstrap";
 import { Plus, ShoppingCart, Trash, Star, Heart } from "lucide-react";
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import "./ProductListing.css";
+
+const API_BASE_URL = "http://localhost:8090/api";
 
 const ProductListing = () => {
-  let navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
-  if (currentUser) {
-    if (currentUser.roles[0] !== "ROLE_ADMIN") {
-      navigate("/login");
-    }
-  } else {
-    navigate("/login");
-  }
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
-
-  const API_BASE_URL = "http://localhost:8090/api";
-
-  // Custom styles
-  const styles = {
-    container: {
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      minHeight: "100vh",
-      padding: "2rem 0",
-    },
-    productCard: {
-      background: "rgba(255, 255, 255, 0.95)",
-      backdropFilter: "blur(20px)",
-      border: "none",
-      borderRadius: "20px",
-      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
-      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-      overflow: "hidden",
-      position: "relative",
-    },
-    productCardHover: {
-      transform: "translateY(-10px)",
-      boxShadow: "0 30px 60px rgba(0, 0, 0, 0.2)",
-    },
-    productImage: {
-      height: "300px",
-      objectFit: "cover",
-      borderRadius: "20px 0 0 20px",
-      transition: "transform 0.3s ease",
-    },
-    productImageHover: {
-      transform: "scale(1.05)",
-    },
-    cardBody: {
-      background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)",
-      padding: "2rem",
-    },
-    productTitle: {
-      fontSize: "1.5rem",
-      fontWeight: "700",
-      color: "#2d3748",
-      textDecoration: "none",
-      transition: "color 0.3s ease",
-    },
-    productTitleHover: {
-      color: "#667eea",
-    },
-    specItem: {
-      display: "flex",
-      alignItems: "center",
-      marginBottom: "0.75rem",
-      padding: "0.5rem",
-      background: "rgba(102, 126, 234, 0.05)",
-      borderRadius: "10px",
-      border: "1px solid rgba(102, 126, 234, 0.1)",
-    },
-    specLabel: {
-      fontWeight: "600",
-      color: "#4a5568",
-      minWidth: "80px",
-    },
-    specValue: {
-      color: "#2d3748",
-      fontWeight: "500",
-    },
-    priceContainer: {
-      background: "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
-      padding: "1rem",
-      borderRadius: "15px",
-      marginBottom: "1.5rem",
-      textAlign: "center",
-    },
-    currentPrice: {
-      fontSize: "2rem",
-      fontWeight: "800",
-      color: "white",
-      textShadow: "0 2px 4px rgba(0,0,0,0.3)",
-    },
-    originalPrice: {
-      fontSize: "1.2rem",
-      color: "rgba(255,255,255,0.8)",
-      textDecoration: "line-through",
-    },
-    discountBadge: {
-      position: "absolute",
-      top: "1rem",
-      right: "1rem",
-      background: "linear-gradient(135deg, #ed64a6 0%, #d53f8c 100%)",
-      color: "white",
-      fontWeight: "700",
-      fontSize: "0.9rem",
-      padding: "0.5rem 1rem",
-      borderRadius: "25px",
-      boxShadow: "0 4px 15px rgba(237, 100, 166, 0.4)",
-    },
-    buttonGroup: {
-      display: "flex",
-      gap: "0.75rem",
-      flexWrap: "wrap",
-    },
-    primaryButton: {
-      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      border: "none",
-      borderRadius: "12px",
-      padding: "0.75rem 1.5rem",
-      fontWeight: "600",
-      transition: "all 0.3s ease",
-      boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-      flex: "1",
-    },
-    secondaryButton: {
-      background: "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
-      border: "none",
-      borderRadius: "12px",
-      padding: "0.75rem 1.5rem",
-      fontWeight: "600",
-      transition: "all 0.3s ease",
-      boxShadow: "0 4px 15px rgba(72, 187, 120, 0.3)",
-      flex: "1",
-    },
-    dangerButton: {
-      background: "linear-gradient(135deg, #fc8181 0%, #e53e3e 100%)",
-      border: "none",
-      borderRadius: "12px",
-      padding: "0.75rem 1rem",
-      fontWeight: "600",
-      transition: "all 0.3s ease",
-      boxShadow: "0 4px 15px rgba(252, 129, 129, 0.3)",
-    },
-    favoriteButton: {
-      position: "absolute",
-      top: "1rem",
-      left: "1rem",
-      background: "rgba(255, 255, 255, 0.9)",
-      border: "none",
-      borderRadius: "50%",
-      width: "45px",
-      height: "45px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      transition: "all 0.3s ease",
-      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-    },
-    rating: {
-      display: "flex",
-      alignItems: "center",
-      gap: "0.5rem",
-      marginBottom: "1rem",
-    },
-    loadingSpinner: {
-      background: "rgba(255, 255, 255, 0.95)",
-      borderRadius: "20px",
-      padding: "3rem",
-      textAlign: "center",
-      backdropFilter: "blur(20px)",
-      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
-    },
-    headerTitle: {
-      textAlign: "center",
-      color: "white",
-      fontSize: "3rem",
-      fontWeight: "800",
-      marginBottom: "3rem",
-      textShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
-    },
-  };
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -285,20 +113,21 @@ const ProductListing = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+    return <Navigate to="/" />;
+  }
+
   if (loading) {
     return (
-      <div style={styles.container}>
+      <div className="seller-listing">
         <Container>
-          <div style={styles.loadingSpinner}>
+          <div className="seller-listing__loading">
             <Spinner
               animation="border"
               role="status"
-              style={{ color: "#667eea" }}
+              className="seller-listing__spinner"
             />
-            <div
-              className="mt-3"
-              style={{ color: "#4a5568", fontSize: "1.2rem" }}
-            >
+            <div className="mt-3 seller-listing__loading-text">
               Loading amazing products...
             </div>
           </div>
@@ -309,18 +138,18 @@ const ProductListing = () => {
 
   if (error) {
     return (
-      <div style={styles.container}>
+      <div className="seller-listing">
         <Container>
           <Alert
             variant="danger"
-            style={{ ...styles.productCard, color: "#e53e3e" }}
+            className="seller-listing__alert"
           >
             <Alert.Heading>Oops! Something went wrong</Alert.Heading>
             <p>{error}</p>
             <Button
               variant="outline-danger"
               onClick={fetchProducts}
-              style={styles.dangerButton}
+              className="seller-listing__btn seller-listing__btn--danger"
             >
               Try Again
             </Button>
@@ -332,9 +161,9 @@ const ProductListing = () => {
 
   if (products.length === 0) {
     return (
-      <div style={styles.container}>
+      <div className="seller-listing">
         <Container>
-          <Alert variant="info" style={styles.productCard}>
+          <Alert variant="info" className="seller-listing__alert">
             <Alert.Heading>No Products Found</Alert.Heading>
             <p>There are currently no products available.</p>
           </Alert>
@@ -344,38 +173,29 @@ const ProductListing = () => {
   }
 
   return (
-    <div style={styles.container}>
+    <div className="seller-listing">
       <Container>
-        <h1 style={styles.headerTitle}>Premium Products</h1>
+        <div className="seller-listing__header">
+          <span className="seller-listing__badge">Seller Console</span>
+          <h1>Store Inventory</h1>
+          <p>Manage listings, update details, and keep stock healthy.</p>
+        </div>
         <Row>
           {products.map((product) => (
             <Col key={product.id} xs={12} className="mb-5">
               <Card
-                style={styles.productCard}
-                onMouseEnter={(e) => {
-                  Object.assign(e.currentTarget.style, styles.productCardHover);
-                  const img = e.currentTarget.querySelector("img");
-                  if (img) Object.assign(img.style, styles.productImageHover);
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 20px 40px rgba(0, 0, 0, 0.1)";
-                  const img = e.currentTarget.querySelector("img");
-                  if (img) img.style.transform = "scale(1)";
-                }}
+                className="seller-listing__card"
               >
                 {getDiscountPercentage(product.price) > 0 && (
-                  <Badge style={styles.discountBadge}>
+                  <Badge className="seller-listing__discount">
                     {getDiscountPercentage(product.price)}% OFF
                   </Badge>
                 )}
 
                 <Button
-                  style={{
-                    ...styles.favoriteButton,
-                    color: favorites.has(product.id) ? "#e53e3e" : "#a0aec0",
-                  }}
+                  className={`seller-listing__favorite ${
+                    favorites.has(product.id) ? "is-active" : ""
+                  }`}
                   onClick={() => toggleFavorite(product.id)}
                 >
                   <Heart
@@ -392,12 +212,12 @@ const ProductListing = () => {
                         product.image
                       }`}
                       alt={product.name}
-                      style={styles.productImage}
+                      className="seller-listing__image"
                     />
                   </Col>
                   <Col md={7}>
-                    <Card.Body style={styles.cardBody}>
-                      <div style={styles.rating}>
+                    <Card.Body className="seller-listing__body">
+                      <div className="seller-listing__rating">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
@@ -406,7 +226,7 @@ const ProductListing = () => {
                             color="#ffd700"
                           />
                         ))}
-                        <span style={{ color: "#4a5568", fontSize: "0.9rem" }}>
+                        <span className="seller-listing__rating-text">
                           (4.8)
                         </span>
                       </div>
@@ -414,128 +234,109 @@ const ProductListing = () => {
                       <Card.Title>
                         <a
                           href="/mobiledata"
-                          style={styles.productTitle}
-                          onMouseEnter={(e) =>
-                            Object.assign(
-                              e.target.style,
-                              styles.productTitleHover
-                            )
-                          }
-                          onMouseLeave={(e) =>
-                            (e.target.style.color = "#2d3748")
-                          }
+                          className="seller-listing__title"
                         >
                           {product.name}
                         </a>
                       </Card.Title>
 
-                      <div className="mb-4">
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Brand:</span>
-                          <span style={styles.specValue}>{product.brand}</span>
+                      <div className="seller-listing__specs">
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Brand:
+                          </span>
+                          <span className="seller-listing__spec-value">
+                            {product.brand}
+                          </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>RAM:</span>
-                          <span style={styles.specValue}>{product.ram}</span>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            RAM:
+                          </span>
+                          <span className="seller-listing__spec-value">
+                            {product.ram}
+                          </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Storage:</span>
-                          <span style={styles.specValue}>{product.rom}</span>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Storage:
+                          </span>
+                          <span className="seller-listing__spec-value">
+                            {product.rom}
+                          </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Camera:</span>
-                          <span style={styles.specValue}>{product.camera}</span>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Camera:
+                          </span>
+                          <span className="seller-listing__spec-value">
+                            {product.camera}
+                          </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Screen:</span>
-                          <span style={styles.specValue}>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Screen:
+                          </span>
+                          <span className="seller-listing__spec-value">
                             {product.screenSize}
                           </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Processor:</span>
-                          <span style={styles.specValue}>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Processor:
+                          </span>
+                          <span className="seller-listing__spec-value">
                             {product.processor}
                           </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Battery:</span>
-                          <span style={styles.specValue}>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Battery:
+                          </span>
+                          <span className="seller-listing__spec-value">
                             {product.battery}
                           </span>
                         </div>
-                        <div style={styles.specItem}>
-                          <span style={styles.specLabel}>Colour:</span>
-                          <span style={styles.specValue}>
+                        <div className="seller-listing__spec-item">
+                          <span className="seller-listing__spec-label">
+                            Colour:
+                          </span>
+                          <span className="seller-listing__spec-value">
                             {product.color}
                           </span>
                         </div>
                       </div>
 
-                      <div style={styles.priceContainer}>
-                        <div style={styles.currentPrice}>
+                      <div className="seller-listing__price">
+                        <div className="seller-listing__current-price">
                           ${calculateDiscountedPrice(product.price)}
                         </div>
                         {parseFloat(product.price) >= 100.0 && (
-                          <div style={styles.originalPrice}>
+                          <div className="seller-listing__original-price">
                             ${parseFloat(product.price).toFixed(2)}
                           </div>
                         )}
                       </div>
 
-                      <div style={styles.buttonGroup}>
+                      <div className="seller-listing__actions">
                         <Button
-                          style={styles.primaryButton}
+                          className="seller-listing__btn seller-listing__btn--primary"
                           onClick={() => handleAddToCart(product)}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow =
-                              "0 8px 25px rgba(102, 126, 234, 0.5)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = "translateY(0px)";
-                            e.target.style.boxShadow =
-                              "0 4px 15px rgba(102, 126, 234, 0.3)";
-                          }}
                         >
                           <Plus size={18} className="me-2" />
                           Add to Cart
                         </Button>
                         <Button
-                          style={styles.secondaryButton}
+                          className="seller-listing__btn seller-listing__btn--secondary"
                           onClick={() => handleBuyNow(product)}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow =
-                              "0 8px 25px rgba(72, 187, 120, 0.5)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = "translateY(0px)";
-                            e.target.style.boxShadow =
-                              "0 4px 15px rgba(72, 187, 120, 0.3)";
-                          }}
                         >
                           <ShoppingCart size={18} className="me-2" />
                           Buy Now
                         </Button>
                         <Button
-                          style={styles.dangerButton}
+                          className="seller-listing__btn seller-listing__btn--danger"
                           onClick={() => handleDelete(product.id)}
                           disabled={deleteLoading === product.id}
-                          onMouseEnter={(e) => {
-                            if (!e.target.disabled) {
-                              e.target.style.transform = "translateY(-2px)";
-                              e.target.style.boxShadow =
-                                "0 8px 25px rgba(252, 129, 129, 0.5)";
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!e.target.disabled) {
-                              e.target.style.transform = "translateY(0px)";
-                              e.target.style.boxShadow =
-                                "0 4px 15px rgba(252, 129, 129, 0.3)";
-                            }
-                          }}
                         >
                           {deleteLoading === product.id ? (
                             <Spinner animation="border" size="sm" />

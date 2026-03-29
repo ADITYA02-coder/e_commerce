@@ -3,10 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.js'
 import './style.css';
 import { Header } from './Header';
+import { SellerHeader } from './SellerHeader';
 import {Product} from './Product';
 import { Footer } from './Footer';
 import { Routes } from 'react-router';
 import { Route } from 'react-router';
+import { useLocation } from 'react-router';
 import { Account } from './Account';
 import OrderDetails from './OrderDetails';
 import Error from './Error';
@@ -28,10 +30,17 @@ import ViewProduct from './ViewProduct.js';
 import Home from './Home.js';
 
 function App() {
+  const location = useLocation();
+  const isSellerRoute =
+    location.pathname.startsWith("/seller") ||
+    location.pathname === "/addProduct" ||
+    location.pathname === "/viewProducts";
+
   return (
-    <>
-      <Header/>
-      <Routes>
+    <div className="app-shell">
+      {isSellerRoute ? <SellerHeader /> : <Header/>}
+      <main className="app-main">
+        <Routes>
         <Route path = "/" element={<Home/>}/>
         <Route path = "/signup" element={<LoginPage/>}/>
         <Route path='/login' element={<Login/>}/>
@@ -56,11 +65,10 @@ function App() {
 
         
         <Route path = "*" element={<Error/>}/>
-
-        
-      </Routes>
+        </Routes>
+      </main>
       <Footer/>
-    </>
+    </div>
     
   );
 }

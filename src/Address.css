@@ -4,28 +4,28 @@
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f5f1ec 0%, #e9e1d8 100%);
   min-height: 100vh;
 }
 
 /* Title Styling */
 .address-title {
   text-align: center;
-  color: #2c3e50;
+  color: var(--text);
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 4px rgba(58, 42, 34, 0.08);
 }
 
 /* Radio Group Header */
 #my-radio-group {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #34495e;
+  color: var(--text);
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #3498db;
+  border-bottom: 2px solid var(--accent);
   display: inline-block;
 }
 
@@ -43,12 +43,12 @@ div[role="group"] {
   align-items: flex-start;
   gap: 1rem;
   padding: 1.5rem;
-  border: 2px solid #e1e8ed;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: white;
+  background: var(--surface);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
 }
@@ -60,14 +60,14 @@ div[role="group"] {
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(45deg, #3498db, #2ecc71);
+  background: linear-gradient(45deg, var(--accent), var(--success));
   transform: scaleY(0);
   transition: transform 0.3s ease;
 }
 
 .address-card:hover {
-  border-color: #3498db;
-  box-shadow: 0 4px 20px rgba(52, 152, 219, 0.15);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-strong);
   transform: translateY(-2px);
 }
 
@@ -80,7 +80,7 @@ div[role="group"] {
   width: 20px;
   height: 20px;
   margin-top: 4px;
-  accent-color: #3498db;
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
@@ -91,27 +91,27 @@ div[role="group"] {
 
 .address-card p {
   margin: 0 0 0.5rem 0;
-  color: #2c3e50;
+  color: var(--text);
   line-height: 1.5;
 }
 
 .address-card p:first-child {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #34495e;
+  color: var(--text);
 }
 
 .address-card p:last-child {
   margin-bottom: 0;
   font-weight: 500;
-  color: #27ae60;
+  color: var(--success);
 }
 
 /* Selected Address Indicator */
 .address-card:has(input[type="radio"]:checked) {
-  border-color: #3498db;
-  background: linear-gradient(135deg, #ebf3fd 0%, #f8fcff 100%);
-  box-shadow: 0 4px 20px rgba(52, 152, 219, 0.2);
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-strong);
 }
 
 .address-card:has(input[type="radio"]:checked)::before {
@@ -120,24 +120,24 @@ div[role="group"] {
 
 /* Picked Value Display */
 .address-container > div:has-text("Picked:") {
-  background: #f8f9fa;
+  background: var(--surface-2);
   padding: 1rem;
   border-radius: 8px;
   margin: 1rem 0;
   font-weight: 500;
-  color: #495057;
-  border-left: 4px solid #3498db;
+  color: var(--text);
+  border-left: 4px solid var(--accent);
 }
 
 /* No Addresses Message */
 .address-container p {
   text-align: center;
-  color: #6c757d;
+  color: var(--muted);
   font-style: italic;
   padding: 2rem;
-  background: white;
+  background: var(--surface);
   border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  border: 2px dashed var(--border);
 }
 
 /* Button Styling */
@@ -154,33 +154,34 @@ div[role="group"] {
 }
 
 .btn-primary {
-  background: linear-gradient(45deg, #3498db, #2980b9);
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
   color: white;
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 15px rgba(194, 91, 51, 0.28);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(45deg, #2980b9, #1f618d);
-  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+  background: linear-gradient(45deg, var(--accent-2), #6f2f1e);
+  box-shadow: 0 6px 20px rgba(194, 91, 51, 0.4);
   transform: translateY(-2px);
 }
 
 .btn-primary:disabled {
-  background: #95a5a6;
+  background: #a89a90;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
 .btn-secondary {
-  background: linear-gradient(45deg, #95a5a6, #7f8c8d);
-  color: white;
-  box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(58, 42, 34, 0.08);
 }
 
 .btn-secondary:hover {
-  background: linear-gradient(45deg, #7f8c8d, #6c7a89);
-  box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+  background: #e9e1d8;
+  box-shadow: 0 6px 20px rgba(58, 42, 34, 0.14);
   transform: translateY(-2px);
 }
 
@@ -191,33 +192,33 @@ div[role="group"] {
 
 .modal-body .form-label {
   font-weight: 600;
-  color: #34495e;
+  color: var(--text);
   margin-bottom: 0.5rem;
   text-transform: capitalize;
 }
 
 .modal-body .form-control {
-  border: 2px solid #e1e8ed;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white;
+  background: var(--surface);
 }
 
 .modal-body .form-control:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(194, 91, 51, 0.12);
   outline: none;
 }
 
 .modal-body .form-control:invalid {
-  border-color: #e74c3c;
+  border-color: var(--danger);
 }
 
 /* Error Messages */
 .text-danger {
-  color: #e74c3c !important;
+  color: var(--danger) !important;
   font-weight: 500;
   margin-top: 0.25rem;
   font-size: 0.875rem;
@@ -227,11 +228,11 @@ div[role="group"] {
 .modal-content {
   border-radius: 16px;
   border: none;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(58, 42, 34, 0.22);
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #3498db, #2ecc71);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: white;
   border-bottom: none;
   border-radius: 16px 16px 0 0;
@@ -245,11 +246,11 @@ div[role="group"] {
 
 .modal-body {
   padding: 2rem;
-  background: #fafbfc;
+  background: var(--surface);
 }
 
 .btn-close {
-  background: white;
+  background: var(--surface);
   border-radius: 50%;
   opacity: 1;
   width: 32px;
@@ -337,18 +338,13 @@ form {
 
 /* Focus Styles for Accessibility */
 .address-card:focus-within {
-  outline: 3px solid rgba(52, 152, 219, 0.3);
+  outline: 3px solid rgba(194, 91, 51, 0.3);
   outline-offset: 2px;
 }
 
 .btn:focus {
-  outline: 3px solid rgba(52, 152, 219, 0.3);
+  outline: 3px solid rgba(194, 91, 51, 0.3);
   outline-offset: 2px;
-}
-
-/* Smooth Transitions */
-* {
-  transition: all 0.3s ease;
 }
 
 /* Custom Scrollbar */
@@ -357,15 +353,15 @@ form {
 }
 
 .modal-body::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--surface-2);
   border-radius: 4px;
 }
 
 .modal-body::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, #3498db, #2ecc71);
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
   border-radius: 4px;
 }
 
 .modal-body::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, #2980b9, #27ae60);
+  background: linear-gradient(45deg, var(--accent-2), #6f2f1e);
 }
