@@ -1,4 +1,3 @@
-import { Home } from 'lucide-react'
 import React from 'react'
 
 export const TestModule = ({name, age}) => {

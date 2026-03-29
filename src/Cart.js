@@ -16,7 +16,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [deletingItems, setDeletingItems] = useState(new Set());
+  const [deletingItems] = useState(new Set());
 
    const { user: currentUser } = useSelector((state) => state.auth);
    console.log("Current User in Cart:", currentUser);
@@ -83,7 +83,7 @@ const Cart = () => {
     };
 
     fetchCartAndProducts();
-  }, [currentUser?.id]);
+  }, [currentUser]);
 
   const getItemKey = (item) => item?._id || item?.id || item?.productId;
 

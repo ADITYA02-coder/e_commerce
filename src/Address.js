@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Formik, Field, Form as FormikForm, ErrorMessage } from "formik";
@@ -31,7 +31,7 @@ const Address = () => {
     }
   }
 
-  async function handleOrders() {
+  const handleOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -55,7 +55,7 @@ const Address = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentUser?.id]);
   // giveing 200 ok status
   const placeOrder = async (addressId) => {
     try {
@@ -118,7 +118,7 @@ const Address = () => {
   useEffect(() => {
     handleAddress();
     if (currentUser) handleOrders();
-  }, [currentUser]);
+  }, [currentUser, handleOrders]);
 
   if (!currentUser) {
     return <Navigate to="/login" />;

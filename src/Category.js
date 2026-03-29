@@ -6,7 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Cart, Plus } from "react-bootstrap-icons";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { BackToTop } from "./BackToTop";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -14,7 +14,6 @@ import "./Category.css";
 
 const Category = () => {
   const navigate = useNavigate();
-  const [productValue, setProductValue] = useState();
   const [products, setProducts] = useState([]);
   const [selectedItems, setSelectedItems] = useState(() => {
     const saved = localStorage.getItem("BuyItems");
@@ -37,17 +36,13 @@ const Category = () => {
 
   const [filterBrand, setFilterBrand] = useState(null);
 
+  const filteredProducts = filterBrand
+    ? products.filter((product) => product.brand === filterBrand)
+    : products;
+
   useEffect(() => {
-    if (filterBrand) {
-       const filtered = products.filter(
-         (product) => product.brand === filterBrand
-       );
-       setProductValue(filtered);
-     } else {
-       setProductValue(products);
-     }
     handleproducts();
-  }, [products, filterBrand]);
+  }, []);
 
   const { user: currentUser } = useSelector((state) => state.auth);
 
@@ -85,29 +80,6 @@ const Category = () => {
     }
 
   const brands = [...new Set(products.map((p) => p.brand))];
-  const productsEndpoint = () => {
-    try {
-      fetch("http://localhost:8090/api/products", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Products fetched from backend:", data);
-          // You can set the fetched data to state if needed
-          setProductValue(data); // Uncomment if you want to replace local products with fetched data
-        });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
-
-  useEffect(() => {
-    productsEndpoint();
-  }, []);
-
   const { categoryName } = useParams();
   console.log("value comes from parameters ", categoryName);
   return (
@@ -124,7 +96,7 @@ const Category = () => {
           <Col>
             <div className="category-filter-header">
               <h5>Filter by Brand</h5>
-              <span>{products.length} items</span>
+              <span>{filteredProducts.length} items</span>
             </div>
             <div className="category-filter-chips">
               <Button
@@ -150,7 +122,9 @@ const Category = () => {
           </Col>
         </Row>
         <Row className="category-grid">
-          {products.filter((d) => d.category === categoryName).map((data) => {
+          {filteredProducts
+            .filter((d) => d.category === categoryName)
+            .map((data) => {
             const ratingValue = Number(data.rating || data.ratings || data.ratingValue || 0);
             const stockValue = Number(data.stock || data.quantity || data.available || 0);
             return (

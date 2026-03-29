@@ -1,9 +1,4 @@
 import React, { useState } from "react";
-import { TestModule } from "./TestModule";
-import ReactStars from "react-rating-stars-component";
-import { DatePicker } from "antd";
-import { render } from "react-dom";
-import { Col, Row } from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -14,9 +9,6 @@ import {
 import { Button, Layout, Menu, theme } from "antd";
 const { Header, Sider, Content } = Layout;
 const ViewProduct = () => {
-  const ratingChanged = (newRating) => {
-    console.log(newRating);
-  };
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },

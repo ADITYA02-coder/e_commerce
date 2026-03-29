@@ -1,5 +1,5 @@
 import React from 'react'
-import {Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const Payment = () => {
   const[paymentMethod, setPaymentMethod] = React.useState('');
   const[cardNumber, setCardNumber] = React.useState('');
@@ -20,12 +20,6 @@ const Payment = () => {
     setCvc('');
     navigate('/order');
   }
-  const fakeCardDetails = {
-    cardNumber: '1234 5678 9012 3456',
-    cardHolderName: 'Aditya Shukla',
-    expiryDate: '12/27',
-    cvc: '123',
-  };
   return (
     <div>
       <h2>Payment Page</h2>
@@ -44,7 +38,7 @@ const Payment = () => {
               <label>Card Number:</label>
               <input
                 type="text"
-                value={fakeCardDetails.cardNumber}
+                value={cardNumber}
                 onChange={(e) => setCardNumber(e.target.value)}
               />
             </div>
@@ -52,7 +46,7 @@ const Payment = () => {
               <label>Card Holder Name:</label>
               <input
                 type="text"
-                value={fakeCardDetails.cardHolderName}
+                value={cardHolderName}
                 onChange={(e) => setCardHolderName(e.target.value)}
               />
             </div>
@@ -60,7 +54,7 @@ const Payment = () => {
               <label>Expiry Date:</label>
               <input
                 type="text"
-                value={fakeCardDetails.expiryDate}
+                value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
               />
             </div>
@@ -68,7 +62,7 @@ const Payment = () => {
               <label>CVC:</label>
               <input
                 type="number"
-                value={fakeCardDetails.cvc}
+                value={cvc}
                 onChange={(e) => setCvc(e.target.value)}
               />
             </div>

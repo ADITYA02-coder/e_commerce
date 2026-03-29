@@ -1,3 +1,0 @@
-import { selectedItems } from "../Product";
-
-
