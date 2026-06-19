@@ -39,7 +39,7 @@ function App() {
     <div className="app-shell">
       {isSellerRoute ? <SellerHeader /> : <Header />}
       <main className="app-main">
-        <Suspense fallback={<div className="route-loading">Loading page…</div>}>
+        <Suspense fallback={<div className="route-loading">Loading page...</div>}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<LoginPage />} />

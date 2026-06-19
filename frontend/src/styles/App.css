@@ -82,3 +82,24 @@ label {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
+
+.route-loading {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  justify-content: center;
+  min-height: 220px;
+}
+
+@media (max-width: 576px) {
+  .login-form,
+  .signup-form {
+    max-width: 100%;
+    padding: 0 12px;
+  }
+
+  .card-container {
+    padding: 18px 16px 22px;
+    margin-top: 24px;
+  }
+}

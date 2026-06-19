@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Input, Card, Row, Col, Spin, message, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_URL, getAssetUrl } from "../config/api";
+import { getAssetUrl } from "../config/api";
+import { fetchProducts } from "../services/productCache";
 
 const { Content } = Layout;
 const { Meta } = Card;
 const { Search } = Input;
-
-const API_BASE = `${API_URL}/products`;  
-// (Replace with actual base URL if different)
 
 const Home = () => {
   const [phones, setPhones] = useState([]);
@@ -18,16 +15,11 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  // Fetch all phones initially or on empty search
   const fetchPhones = async () => {
     setLoading(true);
     try {
-      const resp = await axios.get(API_BASE);
-      const data = Array.isArray(resp.data) ? resp.data : [];
-      console.log("Products fetched from backend:", data);
-      setPhones(data);
+      setPhones(await fetchProducts());
     } catch (error) {
-      console.error("Error fetching products:", error);
       message.error("Failed to load products");
       setPhones([]);
     } finally {
@@ -35,12 +27,10 @@ const Home = () => {
     }
   };
 
-  // Search phones by keyword
   const searchPhones = async (keyword) => {
     setLoading(true);
     try {
-      const resp = await axios.get(API_BASE);
-      const data = Array.isArray(resp.data) ? resp.data : [];
+      const data = await fetchProducts();
       const k = keyword.toLowerCase();
       const filtered = data.filter((phone) => {
         const name = (phone.name || "").toLowerCase();
@@ -49,8 +39,7 @@ const Home = () => {
         return name.includes(k) || model.includes(k) || brand.includes(k);
       });
       setPhones(filtered);
-    } catch (err) {
-      console.error('Error searching phones:', err);
+    } catch {
       message.error('Search failed');
       setPhones([]);
     } finally {

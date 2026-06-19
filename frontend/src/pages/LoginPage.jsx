@@ -74,69 +74,71 @@ const LoginPage = () => {
           validationSchema={validationSchema}
           onSubmit={handleRegister}
         >
-          <Form>
-            {!successful && (
-              <div>
-                <div className="form-group">
-                  <label htmlFor="username">Username</label>
-                  <Field name="username" type="text" className="form-control" />
-                  <ErrorMessage
-                    name="username"
-                    component="div"
-                    className="alert alert-danger"
-                  />
-                </div>
+          {({ isSubmitting, isValid }) => (
+            <Form>
+              {!successful && (
+                <div>
+                  <div className="form-group">
+                    <label htmlFor="username">Username</label>
+                    <Field name="username" type="text" className="form-control" />
+                    <ErrorMessage
+                      name="username"
+                      component="div"
+                      className="alert alert-danger"
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <Field name="email" type="email" className="form-control" />
-                  <ErrorMessage
-                    name="email"
-                    component="div"
-                    className="alert alert-danger"
-                  />
-                </div>
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <Field name="email" type="email" className="form-control" />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="alert alert-danger"
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="password">Password</label>
-                  <Field
-                    name="password"
-                    type="password"
-                    className="form-control"
-                  />
-                  <ErrorMessage
-                    name="password"
-                    component="div"
-                    className="alert alert-danger"
-                  />
-                </div>
-                <div className="social-icons">
-                  <img
-                    src="https://img.icons8.com/color/48/google-logo.png"
-                    alt="Google"
-                  />
-                  <img
-                    src="https://img.icons8.com/color/48/facebook-new.png"
-                    alt="Facebook"
-                  />
-                  <img
-                    src="https://img.icons8.com/color/48/twitter.png"
-                    alt="Twitter"
-                  />
-                </div>
+                  <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <Field
+                      name="password"
+                      type="password"
+                      className="form-control"
+                    />
+                    <ErrorMessage
+                      name="password"
+                      component="div"
+                      className="alert alert-danger"
+                    />
+                  </div>
+                  <div className="social-icons">
+                    <img
+                      src="https://img.icons8.com/color/48/google-logo.png"
+                      alt="Google"
+                    />
+                    <img
+                      src="https://img.icons8.com/color/48/facebook-new.png"
+                      alt="Facebook"
+                    />
+                    <img
+                      src="https://img.icons8.com/color/48/twitter.png"
+                      alt="Twitter"
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-block"
-                    disabled={isSubmitting || !isValid}
-                  >
-                    Sign Up
-                  </button>
+                  <div className="form-group">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-block"
+                      disabled={isSubmitting || !isValid}
+                    >
+                      {isSubmitting ? "Signing Up..." : "Sign Up"}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </Form>
+              )}
+            </Form>
+          )}
         </Formik>
       </div>
 
