@@ -1,0 +1,78 @@
+import React from "react";
+import { Container } from "react-bootstrap";
+import { Row } from "react-bootstrap";
+import { Col } from "react-bootstrap";
+import { CCircle } from "react-bootstrap-icons";
+import "../styles/style.css";
+
+export const Footer = () => {
+  return (
+    <footer className="footer">
+      <Container fluid>
+        <Row>
+          <Col>
+            <h5 className="footerTitle">Get to Know Us</h5>
+          </Col>
+          <Col>
+            <h5 className="footerTitle">Connect with Us</h5>
+          </Col>
+          <Col>
+            <h5 className="footerTitle">Make Money with Us</h5>
+          </Col>
+          <Col>
+            <h5 className="footerTitle">Let Us Help You</h5>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <ul className="footerlist">
+              <li>About ShopEase</li>
+              <li>Careers</li>
+              <li>Press Releases</li>
+              <li>Marketplace Stories</li>
+            </ul>
+          </Col>
+          <Col>
+            <ul className="footerlist">
+              <li>Twitter</li>
+              <li>Instagram</li>
+              <li>Facebook</li>
+            </ul>
+          </Col>
+          <Col>
+            <ul className="footerlist">
+              <li>Sell on ShopEase</li>
+              <li>Seller Accelerator</li>
+              <li>Protect and Build Your Brand</li>
+              <li>Global Selling</li>
+              <li>Supply to ShopEase</li>
+              <li>Become an Affiliate</li>
+              <li>Fulfilment Services</li>
+              <li>Advertise Your Products</li>
+              <li>Payments for Merchants</li>
+            </ul>
+          </Col>
+          <Col>
+            <ul className="footerlist">
+              <li>Your Account</li>
+              <li>Returns Centre</li>
+              <li>Recalls and Product Safety Alerts</li>
+              <li>100% Purchase Protection</li>
+              <li>Mobile App Download</li>
+              <li>Help</li>
+            </ul>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="footercopyright" col={12}>
+            <p>
+              Copyright 2025 <CCircle /> ecommerce company
+            </p>
+          </Col>
+        </Row>
+      </Container>
+    </footer>
+  );
+};
+
+

@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+.profile-page {
+  min-height: 100vh;
+  padding: 48px 6vw 64px;
+  background: radial-gradient(circle at top, #f8efe6 0%, #f3e6da 35%, #efe1d4 100%);
+  color: #2f241f;
+}
+
+.profile-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fff7ef;
+  border-radius: 26px;
+  padding: 32px;
+  box-shadow: 0 18px 40px rgba(62, 38, 24, 0.16);
+  border: 1px solid rgba(143, 63, 40, 0.12);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: #c25b33;
+  color: #fff3ea;
+  display: grid;
+  place-items: center;
+  font-family: "Fraunces", "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-header h3 {
+  font-family: "Fraunces", "Times New Roman", serif;
+  margin: 0 0 4px;
+  color: #2c1e18;
+}
+
+.profile-subtitle {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: #6a4b3b;
+  margin: 0;
+}
+
+.profile-details {
+  display: grid;
+  gap: 14px;
+  background: #fffaf6;
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(194, 91, 51, 0.1);
+}
+
+.profile-details span {
+  display: block;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8f3f28;
+  margin-bottom: 6px;
+}
+
+.profile-details strong {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: #2f241f;
+}
+
+.profile-roles {
+  margin-top: 24px;
+}
+
+.profile-roles h4 {
+  font-family: "Fraunces", "Times New Roman", serif;
+  margin-bottom: 12px;
+}
+
+.profile-role-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-role-list span {
+  background: #fff3ea;
+  border: 1px solid rgba(194, 91, 51, 0.2);
+  color: #8f3f28;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+}
+
+@media (max-width: 720px) {
+  .profile-page {
+    padding: 36px 20px 48px;
+  }
+
+  .profile-card {
+    padding: 24px;
+  }
+}

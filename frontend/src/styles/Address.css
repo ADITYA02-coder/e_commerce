@@ -1,0 +1,367 @@
+/* Address Container */
+.address-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f1ec 0%, #e9e1d8 100%);
+  min-height: 100vh;
+}
+
+/* Title Styling */
+.address-title {
+  text-align: center;
+  color: var(--text);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 4px rgba(58, 42, 34, 0.08);
+}
+
+/* Radio Group Header */
+#my-radio-group {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+
+/* Address Cards Container */
+div[role="group"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual Address Card */
+.address-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.address-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(45deg, var(--accent), var(--success));
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.address-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-2px);
+}
+
+.address-card:hover::before {
+  transform: scaleY(1);
+}
+
+/* Radio Button Styling */
+.address-card input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Address Text Content */
+.address-card div {
+  flex: 1;
+}
+
+.address-card p {
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.address-card p:first-child {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.address-card p:last-child {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: var(--success);
+}
+
+/* Selected Address Indicator */
+.address-card:has(input[type="radio"]:checked) {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  box-shadow: var(--shadow-strong);
+}
+
+.address-card:has(input[type="radio"]:checked)::before {
+  transform: scaleY(1);
+}
+
+/* Picked Value Display */
+.address-container > div:has-text("Picked:") {
+  background: var(--surface-2);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-weight: 500;
+  color: var(--text);
+  border-left: 4px solid var(--accent);
+}
+
+/* No Addresses Message */
+.address-container p {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  padding: 2rem;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 2px dashed var(--border);
+}
+
+/* Button Styling */
+.btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
+  color: white;
+  box-shadow: 0 4px 15px rgba(194, 91, 51, 0.28);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, var(--accent-2), #6f2f1e);
+  box-shadow: 0 6px 20px rgba(194, 91, 51, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background: #a89a90;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(58, 42, 34, 0.08);
+}
+
+.btn-secondary:hover {
+  background: #e9e1d8;
+  box-shadow: 0 6px 20px rgba(58, 42, 34, 0.14);
+  transform: translateY(-2px);
+}
+
+/* Form Styling inside Modal */
+.modal-body .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.modal-body .form-label {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
+
+.modal-body .form-control {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--surface);
+}
+
+.modal-body .form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(194, 91, 51, 0.12);
+  outline: none;
+}
+
+.modal-body .form-control:invalid {
+  border-color: var(--danger);
+}
+
+/* Error Messages */
+.text-danger {
+  color: var(--danger) !important;
+  font-weight: 500;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Modal Enhancements */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(58, 42, 34, 0.22);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  padding: 1.5rem 2rem;
+}
+
+.modal-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.modal-body {
+  padding: 2rem;
+  background: var(--surface);
+}
+
+.btn-close {
+  background: var(--surface);
+  border-radius: 50%;
+  opacity: 1;
+  width: 32px;
+  height: 32px;
+}
+
+/* Form Layout */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Button Container */
+.button-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .address-container {
+    padding: 1rem;
+  }
+  
+  .address-title {
+    font-size: 2rem;
+  }
+  
+  div[role="group"] {
+    grid-template-columns: 1fr;
+  }
+  
+  .address-card {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .button-container {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .address-container {
+    padding: 0.5rem;
+  }
+  
+  .address-title {
+    font-size: 1.5rem;
+  }
+  
+  .address-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .address-card input[type="radio"] {
+    align-self: center;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.btn:disabled {
+  animation: pulse 2s infinite;
+}
+
+/* Focus Styles for Accessibility */
+.address-card:focus-within {
+  outline: 3px solid rgba(194, 91, 51, 0.3);
+  outline-offset: 2px;
+}
+
+.btn:focus {
+  outline: 3px solid rgba(194, 91, 51, 0.3);
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--surface-2);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--accent), var(--accent-2));
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--accent-2), #6f2f1e);
+}

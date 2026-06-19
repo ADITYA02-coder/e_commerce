@@ -1,0 +1,52 @@
+:root {
+  --bg: #f1f3f6;
+  --surface: #ffffff;
+  --surface-2: #f7f9fc;
+  --surface-3: #eef3f8;
+  --text: #17202a;
+  --muted: #5f6c7b;
+  --accent: #ff9f00;
+  --accent-2: #fb641b;
+  --brand: #131921;
+  --brand-2: #232f3e;
+  --link: #2874f0;
+  --border: #dfe5ec;
+  --shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  --shadow-strong: 0 16px 34px rgba(15, 23, 42, 0.14);
+  --success: #067d62;
+  --danger: #b42318;
+  --info: #2874f0;
+  --warning: #ff9f00;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0f5ed7;
+}
+
+img {
+  max-width: 100%;
+}

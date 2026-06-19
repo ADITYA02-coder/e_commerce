@@ -1,0 +1,34 @@
+.seller-header {
+  background: linear-gradient(135deg, #2f241f, #3a2a23);
+  border-bottom: 1px solid rgba(255, 245, 238, 0.15);
+  padding: 10px 8px;
+}
+
+.seller-header .navbar-brand,
+.seller-header .nav-link,
+.seller-header a,
+.seller-header svg,
+.seller-header span {
+  color: #fff3ea;
+}
+
+.seller-header .nav-link:hover,
+.seller-header a:hover {
+  color: #f0b58b;
+}
+
+.seller-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.seller-header .navbar-toggler {
+  border-color: rgba(240, 181, 139, 0.4);
+}
+
+.seller-header .navbar-toggler-icon {
+  filter: invert(1);
+}

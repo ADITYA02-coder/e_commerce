@@ -1,0 +1,250 @@
+/* Basic Reset */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.toggle-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  color: var(--text);
+}
+
+.sidebar {
+  width: 0;
+  overflow-x: hidden;
+  transition: width 0.25s ease;
+  background-color: var(--brand-2);
+  color: #ffffff;
+  padding-top: 60px;
+  position: fixed;
+  height: 100%;
+  z-index: 1050;
+  box-shadow: 10px 0 24px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar.open {
+  width: 200px;
+}
+
+.sidebar nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  padding: 15px 20px;
+}
+
+.sidebar nav ul li a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.sidebar nav ul li a:hover {
+  color: var(--accent);
+}
+
+.content {
+  flex-grow: 1;
+  margin-left: 60px;
+  padding: 20px;
+  background: var(--bg);
+}
+.header{
+  background-color: var(--brand);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  min-height: 64px;
+  padding: 8px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header .navbar-brand,
+.header .nav-link,
+.header a,
+.header svg {
+  color: #ffffff;
+}
+
+.header .nav-link:hover,
+.header a:hover {
+  color: var(--accent);
+}
+
+.header button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.header button:hover {
+  border-color: var(--accent);
+}
+
+.header .dropdown-menu {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-strong);
+  border-radius: 8px;
+}
+
+.header .dropdown-item,
+.header .dropdown-item a {
+  color: var(--text);
+}
+
+.header .dropdown-item a {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.header .dropdown-item:hover,
+.header .dropdown-item:focus {
+  background: #eef4ff;
+  color: var(--link);
+}
+
+.header .container-fluid {
+  gap: 14px;
+}
+
+.header-brand {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.35rem;
+  font-weight: 800;
+  gap: 8px;
+  letter-spacing: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.header-brand-icon {
+  color: var(--accent) !important;
+  height: 26px;
+  width: 26px;
+}
+
+.header-menu-brand {
+  margin: 0;
+}
+
+.header-search {
+  display: flex;
+  flex: 1 1 360px;
+  max-width: 680px;
+  min-width: 220px;
+}
+
+.header-search input {
+  background: #ffffff;
+  border: 0;
+  border-radius: 6px 0 0 6px;
+  color: var(--text);
+  font-size: 0.95rem;
+  height: 42px;
+  min-width: 0;
+  outline: none;
+  padding: 0 14px;
+  width: 100%;
+}
+
+.header-search button {
+  background: var(--accent);
+  border: 0;
+  border-radius: 0 6px 6px 0;
+  color: #111827;
+  font-weight: 700;
+  min-width: 92px;
+  padding: 0 18px;
+}
+
+.header-search button:hover {
+  background: #f4b400;
+  color: #111827;
+}
+
+.header .navbar-collapse {
+  flex-grow: 0;
+}
+
+.header .nav-link {
+  border-radius: 6px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  padding: 8px 10px !important;
+  white-space: nowrap;
+}
+
+.header-cart {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 6px;
+  padding: 8px 8px;
+}
+
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+@media (max-width: 992px) {
+  .header .container-fluid {
+    align-items: center;
+  }
+
+  .header-search {
+    flex-basis: 100%;
+    max-width: none;
+    order: 4;
+  }
+
+  .header .navbar-collapse {
+    flex-basis: 100%;
+    order: 5;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    padding: 8px;
+  }
+
+  .header-brand {
+    font-size: 1.1rem;
+  }
+
+  .header-search input,
+  .header-search button {
+    height: 38px;
+  }
+
+  .header-search button {
+    min-width: 72px;
+    padding: 0 10px;
+  }
+}
