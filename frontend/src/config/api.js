@@ -1,5 +1,7 @@
 const DEFAULT_API_BASE_URL =
-  import.meta.env.PROD ? "" : "http://localhost:8090";
+  import.meta.env.PROD
+    ? "https://e-commerce-ctq5.onrender.com"
+    : "http://localhost:8090";
 
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/$/, "");

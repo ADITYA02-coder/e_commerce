@@ -17,7 +17,7 @@ Required environment variables:
 
 ```env
 PORT=8090
-CLIENT_URL=https://your-frontend-domain.com
+CLIENT_URL=https://e-commerce-eosin-psi-28.vercel.app
 MONGODB_URI=mongodb+srv://...
 COOKIE_SECRET=replace-with-a-long-random-secret
 JWT_SECRET=replace-with-a-long-random-secret
@@ -39,7 +39,7 @@ Use `frontend` as the static app root.
 Required environment variable:
 
 ```env
-VITE_API_BASE_URL=https://your-backend-domain.com
+VITE_API_BASE_URL=https://e-commerce-ctq5.onrender.com
 ```
 
 For local development, copy each `.env.example` file to `.env` in the same folder and update the values.
