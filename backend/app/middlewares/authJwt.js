@@ -62,9 +62,34 @@ const isModerator = async (req, res, next) => {
   }
 };
 
+const isSeller = async (req, res, next) => {
+  try {
+
+    const user = await User.findById(req.userId);
+
+    const roles = await Role.find({
+      _id: { $in: user.roles }
+    });
+
+    if (roles.some(role => role.name === "seller")) {
+      next();
+      return;
+    }
+
+    res.status(403).send({
+      message: "Require Seller Role!"
+    });
+
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || err
+    });
+  }
+};
 const authJwt = {
   verifyToken,
   isAdmin,
   isModerator,
+  isSeller
 };
 module.exports = authJwt;

@@ -142,6 +142,7 @@ require("./app/routes/profile.routes")(app);
 require("./app/routes/cart.routes")(app);
 require("./app/routes/order.routes")(app);
 require("./app/routes/address.routes")(app);
+require("./app/routes/seller.routes")(app);
 
 // Ecommerce routes
 require("./app/routes/review.routes")(app);
