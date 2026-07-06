@@ -26,7 +26,6 @@ const Order = lazy(() => import('../pages/Order'));
 const ViewProduct = lazy(() => import('../pages/ViewProduct'));
 const Home = lazy(() => import('../pages/Home'));
 const Product = lazy(() => import('../pages/Product').then((module) => ({ default: module.Product })));
-const TestModule = lazy(() => import('../pages/TestModule'));
 
 function App() {
   const location = useLocation();
@@ -58,7 +57,6 @@ function App() {
             <Route path="/address" element={<Address />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/order" element={<Order />} />
-            <Route path="/test" element={<TestModule />} />
             <Route path="/view" element={<ViewProduct />} />
             <Route path="*" element={<Error />} />
           </Routes>
