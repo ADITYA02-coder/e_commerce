@@ -23,15 +23,13 @@ const Login = () => {
   const redirectTo = searchParams.get("redirect");
 
   if (isLoggedIn && currentUser) {
-    return (
-      <Navigate
-        to={
-          currentUser.roles.includes("ROLE_ADMIN")
-            ? "/seller"
-            : redirectTo || "/"
-        }
-      />
-    );
+    const rolePath = currentUser.roles?.includes("ROLE_ADMIN")
+      ? "/admin"
+      : currentUser.roles?.includes("ROLE_SELLER")
+        ? "/seller"
+        : redirectTo || "/";
+
+    return <Navigate to={rolePath} />;
   }
 
   const initialValues = { username: "", password: "" };
@@ -69,6 +67,8 @@ const Login = () => {
       .unwrap()
       .then((user) => {
         if (user.roles.includes("ROLE_ADMIN")) {
+          navigate("/admin");
+        } else if (user.roles.includes("ROLE_SELLER")) {
           navigate("/seller");
         } else {
           navigate(redirectTo || "/");

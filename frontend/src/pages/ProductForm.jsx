@@ -24,7 +24,9 @@ const ProductForm = () => {
   const [color, setColor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+  const canManageProducts = currentUser?.roles?.includes("ROLE_SELLER") || currentUser?.roles?.includes("ROLE_ADMIN");
+
+  if (!currentUser || !canManageProducts) {
     return <Navigate to="/" />;
   }
 

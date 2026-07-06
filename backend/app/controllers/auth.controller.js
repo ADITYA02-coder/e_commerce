@@ -6,17 +6,44 @@ const db = require("../models");
 const User = db.user;
 const Role = db.role;
 
+const formatUserResponse = (user) => {
+  const authorities = (user.roles || []).map((role) => `ROLE_${role.name.toUpperCase()}`);
+
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    fullName: user.fullName || "",
+    phone: user.phone || "",
+    address: user.address || "",
+    city: user.city || "",
+    country: user.country || "",
+    bio: user.bio || "",
+    companyName: user.companyName || "",
+    roles: authorities,
+    accessToken: user.accessToken
+  };
+};
+
 exports.signup = async (req, res) => {
   try {
+    const normalizedRoles = (req.body.roles || (req.body.role ? [req.body.role] : [])).map((role) => role.toLowerCase());
+    const roles = normalizedRoles.length ? normalizedRoles : ["customer"];
+    const foundRoles = await Role.find({ name: { $in: roles } });
+
     const user = new User({
       username: req.body.username,
       email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 8)
+      password: bcrypt.hashSync(req.body.password, 8),
+      fullName: req.body.fullName || "",
+      phone: req.body.phone || "",
+      address: req.body.address || "",
+      city: req.body.city || "",
+      country: req.body.country || "",
+      bio: req.body.bio || "",
+      companyName: req.body.companyName || "",
+      roles: foundRoles.map((role) => role._id)
     });
-
-    const roles = req.body.roles?.length ? req.body.roles : ["user"];
-    const foundRoles = await Role.find({ name: { $in: roles } });
-    user.roles = foundRoles.map(role => role._id);
 
     await user.save();
     return res.send({ message: "User was registered successfully!" });
@@ -29,7 +56,9 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.body.username }).populate("roles", "-__v");
+    const user = await User.findOne({
+      $or: [{ username: req.body.username }, { email: req.body.username }]
+    }).populate("roles", "-__v");
 
     if (!user) {
       return res.status(404).send({ message: "User Not found." });
@@ -48,19 +77,82 @@ exports.signin = async (req, res) => {
       expiresIn: 86400
     });
 
-    const authorities = user.roles.map(role => `ROLE_${role.name.toUpperCase()}`);
+    const response = formatUserResponse({ ...user.toObject(), accessToken: token });
 
-    return res.status(200).send({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      roles: authorities,
-      accessToken: token
-    });
+    return res.status(200).send(response);
   } catch (err) {
     return res.status(500).send({
       message: err.message || "Some error occurred while signing in."
     });
+  }
+};
+
+exports.me = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).populate("roles", "-__v");
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    const token = req.headers["x-access-token"] || req.headers["authorization"] || "";
+    const response = formatUserResponse({ ...user.toObject(), accessToken: token.startsWith("Bearer ") ? token.slice(7) : token });
+    return res.status(200).send(response);
+  } catch (err) {
+    return res.status(500).send({ message: err.message || "Some error occurred while loading account." });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    const updates = {
+      fullName: req.body.fullName,
+      phone: req.body.phone,
+      address: req.body.address,
+      city: req.body.city,
+      country: req.body.country,
+      bio: req.body.bio,
+      companyName: req.body.companyName
+    };
+
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] === undefined) delete updates[key];
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(req.userId, updates, { new: true }).populate("roles", "-__v");
+    return res.status(200).send(formatUserResponse(updatedUser.toObject()));
+  } catch (err) {
+    return res.status(500).send({ message: err.message || "Some error occurred while updating profile." });
+  }
+};
+
+exports.analytics = async (req, res) => {
+  try {
+    const users = await User.find().populate("roles", "-__v");
+
+    const counts = users.reduce(
+      (acc, user) => {
+        const roles = (user.roles || []).map((role) => role.name.toLowerCase());
+        if (roles.includes("admin")) acc.admins += 1;
+        if (roles.includes("seller")) acc.sellers += 1;
+        if (roles.includes("customer")) acc.customers += 1;
+        return acc;
+      },
+      { admins: 0, sellers: 0, customers: 0 }
+    );
+
+    return res.status(200).send({
+      totalUsers: users.length,
+      ...counts
+    });
+  } catch (err) {
+    return res.status(500).send({ message: err.message || "Some error occurred while loading analytics." });
   }
 };
 

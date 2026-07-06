@@ -229,8 +229,8 @@ function initial() {
       }
 
       return Role.insertMany([
-        { name: "user" },
-        { name: "moderator" },
+        { name: "customer" },
+        { name: "seller" },
         { name: "admin" }
       ]).then(() => {
         console.log("added roles to roles collection");

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -22,6 +22,7 @@ const LoginPage = () => {
     username: "",
     email: "",
     password: "",
+    role: "customer",
   };
 
   const validationSchema = Yup.object().shape({
@@ -46,11 +47,11 @@ const LoginPage = () => {
   });
 
   const handleRegister = (formValue) => {
-    const { username, email, password } = formValue;
+    const { username, email, password, role } = formValue;
 
     setSuccessful(false);
 
-    dispatch(register({ username, email, password }))
+    dispatch(register({ username, email, password, role }))
       .unwrap()
       .then(() => {
         setSuccessful(true);
@@ -69,6 +70,8 @@ const LoginPage = () => {
           alt="profile-img"
           className="profile-img-card"
         />
+        <h3 className="mb-3 text-center">Create your account</h3>
+        <p className="text-muted text-center">Choose a role to begin your journey.</p>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -81,57 +84,32 @@ const LoginPage = () => {
                   <div className="form-group">
                     <label htmlFor="username">Username</label>
                     <Field name="username" type="text" className="form-control" />
-                    <ErrorMessage
-                      name="username"
-                      component="div"
-                      className="alert alert-danger"
-                    />
+                    <ErrorMessage name="username" component="div" className="alert alert-danger" />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
                     <Field name="email" type="email" className="form-control" />
-                    <ErrorMessage
-                      name="email"
-                      component="div"
-                      className="alert alert-danger"
-                    />
+                    <ErrorMessage name="email" component="div" className="alert alert-danger" />
                   </div>
 
                   <div className="form-group">
                     <label htmlFor="password">Password</label>
-                    <Field
-                      name="password"
-                      type="password"
-                      className="form-control"
-                    />
-                    <ErrorMessage
-                      name="password"
-                      component="div"
-                      className="alert alert-danger"
-                    />
-                  </div>
-                  <div className="social-icons">
-                    <img
-                      src="https://img.icons8.com/color/48/google-logo.png"
-                      alt="Google"
-                    />
-                    <img
-                      src="https://img.icons8.com/color/48/facebook-new.png"
-                      alt="Facebook"
-                    />
-                    <img
-                      src="https://img.icons8.com/color/48/twitter.png"
-                      alt="Twitter"
-                    />
+                    <Field name="password" type="password" className="form-control" />
+                    <ErrorMessage name="password" component="div" className="alert alert-danger" />
                   </div>
 
                   <div className="form-group">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-block"
-                      disabled={isSubmitting || !isValid}
-                    >
+                    <label htmlFor="role">Role</label>
+                    <Field as="select" name="role" className="form-control">
+                      <option value="customer">Customer</option>
+                      <option value="seller">Seller</option>
+                      <option value="admin">Admin</option>
+                    </Field>
+                  </div>
+
+                  <div className="form-group mt-3">
+                    <button type="submit" className="btn btn-primary btn-block" disabled={isSubmitting || !isValid}>
                       {isSubmitting ? "Signing Up..." : "Sign Up"}
                     </button>
                   </div>
@@ -140,16 +118,14 @@ const LoginPage = () => {
             </Form>
           )}
         </Formik>
+        <div className="mt-3 text-center">
+          <Link to="/login">Already have an account? Login</Link>
+        </div>
       </div>
 
       {message && (
         <div className="form-group">
-          <div
-            className={
-              successful ? "alert alert-success" : "alert alert-danger"
-            }
-            role="alert"
-          >
+          <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
             {message}
           </div>
         </div>

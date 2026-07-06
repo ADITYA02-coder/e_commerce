@@ -7,9 +7,9 @@ const user = JSON.parse(localStorage.getItem("user"));
 
 export const register = createAsyncThunk(
   "auth/register",
-  async ({ username, email, password }, thunkAPI) => {
+  async ({ username, email, password, role }, thunkAPI) => {
     try {
-      const response = await AuthService.register(username, email, password);
+      const response = await AuthService.register(username, email, password, role);
       thunkAPI.dispatch(setMessage(response.data.message));
       return response.data;
     } catch (error) {
@@ -30,7 +30,6 @@ export const login = createAsyncThunk(
   async ({ username, password }, thunkAPI) => {
     try {
       const data = await AuthService.login(username, password);
-      console.log(data);
       return { user: data };
     } catch (error) {
       const message =
@@ -44,6 +43,28 @@ export const login = createAsyncThunk(
     }
   }
 );
+
+export const loadCurrentUser = createAsyncThunk("auth/loadCurrentUser", async (_, thunkAPI) => {
+  try {
+    const data = await AuthService.getCurrentUser();
+    return { user: data };
+  } catch (error) {
+    const message = error.message || "Unable to load profile";
+    thunkAPI.dispatch(setMessage(message));
+    return thunkAPI.rejectWithValue();
+  }
+});
+
+export const updateProfile = createAsyncThunk("auth/updateProfile", async (payload, thunkAPI) => {
+  try {
+    const data = await AuthService.updateProfile(payload);
+    return { user: data };
+  } catch (error) {
+    const message = error.response?.data?.message || "Unable to update profile";
+    thunkAPI.dispatch(setMessage(message));
+    return thunkAPI.rejectWithValue();
+  }
+});
 
 export const logout = createAsyncThunk("auth/logout", async () => {
   await AuthService.logout();
@@ -59,27 +80,33 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(register.fulfilled, (state) => {
         state.isLoggedIn = false;
       })
-      .addCase(register.rejected, (state, action) => {
+      .addCase(register.rejected, (state) => {
         state.isLoggedIn = false;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.user = action.payload.user;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(login.rejected, (state) => {
         state.isLoggedIn = false;
         state.user = null;
       })
-      .addCase(logout.fulfilled, (state, action) => {
+      .addCase(loadCurrentUser.fulfilled, (state, action) => {
+        state.isLoggedIn = true;
+        state.user = action.payload.user;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+      })
+      .addCase(logout.fulfilled, (state) => {
         state.isLoggedIn = false;
         state.user = null;
       });
   },
 });
-
 
 const { reducer } = authSlice;
 export default reducer;

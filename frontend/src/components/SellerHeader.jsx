@@ -32,6 +32,7 @@ export const SellerHeader = () => {
             <Nav.Link as={Link} to="/addProduct">Add Product</Nav.Link>
             <Nav.Link as={Link} to="/viewProducts">Products</Nav.Link>
             <Nav.Link as={Link} to="/sellerOrders">Orders</Nav.Link>
+            <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
             <Nav.Link as={Link} to="/">Storefront</Nav.Link>
           </Nav>
           <Nav>

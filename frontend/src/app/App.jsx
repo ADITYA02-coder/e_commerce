@@ -17,6 +17,7 @@ const ProductForm = lazy(() => import('../pages/ProductForm'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const SellerOrders = lazy(() => import('../pages/SellerOrders'));
 const SellerDashboard = lazy(() => import('../pages/SellerDashboard'));
+const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
 const Login = lazy(() => import('../pages/Login'));
 const Profile = lazy(() => import('../pages/Profile'));
 const ProductListing = lazy(() => import('../pages/ProductListing'));
@@ -53,6 +54,7 @@ function App() {
             <Route path="/viewProducts" element={<ProductListing />} />
             <Route path="/addProduct" element={<ProductForm />} />
             <Route path="/seller" element={<SellerDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/sellerOrders" element={<SellerOrders />} />
             <Route path="/address" element={<Address />} />
             <Route path="/payment" element={<Payment />} />

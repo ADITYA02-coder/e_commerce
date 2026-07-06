@@ -52,6 +52,12 @@ export const Header = () => {
               <Nav.Link as={Link} to="/">Home</Nav.Link>
               <Nav.Link as={Link} to="/product">Products</Nav.Link>
               <Nav.Link as={Link} to="/account">Account</Nav.Link>
+              {currentUser?.roles?.includes("ROLE_SELLER") && (
+                <Nav.Link as={Link} to="/seller">Seller Hub</Nav.Link>
+              )}
+              {currentUser?.roles?.includes("ROLE_ADMIN") && (
+                <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
+              )}
               <NavDropdown title="Category" id="navbarScrollingDropdown">
                 <NavDropdown.Item as={Link} to="/category/mobiles">
                   Mobiles, Computers
@@ -83,6 +89,7 @@ export const Header = () => {
               </>
             ) : (
               <>
+                <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </>
             )}

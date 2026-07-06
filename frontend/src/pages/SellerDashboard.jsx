@@ -4,7 +4,9 @@ import { Navigate, Link } from "react-router-dom";
 import "../styles/SellerDashboard.css";
 const SellerDashboard = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
-  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+  const canAccessSellerDashboard = currentUser?.roles?.includes("ROLE_SELLER") || currentUser?.roles?.includes("ROLE_ADMIN");
+
+  if (!currentUser || !canAccessSellerDashboard) {
     return <Navigate to="/" />;
   }
   return (
