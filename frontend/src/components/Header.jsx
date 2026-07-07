@@ -9,11 +9,31 @@ import { Amazon } from "react-bootstrap-icons";
 import { Cart } from "react-bootstrap-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../slices/auth";
+import { API_URL } from "../config/api";
 export const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [search, setSearch] = React.useState("");
+  const [categories, setCategories] = React.useState([]);
   const { user: currentUser } = useSelector((state) => state.auth);
+
+  React.useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cats`);
+        if (!response.ok) return;
+        const data = await response.json();
+        const categoryNames = (Array.isArray(data) ? data : [])
+          .map((item) => (item?.name || "").trim())
+          .filter(Boolean);
+        setCategories(Array.from(new Set(categoryNames)));
+      } catch (error) {
+        console.error("Failed to load categories", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -22,7 +42,8 @@ export const Header = () => {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    navigate("/product");
+    const query = search.trim();
+    navigate(query ? `/product?q=${encodeURIComponent(query)}` : "/product");
   };
 
   return (
@@ -33,6 +54,10 @@ export const Header = () => {
             <Amazon className="header-brand-icon" />
             <span>ShopEase</span>
           </Navbar.Brand>
+          <div className="header-location" role="button" onClick={() => navigate("/address")}>
+            <small>Deliver to</small>
+            <strong>India</strong>
+          </div>
           <form className="header-search" onSubmit={handleSearch}>
             <input
               type="search"
@@ -59,21 +84,17 @@ export const Header = () => {
                 <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
               )}
               <NavDropdown title="Category" id="navbarScrollingDropdown">
-                <NavDropdown.Item as={Link} to="/category/mobiles">
-                  Mobiles, Computers
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/category/mens">
-                  Men's Fashion
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/category/women">
-                  Women's Fashion
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/category/kids">
-                  Kids
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/category/electronics">
-                  Electronics Items
-                </NavDropdown.Item>
+                {categories.length ? (
+                  categories.map((category) => (
+                    <NavDropdown.Item key={category} as={Link} to={`/category/${encodeURIComponent(category)}`}>
+                      {category}
+                    </NavDropdown.Item>
+                  ))
+                ) : (
+                  <NavDropdown.Item as={Link} to="/product">
+                    Browse all products
+                  </NavDropdown.Item>
+                )}
               </NavDropdown>
               <Nav.Link disabled>Prime</Nav.Link>
               <Nav.Link as={Link} to="/cart" className="header-cart">
@@ -96,6 +117,20 @@ export const Header = () => {
           </Nav>
         </Container>
       </Navbar>
+      <div className="header-subnav">
+        <Container fluid>
+          <div className="header-subnav-links">
+            <Link to="/product">Today's Deals</Link>
+            <Link to="/product">Customer Service</Link>
+            <Link to="/seller">Sell</Link>
+            {categories.slice(0, 6).map((category) => (
+              <Link key={category} to={`/category/${encodeURIComponent(category)}`}>
+                {category}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </div>
     </>
   );
 };

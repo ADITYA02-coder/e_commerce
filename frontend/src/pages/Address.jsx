@@ -13,6 +13,7 @@ const Address = () => {
   const [show, setShow] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [cartId, setCartId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -21,7 +22,7 @@ const Address = () => {
 
   async function handleAddress() {
     try {
-      const response = await fetch(`${API_URL}/addresses`);
+      const response = await fetch(`${API_URL}/addresses?userId=${currentUser.id}`);
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -46,6 +47,9 @@ const Address = () => {
 
       const cartData = await cartResponse.json();
       setCartItems(cartData.items || []);
+      setCartId(cartData.id || cartData._id || "");
+
+      localStorage.setItem("checkoutCartId", cartData.id || cartData._id || "");
 
       if (!cartData.items || cartData.items.length === 0) {
         setCartItems([]);
@@ -90,35 +94,31 @@ const Address = () => {
 
       if (!res.ok) throw new Error("Failed to place order");
 
-      // ✅ clear cart after placing order
+      const createdOrder = await res.json();
 
-      alert("✅ Going to payment!");
-      handleDelete();
+      const checkoutTotal = cartItems.reduce(
+        (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0),
+        0
+      );
+
+      localStorage.setItem("pendingOrderId", createdOrder.id || createdOrder._id || "");
+      localStorage.setItem("pendingOrderAmount", String(checkoutTotal));
+      if (cartId) {
+        localStorage.setItem("checkoutCartId", cartId);
+      }
+
+      alert("Order placed. Please complete payment.");
 
       navigate("/payment");
     } catch (err) {
       alert(`❌ Error: ${err.message}`);
     }
   };
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`${API_URL}/carts/`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete cart item");
-      console.log("Cart item deleted successfully", response);
-      // ✅ Refresh cart items after deletion
-      handleOrders();
-    } catch (error) {
-      console.error("Error deleting cart item:", error);
-    }
-  };
-
   useEffect(() => {
-    handleAddress();
-    if (currentUser) handleOrders();
+    if (currentUser) {
+      handleAddress();
+      handleOrders();
+    }
   }, [currentUser, handleOrders]);
 
   if (!currentUser) {

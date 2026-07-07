@@ -114,7 +114,11 @@ const ProductListing = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+  const canManageProducts =
+    currentUser?.roles?.includes("ROLE_SELLER") ||
+    currentUser?.roles?.includes("ROLE_ADMIN");
+
+  if (!currentUser || !canManageProducts) {
     return <Navigate to="/" />;
   }
 

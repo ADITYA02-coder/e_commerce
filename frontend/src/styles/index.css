@@ -1,23 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap");
+
 :root {
-  --bg: #f4f7fb;
+  --bg: #e3e6e6;
   --surface: #ffffff;
-  --surface-2: #f7faff;
-  --surface-3: #eef4ff;
-  --text: #111827;
-  --muted: #64748b;
-  --accent: #ff8a00;
-  --accent-2: #fb641b;
-  --brand: #0f172a;
-  --brand-2: #14213d;
-  --link: #1d4ed8;
-  --border: #dbe7f7;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --shadow-strong: 0 16px 40px rgba(15, 23, 42, 0.14);
-  --success: #0f9d74;
-  --danger: #d14343;
-  --info: #2563eb;
-  --warning: #ff8a00;
-  --hero-gradient: linear-gradient(135deg, #ffffff 0%, #eef6ff 48%, #fff7e8 100%);
+  --surface-2: #f6f8f8;
+  --surface-3: #f0f2f2;
+  --text: #0f1111;
+  --muted: #565959;
+  --accent: #febd69;
+  --accent-2: #f3a847;
+  --brand: #131921;
+  --brand-2: #232f3e;
+  --link: #007185;
+  --border: #d5d9d9;
+  --shadow: 0 2px 10px rgba(15, 17, 17, 0.12);
+  --shadow-strong: 0 10px 24px rgba(15, 17, 17, 0.18);
+  --success: #067d62;
+  --danger: #b12704;
+  --info: #146eb4;
+  --warning: #f08804;
+  --hero-gradient: linear-gradient(180deg, #f7f8fa 0%, #e7ecef 100%);
 }
 
 *,
@@ -32,9 +34,9 @@ html {
 
 body {
   margin: 0;
-  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Nunito Sans", "Trebuchet MS", sans-serif;
   color: var(--text);
-  background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 100%);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -77,17 +79,18 @@ button,
 
 .btn-primary,
 .ant-btn-primary {
-  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
-  border-color: transparent;
-  color: #ffffff;
-  box-shadow: 0 10px 20px rgba(251, 100, 27, 0.2);
+  background: linear-gradient(180deg, #f7dfa5, #f0c14b);
+  border-color: #a88734;
+  color: #111;
+  box-shadow: none;
 }
 
 .btn-primary:hover,
 .ant-btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(251, 100, 27, 0.24);
-  color: #ffffff;
+  background: linear-gradient(180deg, #f5d78e, #edb932);
+  border-color: #8d6f2f;
+  color: #111;
 }
 
 .btn-outline-secondary,

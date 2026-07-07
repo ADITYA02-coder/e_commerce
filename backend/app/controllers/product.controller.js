@@ -1,6 +1,9 @@
 const db = require("../models");
 const Product = db.products;
+const Cat = db.cats;
 const fs = require("fs");
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   //http://localhost:8090/uploads/7acef58e-da7a-4986-803e-6e717de80577.jpg
   global.__basedir = __dirname;
 // Create and Save a new Product
@@ -48,12 +51,25 @@ exports.create = async (req, res) => {
   try {
     console.log(req.file);
 
+    const categoryName = (req.body.category || "").trim();
+    if (!categoryName) {
+      return res.status(400).send({ message: "Category is required" });
+    }
+
+    // Auto-register newly introduced categories so sellers can list any type.
+    const existingCategory = await Cat.findOne({
+      name: { $regex: new RegExp(`^${escapeRegex(categoryName)}$`, "i") }
+    });
+    if (!existingCategory) {
+      await Cat.create({ name: categoryName });
+    }
+
     const imageUrl = req.file?.path || req.body.image || "";
 
     const data = await Product.create({
       userId: req.body.userId,
       name: req.body.name,
-      category: req.body.category,
+      category: categoryName,
       price: req.body.price,
       brand: req.body.brand,
       ram: req.body.ram,

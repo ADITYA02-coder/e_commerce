@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
@@ -8,9 +8,11 @@ import Row from "react-bootstrap/Row";
 import { BackToTop } from "../components/BackToTop";
 import { getAssetUrl } from "../config/api";
 import { fetchProducts } from "../services/productCache";
+import { searchStorefrontProducts } from "../services/storefront.service";
 import "../styles/style.css";
 
 export const Product = () => {
+  const location = useLocation();
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,9 +22,21 @@ export const Product = () => {
   const [inStockOnly, setInStockOnly] = useState(false);
 
   const loadProducts = async (force = false) => {
+    const query = new URLSearchParams(location.search).get("q") || "";
+
     try {
       setLoading(true);
-      setAllProducts(await fetchProducts(force));
+      if (query.trim()) {
+        const result = await searchStorefrontProducts({
+          q: query.trim(),
+          sort: "popular",
+          page: 1,
+          limit: 60
+        });
+        setAllProducts(result.items || []);
+      } else {
+        setAllProducts(await fetchProducts(force));
+      }
       setError(null);
     } catch {
       setAllProducts([]);
@@ -34,7 +48,7 @@ export const Product = () => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [location.search]);
 
   const brands = useMemo(
     () => [...new Set(allProducts.map((product) => product.brand).filter(Boolean))],

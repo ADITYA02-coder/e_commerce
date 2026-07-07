@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const styles = {
   wrap: {
@@ -341,6 +342,10 @@ const QRCode = () => (
 const Payment = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState('debit');
+  const pendingOrderId = localStorage.getItem('pendingOrderId') || '';
+  const pendingOrderAmount = Number(localStorage.getItem('pendingOrderAmount') || 0);
+  const checkoutCartId = localStorage.getItem('checkoutCartId') || '';
+  const payableAmount = pendingOrderAmount > 0 ? pendingOrderAmount : 1499;
 
   // Debit card fields
   const [cardNumber, setCardNumber] = useState('');
@@ -396,13 +401,35 @@ const Payment = () => {
 
   const handlePay = () => {
     setProcessing(true);
-    setTimeout(() => {
-      setProcessing(false);
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/order');
-      }, 1500);
-    }, 1800);
+    const finalizePayment = async () => {
+      try {
+        if (pendingOrderId) {
+          await fetch(`${API_URL}/orders/${pendingOrderId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentStatus: 'paid', orderStatus: 'processing' }),
+          });
+        }
+
+        if (checkoutCartId) {
+          await fetch(`${API_URL}/carts/${checkoutCartId}`, { method: 'DELETE' });
+        }
+
+        localStorage.removeItem('pendingOrderId');
+        localStorage.removeItem('pendingOrderAmount');
+        localStorage.removeItem('checkoutCartId');
+
+        setProcessing(false);
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/order');
+        }, 1200);
+      } catch (error) {
+        setProcessing(false);
+      }
+    };
+
+    setTimeout(finalizePayment, 1300);
   };
 
   const inputStyle = (id) => ({
@@ -416,8 +443,8 @@ const Payment = () => {
     : processing
     ? 'Processing…'
     : tab === 'upi' && upiStatus === 'verified'
-    ? 'Pay ₹1,499.00 via UPI'
-    : 'Pay ₹1,499.00';
+    ? `Pay ₹${payableAmount.toFixed(2)} via UPI`
+    : `Pay ₹${payableAmount.toFixed(2)}`;
 
   return (
     <div style={styles.wrap}>
@@ -439,7 +466,7 @@ const Payment = () => {
         {/* Amount */}
         <div style={styles.amountRow}>
           <span style={styles.amountLabel}>Order total</span>
-          <span style={styles.amountValue}>₹1,499.00</span>
+          <span style={styles.amountValue}>₹{payableAmount.toFixed(2)}</span>
         </div>
 
         {/* Tabs */}
@@ -579,7 +606,7 @@ const Payment = () => {
               </div>
               <p style={styles.qrLabel}>
                 Open any UPI app, tap "Scan QR"<br />
-                and pay ₹1,499.00
+                and pay ₹{payableAmount.toFixed(2)}
               </p>
               <div style={styles.appChipsRow}>
                 {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => (

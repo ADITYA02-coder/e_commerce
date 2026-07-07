@@ -8,6 +8,9 @@ import "../styles/style.css";
 export const Footer = () => {
   return (
     <footer className="footer">
+      <div className="footer-backtop" role="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        Back to top
+      </div>
       <Container fluid>
         <Row>
           <Col>
@@ -30,6 +33,7 @@ export const Footer = () => {
               <li>Careers</li>
               <li>Press Releases</li>
               <li>Marketplace Stories</li>
+              <li>Investor Relations</li>
             </ul>
           </Col>
           <Col>
@@ -37,6 +41,7 @@ export const Footer = () => {
               <li>Twitter</li>
               <li>Instagram</li>
               <li>Facebook</li>
+              <li>LinkedIn</li>
             </ul>
           </Col>
           <Col>
@@ -55,6 +60,7 @@ export const Footer = () => {
           <Col>
             <ul className="footerlist">
               <li>Your Account</li>
+              <li>Your Orders</li>
               <li>Returns Centre</li>
               <li>Recalls and Product Safety Alerts</li>
               <li>100% Purchase Protection</li>

@@ -39,6 +39,14 @@ module.exports = mongoose => {
         required: true
       },
 
+      addressLine1: String,
+      addressLine2: String,
+      city: String,
+      district: String,
+      state: String,
+      pin: String,
+      mobile: String,
+
       paymentStatus: {
         type: String,
         enum: ['pending', 'paid', 'failed'],

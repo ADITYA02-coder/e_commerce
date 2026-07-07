@@ -19,6 +19,13 @@ exports.create = (req, res) => {
     active: req.body.active || true,
     items: req.body.items,
     totalAmount: totalAmount,
+    addressLine1: req.body.addressLine1,
+    addressLine2: req.body.addressLine2,
+    city: req.body.city,
+    district: req.body.district,
+    state: req.body.state,
+    pin: req.body.pin,
+    mobile: req.body.mobile,
     paymentStatus: req.body.paymentStatus || "pending",
     orderStatus: req.body.orderStatus || "processing"
 

@@ -22,6 +22,7 @@ const ProductForm = () => {
   const [battery, setBattery] = useState("");
   const [processor, setProcessor] = useState("");
   const [color, setColor] = useState("");
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canManageProducts = currentUser?.roles?.includes("ROLE_SELLER") || currentUser?.roles?.includes("ROLE_ADMIN");
@@ -29,6 +30,24 @@ const ProductForm = () => {
   if (!currentUser || !canManageProducts) {
     return <Navigate to="/" />;
   }
+
+  React.useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cats`);
+        if (!response.ok) return;
+        const categories = await response.json();
+        const names = (Array.isArray(categories) ? categories : [])
+          .map((item) => (item?.name || "").trim())
+          .filter(Boolean);
+        setCategoryOptions(Array.from(new Set(names)));
+      } catch (error) {
+        console.error("Unable to load categories", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   const resetForm = () => {
     setName("");
@@ -136,18 +155,19 @@ const ProductForm = () => {
               />
             </Col>
             <Col>
-              <Form.Select
+              <Form.Control
+                type="text"
+                placeholder="Category * (e.g., books, furniture, grocery)"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                list="product-category-options"
                 required
-              >
-                <option value="">Select Category *</option>
-                <option value="mobiles">Mobiles, Computers</option>
-                <option value="mens">Mens Fashion</option>
-                <option value="womens">Womens Fashion</option>
-                <option value="kids">Kids</option>
-                <option value="electronics">Electronics Items</option>
-              </Form.Select>
+              />
+              <datalist id="product-category-options">
+                {categoryOptions.map((option) => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
             </Col>
           </Row>
 
