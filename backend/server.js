@@ -222,19 +222,21 @@ db.mongoose
   });
 
 function initial() {
-  Role.estimatedDocumentCount()
-    .then(count => {
-      if (count !== 0) {
-        return;
+  const defaultRoles = ["customer", "seller", "admin"];
+
+  Role.find({ name: { $in: defaultRoles } })
+    .then(existingRoles => {
+      const existingRoleNames = new Set(existingRoles.map(role => role.name));
+      const missingRoles = defaultRoles.filter(roleName => !existingRoleNames.has(roleName));
+
+      if (missingRoles.length === 0) {
+        return null;
       }
 
-      return Role.insertMany([
-        { name: "customer" },
-        { name: "seller" },
-        { name: "admin" }
-      ]).then(() => {
-        console.log("added roles to roles collection");
-      });
+      return Promise.all(missingRoles.map(roleName => Role.create({ name: roleName })))
+        .then(() => {
+          console.log("added missing roles to roles collection");
+        });
     })
     .catch(err => {
       console.log("error", err);

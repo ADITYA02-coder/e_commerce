@@ -6,6 +6,29 @@ const db = require("../models");
 const User = db.user;
 const Role = db.role;
 
+const normalizeRoleName = (role) => {
+  const value = (role || "customer").toString().trim().toLowerCase();
+  if (value === "user" || value === "customer") return "customer";
+  if (value === "seller" || value === "moderator") return "seller";
+  if (value === "admin") return "admin";
+  return value;
+};
+
+const ensureRoles = async (requestedRoles) => {
+  const roleNames = Array.from(new Set(requestedRoles.map(normalizeRoleName)));
+  const existingRoles = await Role.find({ name: { $in: roleNames } });
+  const existingRoleNames = new Set(existingRoles.map((role) => role.name));
+
+  for (const roleName of roleNames) {
+    if (!existingRoleNames.has(roleName)) {
+      const createdRole = await Role.create({ name: roleName });
+      existingRoleNames.add(createdRole.name);
+    }
+  }
+
+  return Role.find({ name: { $in: roleNames } });
+};
+
 const formatUserResponse = (user) => {
   const authorities = (user.roles || []).map((role) => `ROLE_${role.name.toUpperCase()}`);
 
@@ -27,9 +50,9 @@ const formatUserResponse = (user) => {
 
 exports.signup = async (req, res) => {
   try {
-    const normalizedRoles = (req.body.roles || (req.body.role ? [req.body.role] : [])).map((role) => role.toLowerCase());
+    const normalizedRoles = (req.body.roles || (req.body.role ? [req.body.role] : [])).map(normalizeRoleName);
     const roles = normalizedRoles.length ? normalizedRoles : ["customer"];
-    const foundRoles = await Role.find({ name: { $in: roles } });
+    const foundRoles = await ensureRoles(roles);
 
     const user = new User({
       username: req.body.username,
