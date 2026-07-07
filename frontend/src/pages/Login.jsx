@@ -65,10 +65,13 @@ const Login = () => {
 
     dispatch(login({ username, password }))
       .unwrap()
-      .then((user) => {
-        if (user.roles.includes("ROLE_ADMIN")) {
+      .then((payload) => {
+        const userData = payload?.user || payload;
+        const roles = userData?.roles || [];
+
+        if (roles.includes("ROLE_ADMIN")) {
           navigate("/admin");
-        } else if (user.roles.includes("ROLE_SELLER")) {
+        } else if (roles.includes("ROLE_SELLER")) {
           navigate("/seller");
         } else {
           navigate(redirectTo || "/");
