@@ -84,101 +84,91 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="col-md-12 signup-form" style={{ padding: "24px 0" }}>
-      <div className="card card-container" style={{ maxWidth: "1080px", border: "none", borderRadius: "28px", boxShadow: "0 24px 60px rgba(15, 23, 42, 0.16)", overflow: "hidden" }}>
-        <div className="row g-0">
-          <div className="col-lg-5" style={{ background: "linear-gradient(135deg, #0f172a, #1d4ed8)", color: "white", padding: "36px 28px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ width: "64px", height: "64px", borderRadius: "18px", marginBottom: "18px", background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px" }}>
-              🛍️
+    <div className="auth-shell signup-form">
+      <div className="auth-card card-container">
+        <div className="auth-side-panel auth-side-panel--signup col-lg-5">
+          <div className="auth-badge">🛍️</div>
+          <h2>Join ShopEase</h2>
+          <p>
+            Create your account and choose the role that fits your journey, whether you are shopping, selling, or managing the marketplace.
+          </p>
+          <ul>
+            <li>✓ Fast checkout and secure profile</li>
+            <li>✓ Seller tools and storefront control</li>
+            <li>✓ Admin insights and marketplace oversight</li>
+          </ul>
+        </div>
+
+        <div className="auth-form-panel col-lg-7">
+          <div className="text-center mb-3">
+            <div style={{ width: "54px", height: "54px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #2563eb, #7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "22px" }}>
+              ✦
             </div>
-            <h2 className="mb-2">Join ShopEase</h2>
-            <p style={{ opacity: 0.9, lineHeight: 1.6 }}>
-              Create your account and choose the role that fits your journey, whether you are shopping, selling, or managing the marketplace.
-            </p>
-            <div style={{ marginTop: "18px", padding: "16px", borderRadius: "16px", background: "rgba(255,255,255,0.14)" }}>
-              <div style={{ fontSize: "14px", fontWeight: 600, marginBottom: "6px" }}>Why join?</div>
-              <div style={{ fontSize: "13px", opacity: 0.92 }}>Fast checkout • Secure profile • Seller tools • Admin insights</div>
-            </div>
+            <h3>Create your account</h3>
+            <p className="text-muted mb-0">Pick your role and get started in minutes.</p>
           </div>
 
-          <div className="col-lg-7" style={{ padding: "32px 28px" }}>
-            <div className="text-center mb-3">
-              <div style={{ width: "56px", height: "56px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #2563eb, #7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "24px" }}>
-                ✦
-              </div>
-              <h3 className="mb-2">Create your account</h3>
-              <p className="text-muted mb-0">Pick your role and get started in minutes.</p>
-            </div>
-
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleRegister}
-            >
-              {({ isSubmitting, isValid, values, setFieldValue }) => (
-                <Form>
-                  {!successful && (
-                    <div>
-                      <div className="row g-2 mb-3">
-                        {roleOptions.map((option) => (
-                          <div className="col-md-4" key={option.value}>
-                            <button
-                              type="button"
-                              className={`w-100 text-start border rounded-4 p-3 ${values.role === option.value ? "shadow-sm" : ""}`}
-                              onClick={() => setFieldValue("role", option.value)}
-                              style={{
-                                background: option.accent,
-                                borderColor: values.role === option.value ? "#2563eb" : "#e5e7eb",
-                                transform: values.role === option.value ? "translateY(-2px)" : "none",
-                                transition: "all 0.2s ease",
-                              }}
-                            >
-                              <div className="fw-semibold">{option.label}</div>
-                              <small className="d-block text-muted">{option.description}</small>
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                      <Field type="hidden" name="role" />
-
-                      <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <Field name="username" type="text" className="form-control" />
-                        <ErrorMessage name="username" component="div" className="alert alert-danger" />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <Field name="email" type="email" className="form-control" />
-                        <ErrorMessage name="email" component="div" className="alert alert-danger" />
-                      </div>
-
-                      <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <Field name="password" type="password" className="form-control" />
-                        <ErrorMessage name="password" component="div" className="alert alert-danger" />
-                      </div>
-
-                      <div className="form-group mt-3">
-                        <button type="submit" className="btn btn-primary btn-block" disabled={isSubmitting || !isValid}>
-                          {isSubmitting ? "Signing Up..." : "Sign Up"}
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleRegister}
+          >
+            {({ isSubmitting, isValid, values, setFieldValue }) => (
+              <Form>
+                {!successful && (
+                  <div>
+                    <div className="auth-role-grid">
+                      {roleOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`auth-role-card text-start ${values.role === option.value ? "active" : ""}`}
+                          onClick={() => setFieldValue("role", option.value)}
+                        >
+                          <div className="fw-semibold">{option.label}</div>
+                          <small>{option.description}</small>
                         </button>
-                      </div>
+                      ))}
                     </div>
-                  )}
-                </Form>
-              )}
-            </Formik>
-            <div className="mt-3 text-center">
-              <Link to="/login">Already have an account? Login</Link>
-            </div>
+                    <Field type="hidden" name="role" />
+
+                    <div className="form-group">
+                      <label htmlFor="username">Username</label>
+                      <Field name="username" type="text" className="auth-input-field form-control" />
+                      <ErrorMessage name="username" component="div" className="alert alert-danger auth-alert" />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="email">Email</label>
+                      <Field name="email" type="email" className="auth-input-field form-control" />
+                      <ErrorMessage name="email" component="div" className="alert alert-danger auth-alert" />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="password">Password</label>
+                      <Field name="password" type="password" className="auth-input-field form-control" />
+                      <ErrorMessage name="password" component="div" className="alert alert-danger auth-alert" />
+                    </div>
+
+                    <div className="form-group mt-3">
+                      <button type="submit" className="btn btn-primary auth-submit" disabled={isSubmitting || !isValid}>
+                        {isSubmitting ? "Signing Up..." : "Create account"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </Form>
+            )}
+          </Formik>
+          <div className="auth-link-row">
+            <Link to="/login">Already have an account? Login</Link>
           </div>
         </div>
       </div>
 
       {message && (
         <div className="form-group">
-          <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
+          <div className={successful ? "alert alert-success auth-alert" : "alert alert-danger auth-alert"} role="alert">
             {message}
           </div>
         </div>
