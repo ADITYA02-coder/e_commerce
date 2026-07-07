@@ -12,6 +12,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("customer");
   const { isLoggedIn, user: currentUser } = useSelector((state) => state.auth);
   const { message } = useSelector((state) => state.message);
 
@@ -31,6 +32,12 @@ const Login = () => {
 
     return <Navigate to={rolePath} />;
   }
+
+  const roleOptions = [
+    { value: "customer", label: "Customer", description: "Shop and manage your orders" },
+    { value: "seller", label: "Seller", description: "Add products and run your store" },
+    { value: "admin", label: "Admin", description: "Monitor the marketplace" },
+  ];
 
   const initialValues = { username: "", password: "" };
 
@@ -84,12 +91,34 @@ const Login = () => {
 
   return (
     <div className="col-md-12 login-form">
-      <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
+      <div className="card card-container" style={{ maxWidth: "680px", border: "none", borderRadius: "24px", boxShadow: "0 20px 45px rgba(15, 23, 42, 0.12)" }}>
+        <div className="text-center mb-3">
+          <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #2563eb, #7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "28px" }}>
+            🔐
+          </div>
+          <h3 className="mb-2">Welcome back</h3>
+          <p className="text-muted mb-0">Choose your role and sign in to continue.</p>
+        </div>
+
+        <div className="row g-2 mb-3">
+          {roleOptions.map((option) => (
+            <div className="col-md-4" key={option.value}>
+              <button
+                type="button"
+                className={`w-100 text-start border rounded-4 p-3 ${selectedRole === option.value ? "shadow-sm" : ""}`}
+                onClick={() => setSelectedRole(option.value)}
+                style={{
+                  background: selectedRole === option.value ? "#f8fbff" : "#fff",
+                  borderColor: selectedRole === option.value ? "#2563eb" : "#e5e7eb",
+                }}
+              >
+                <div className="fw-semibold">{option.label}</div>
+                <small className="d-block text-muted">{option.description}</small>
+              </button>
+            </div>
+          ))}
+        </div>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

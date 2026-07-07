@@ -14,6 +14,27 @@ const LoginPage = () => {
   const { message } = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
+  const roleOptions = [
+    {
+      value: "customer",
+      label: "Customer",
+      description: "Shop, track orders, and manage your account",
+      accent: "linear-gradient(135deg, #eef8ff, #dcecff)",
+    },
+    {
+      value: "seller",
+      label: "Seller",
+      description: "List products and grow your store",
+      accent: "linear-gradient(135deg, #fff5e8, #ffe2c2)",
+    },
+    {
+      value: "admin",
+      label: "Admin",
+      description: "Manage users and oversee the marketplace",
+      accent: "linear-gradient(135deg, #f3ebff, #e2d4ff)",
+    },
+  ];
+
   useEffect(() => {
     dispatch(clearMessage());
   }, [dispatch]);
@@ -64,23 +85,46 @@ const LoginPage = () => {
 
   return (
     <div className="col-md-12 signup-form">
-      <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
-        <h3 className="mb-3 text-center">Create your account</h3>
-        <p className="text-muted text-center">Choose a role to begin your journey.</p>
+      <div className="card card-container" style={{ maxWidth: "720px", border: "none", borderRadius: "24px", boxShadow: "0 20px 45px rgba(15, 23, 42, 0.12)" }}>
+        <div className="text-center mb-3">
+          <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #2563eb, #7c3aed)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: "28px" }}>
+            ✦
+          </div>
+          <h3 className="mb-2">Create your account</h3>
+          <p className="text-muted mb-0">Choose the role that fits your journey and get started in minutes.</p>
+        </div>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleRegister}
         >
-          {({ isSubmitting, isValid }) => (
+          {({ isSubmitting, isValid, values, setFieldValue }) => (
             <Form>
               {!successful && (
                 <div>
+                  <div className="row g-2 mb-3">
+                    {roleOptions.map((option) => (
+                      <div className="col-md-4" key={option.value}>
+                        <button
+                          type="button"
+                          className={`w-100 text-start border rounded-4 p-3 ${values.role === option.value ? "shadow-sm" : ""}`}
+                          onClick={() => setFieldValue("role", option.value)}
+                          style={{
+                            background: option.accent,
+                            borderColor: values.role === option.value ? "#2563eb" : "#e5e7eb",
+                            transform: values.role === option.value ? "translateY(-2px)" : "none",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          <div className="fw-semibold">{option.label}</div>
+                          <small className="d-block text-muted">{option.description}</small>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <Field type="hidden" name="role" />
+
                   <div className="form-group">
                     <label htmlFor="username">Username</label>
                     <Field name="username" type="text" className="form-control" />
@@ -97,15 +141,6 @@ const LoginPage = () => {
                     <label htmlFor="password">Password</label>
                     <Field name="password" type="password" className="form-control" />
                     <ErrorMessage name="password" component="div" className="alert alert-danger" />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="role">Role</label>
-                    <Field as="select" name="role" className="form-control">
-                      <option value="customer">Customer</option>
-                      <option value="seller">Seller</option>
-                      <option value="admin">Admin</option>
-                    </Field>
                   </div>
 
                   <div className="form-group mt-3">
