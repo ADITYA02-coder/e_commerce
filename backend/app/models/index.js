@@ -11,6 +11,7 @@ db.mongoose = mongoose;
 db.url = dbConfig.url;
 db.user = require("./user.model");
 db.role = require("./role.model");
+db.seller = require("./seller.model");
 db.ROLES = ["customer", "seller", "admin"];
 db.cats = require("./cat.model.js")(mongoose);
 db.customers = require("./customer.model.js")(mongoose);

@@ -13,9 +13,28 @@ const Profile = () => {
     phone: "",
     address: "",
     gstNumber: "",
-    logo: ""
+    identityDocumentType: "passport",
+    identityDocumentNumber: "",
+    transparencyCode: ""
   });
-  const [sellerApproved, setSellerApproved] = useState(null);
+  const [sellerExisting, setSellerExisting] = useState({
+    logoUrl: "",
+    identityDocumentUrl: "",
+    bankStatementUrl: "",
+    liveSelfieUrl: "",
+    authorizationLetterUrl: "",
+    invoiceUrl: "",
+    verificationNotes: ""
+  });
+  const [sellerFiles, setSellerFiles] = useState({
+    logoFile: null,
+    identityDocumentFile: null,
+    bankStatementFile: null,
+    liveSelfieFile: null,
+    authorizationLetterFile: null,
+    invoiceFile: null
+  });
+  const [sellerApprovalState, setSellerApprovalState] = useState(null);
   const [sellerLoading, setSellerLoading] = useState(false);
   const [sellerSaving, setSellerSaving] = useState(false);
   const [form, setForm] = useState({
@@ -63,9 +82,20 @@ const Profile = () => {
           phone: data.phone || "",
           address: data.address || "",
           gstNumber: data.gstNumber || "",
-          logo: data.logo || ""
+          identityDocumentType: data.identityDocumentType || "passport",
+          identityDocumentNumber: data.identityDocumentNumber || "",
+          transparencyCode: data.transparencyCode || ""
         });
-        setSellerApproved(Boolean(data.isApproved));
+        setSellerExisting({
+          logoUrl: data.logo || "",
+          identityDocumentUrl: data.identityDocumentUrl || "",
+          bankStatementUrl: data.bankStatementUrl || "",
+          liveSelfieUrl: data.liveSelfieUrl || "",
+          authorizationLetterUrl: data.authorizationLetterUrl || "",
+          invoiceUrl: data.invoiceUrl || "",
+          verificationNotes: data.verificationNotes || ""
+        });
+        setSellerApprovalState(data.verificationStatus || (data.isApproved ? "approved" : "pending"));
       } catch (error) {
         console.error("Failed to load seller profile", error);
       } finally {
@@ -105,7 +135,16 @@ const Profile = () => {
   };
 
   const handleSellerChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, files } = event.target;
+
+    if (files) {
+      setSellerFiles((prev) => ({
+        ...prev,
+        [name]: files[0] || null
+      }));
+      return;
+    }
+
     setSellerForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -125,13 +164,24 @@ const Profile = () => {
 
     try {
       setSellerSaving(true);
+      const formData = new FormData();
+
+      Object.entries(sellerForm).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      Object.entries(sellerFiles).forEach(([key, file]) => {
+        if (file) {
+          formData.append(key, file);
+        }
+      });
+
       const response = await fetch(`${API_URL}/seller/apply`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(sellerForm)
+        body: formData
       });
 
       const payload = await response.json().catch(() => ({}));
@@ -144,15 +194,46 @@ const Profile = () => {
         phone: payload.phone || "",
         address: payload.address || "",
         gstNumber: payload.gstNumber || "",
-        logo: payload.logo || ""
+        identityDocumentType: payload.identityDocumentType || "passport",
+        identityDocumentNumber: payload.identityDocumentNumber || "",
+        transparencyCode: payload.transparencyCode || ""
       });
-      setSellerApproved(Boolean(payload.isApproved));
+      setSellerExisting({
+        logoUrl: payload.logo || "",
+        identityDocumentUrl: payload.identityDocumentUrl || "",
+        bankStatementUrl: payload.bankStatementUrl || "",
+        liveSelfieUrl: payload.liveSelfieUrl || "",
+        authorizationLetterUrl: payload.authorizationLetterUrl || "",
+        invoiceUrl: payload.invoiceUrl || "",
+        verificationNotes: payload.verificationNotes || ""
+      });
+      setSellerFiles({
+        logoFile: null,
+        identityDocumentFile: null,
+        bankStatementFile: null,
+        liveSelfieFile: null,
+        authorizationLetterFile: null,
+        invoiceFile: null
+      });
+      setSellerApprovalState(payload.verificationStatus || (payload.isApproved ? "approved" : "pending"));
       alert("Seller profile saved successfully.");
     } catch (error) {
       alert(error.message || "Unable to save seller profile");
     } finally {
       setSellerSaving(false);
     }
+  };
+
+  const sellerFileStatus = (file, existingUrl) => {
+    if (file) {
+      return file.name;
+    }
+
+    if (existingUrl) {
+      return "Already uploaded";
+    }
+
+    return "No file selected";
   };
 
   return (
@@ -261,11 +342,103 @@ const Profile = () => {
                 />
               </div>
               <div className="col-md-6">
-                <label className="form-label">Logo URL</label>
+                <label className="form-label">Shop Logo *</label>
                 <input
                   className="form-control"
-                  name="logo"
-                  value={sellerForm.logo}
+                  type="file"
+                  name="logoFile"
+                  accept="image/*"
+                  onChange={handleSellerChange}
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.logoFile, sellerExisting.logoUrl)}</small>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Identity Document Type *</label>
+                <select
+                  className="form-control"
+                  name="identityDocumentType"
+                  value={sellerForm.identityDocumentType}
+                  onChange={handleSellerChange}
+                  required
+                >
+                  <option value="passport">Passport</option>
+                  <option value="driver_license">Driver's License</option>
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Identity Document Number *</label>
+                <input
+                  className="form-control"
+                  name="identityDocumentNumber"
+                  value={sellerForm.identityDocumentNumber}
+                  onChange={handleSellerChange}
+                  required
+                />
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Identity Document File *</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  name="identityDocumentFile"
+                  accept="image/*,.pdf"
+                  onChange={handleSellerChange}
+                  required
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.identityDocumentFile, sellerExisting.identityDocumentUrl)}</small>
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Bank / Card Statement *</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  name="bankStatementFile"
+                  accept="image/*,.pdf"
+                  onChange={handleSellerChange}
+                  required
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.bankStatementFile, sellerExisting.bankStatementUrl)}</small>
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Live Selfie / Video Call Capture *</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  name="liveSelfieFile"
+                  accept="image/*,.pdf,.mp4,.mov,.webm"
+                  onChange={handleSellerChange}
+                  required
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.liveSelfieFile, sellerExisting.liveSelfieUrl)}</small>
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Brand Authorization Letter</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  name="authorizationLetterFile"
+                  accept="image/*,.pdf"
+                  onChange={handleSellerChange}
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.authorizationLetterFile, sellerExisting.authorizationLetterUrl)}</small>
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Wholesale Invoice</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  name="invoiceFile"
+                  accept="image/*,.pdf"
+                  onChange={handleSellerChange}
+                />
+                <small className="text-muted">{sellerFileStatus(sellerFiles.invoiceFile, sellerExisting.invoiceUrl)}</small>
+              </div>
+              <div className="col-md-12">
+                <label className="form-label">Transparency / Tracking Code</label>
+                <input
+                  className="form-control"
+                  name="transparencyCode"
+                  value={sellerForm.transparencyCode}
                   onChange={handleSellerChange}
                 />
               </div>
@@ -273,10 +446,22 @@ const Profile = () => {
                 <label className="form-label">Approval Status</label>
                 <input
                   className="form-control"
-                  value={sellerLoading ? "Loading..." : sellerApproved === null ? "Pending" : sellerApproved ? "Approved" : "Pending"}
+                  value={
+                    sellerLoading
+                      ? "Loading..."
+                      : sellerApprovalState === null
+                        ? "Pending"
+                        : sellerApprovalState
+                  }
                   readOnly
                 />
               </div>
+              {sellerExisting.verificationNotes ? (
+                <div className="col-md-12">
+                  <label className="form-label">Review Note</label>
+                  <textarea className="form-control" rows="3" value={sellerExisting.verificationNotes} readOnly />
+                </div>
+              ) : null}
             </div>
             <button className="btn btn-primary mt-3" type="submit" disabled={sellerSaving}>
               {sellerSaving ? "Saving..." : "Save Seller Details"}

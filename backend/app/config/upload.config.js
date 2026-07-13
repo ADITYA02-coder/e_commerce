@@ -18,6 +18,15 @@ const imageFilter = (req, file, cb) => {
   }
 };
 
+const documentFilter = (req, file, cb) => {
+  if (file.mimetype) {
+    cb(null, true);
+    return;
+  }
+
+  cb("Please upload a file.", false);
+};
+
 // Create Cloudinary storage for general uploads
 const createCloudinaryStorage = (folder = "kit_uploads") => {
   return new CloudinaryStorage({
@@ -38,9 +47,18 @@ const createUploadMiddleware = (folder = "kit_uploads") => {
   });
 };
 
+const createDocumentUploadMiddleware = (folder = "kit_uploads") => {
+  const storage = createCloudinaryStorage(folder);
+  return multer({
+    storage: storage,
+    fileFilter: documentFilter
+  });
+};
+
 module.exports = {
   cloudinary,
   createCloudinaryStorage,
   createUploadMiddleware,
+  createDocumentUploadMiddleware,
   imageFilter
 };

@@ -27,12 +27,6 @@ const LoginPage = () => {
       description: "List products and grow your store",
       accent: "linear-gradient(135deg, #fff5e8, #ffe2c2)",
     },
-    {
-      value: "admin",
-      label: "Admin",
-      description: "Manage users and oversee the marketplace",
-      accent: "linear-gradient(135deg, #f3ebff, #e2d4ff)",
-    },
   ];
 
   useEffect(() => {
@@ -105,7 +99,7 @@ const LoginPage = () => {
               ✦
             </div>
             <h3>Create your account</h3>
-            <p className="text-muted mb-0">Pick your role and get started in minutes.</p>
+            <p className="text-muted mb-0">Pick customer or seller to get started in minutes.</p>
           </div>
 
           <Formik

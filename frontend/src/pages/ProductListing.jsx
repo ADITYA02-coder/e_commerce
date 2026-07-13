@@ -24,11 +24,21 @@ const ProductListing = () => {
   const [error, setError] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
+  const [sellerStatus, setSellerStatus] = useState("loading");
+  const [sellerMessage, setSellerMessage] = useState("");
+
+  const token = currentUser?.accessToken;
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/products`);
+      const endpoint = currentUser?.roles?.includes("ROLE_SELLER")
+        ? `${API_BASE_URL}/products/mine`
+        : `${API_BASE_URL}/products`;
+
+      const response = await fetch(endpoint, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -40,7 +50,7 @@ const ProductListing = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentUser, token]);
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
@@ -54,6 +64,7 @@ const ProductListing = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
 
@@ -111,15 +122,75 @@ const ProductListing = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    const loadSellerStatus = async () => {
+      if (!currentUser?.roles?.includes("ROLE_SELLER")) {
+        setSellerStatus("approved");
+        return;
+      }
+
+      if (!token) {
+        setSellerStatus("missing");
+        setSellerMessage("Sign in again to manage your products.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/seller/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          setSellerStatus("missing");
+          setSellerMessage("Complete your seller profile before managing products.");
+          return;
+        }
+
+        const data = await response.json();
+        const status = data.verificationStatus || (data.isApproved ? "approved" : "pending");
+        setSellerStatus(status);
+
+        if (status !== "approved") {
+          setSellerMessage("Your seller application is waiting for admin approval.");
+          return;
+        }
+
+        setSellerMessage("");
+        fetchProducts();
+      } catch (error) {
+        setSellerStatus("pending");
+        setSellerMessage("Unable to verify seller approval right now.");
+      }
+    };
+
+    loadSellerStatus();
+  }, [currentUser, fetchProducts, token]);
 
   const canManageProducts =
-    currentUser?.roles?.includes("ROLE_SELLER") ||
-    currentUser?.roles?.includes("ROLE_ADMIN");
+    currentUser?.roles?.includes("ROLE_SELLER");
 
   if (!currentUser || !canManageProducts) {
     return <Navigate to="/" />;
+  }
+
+  if (currentUser?.roles?.includes("ROLE_SELLER") && sellerStatus !== "approved" && !loading) {
+    return (
+      <div className="seller-listing">
+        <Container>
+          <Alert variant="warning" className="seller-listing__alert">
+            <Alert.Heading>Seller approval required</Alert.Heading>
+            <p>{sellerMessage || "Complete and approve your seller profile before managing products."}</p>
+            <div className="d-flex gap-2 flex-wrap">
+              <Button as={Link} to="/profile" variant="outline-warning">
+                Update Seller Profile
+              </Button>
+              <Button as={Link} to="/seller" variant="warning">
+                Open Seller Dashboard
+              </Button>
+            </div>
+          </Alert>
+        </Container>
+      </div>
+    );
   }
 
   if (loading) {

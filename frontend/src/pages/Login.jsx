@@ -31,7 +31,6 @@ const Login = () => {
   const roleOptions = [
     { value: "customer", label: "Customer", description: "Shop and manage your orders" },
     { value: "seller", label: "Seller", description: "Add products and run your store" },
-    { value: "admin", label: "Admin", description: "Monitor the marketplace" },
   ];
 
   const initialValues = { username: "", password: "" };
@@ -106,7 +105,7 @@ const Login = () => {
               ✦
             </div>
             <h3>Welcome back</h3>
-            <p className="text-muted mb-0">Choose your role and sign in to continue.</p>
+            <p className="text-muted mb-0">Choose customer or seller and sign in to continue.</p>
           </div>
 
           <div className="auth-role-grid">

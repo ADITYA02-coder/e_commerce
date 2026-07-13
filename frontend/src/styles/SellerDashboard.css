@@ -74,6 +74,59 @@
   max-width: 520px;
 }
 
+.seller-status-banner {
+  display: grid;
+  gap: 6px;
+  padding: 18px 18px 16px;
+  border-radius: 18px;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(29, 78, 216, 0.12);
+  background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.seller-status-banner strong {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--link);
+}
+
+.seller-status-banner span,
+.seller-status-banner p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.seller-status-banner--approved {
+  border-color: rgba(6, 125, 98, 0.18);
+  background: linear-gradient(135deg, rgba(6, 125, 98, 0.08) 0%, #ffffff 100%);
+}
+
+.seller-status-banner--pending {
+  border-color: rgba(240, 136, 4, 0.18);
+  background: linear-gradient(135deg, rgba(240, 136, 4, 0.08) 0%, #ffffff 100%);
+}
+
+.seller-status-banner--rejected {
+  border-color: rgba(177, 39, 4, 0.18);
+  background: linear-gradient(135deg, rgba(177, 39, 4, 0.08) 0%, #ffffff 100%);
+}
+
+.seller-status-banner--rejected strong {
+  color: var(--danger);
+}
+
+.seller-status-banner__note {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(177, 39, 4, 0.08);
+  color: var(--danger);
+  font-weight: 600;
+}
+
 .seller-hero__actions {
   display: flex;
   gap: 14px;
@@ -119,6 +172,11 @@
   background: #f7faff;
   color: var(--link);
   border-color: rgba(29, 78, 216, 0.18);
+}
+
+.seller-btn.subtle.is-disabled {
+  pointer-events: none;
+  opacity: 0.75;
 }
 
 .seller-hero__panel {
@@ -173,6 +231,18 @@
 .seller-links li:hover {
   transform: translateX(4px);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+}
+
+.seller-links li.is-locked {
+  opacity: 0.78;
+  background: linear-gradient(135deg, #fbfdff 0%, #fff8f0 100%);
+}
+
+.seller-links__locked-label {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
 }
 
 .seller-links a {
@@ -297,5 +367,9 @@
   .seller-hero__actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .seller-status-banner {
+    padding: 16px;
   }
 }

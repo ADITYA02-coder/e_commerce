@@ -1,11 +1,77 @@
 const db = require("../models");
 const Product = db.products;
 const Cat = db.cats;
+const Seller = db.seller;
+const User = db.user;
+const Role = db.role;
 const fs = require("fs");
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   //http://localhost:8090/uploads/7acef58e-da7a-4986-803e-6e717de80577.jpg
   global.__basedir = __dirname;
+
+const requiredSellerFields = [
+  "shopName",
+  "phone",
+  "address",
+  "identityDocumentType",
+  "identityDocumentNumber",
+  "identityDocumentUrl",
+  "bankStatementUrl",
+  "liveSelfieUrl"
+];
+
+const getUserRoles = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    return [];
+  }
+
+  const roles = await Role.find({ _id: { $in: user.roles || [] } });
+  return roles.map((role) => role.name);
+};
+
+const hasRequiredSellerDetails = (seller) =>
+  requiredSellerFields.every((field) => String(seller?.[field] || "").trim());
+
+const canCreateProducts = async (req, res) => {
+  const roles = await getUserRoles(req.userId);
+
+  if (roles.includes("admin")) {
+    return { allowed: true };
+  }
+
+  if (!roles.includes("seller")) {
+    res.status(403).send({ message: "Seller role required to add products" });
+    return { allowed: false };
+  }
+
+  const seller = await Seller.findOne({ user: req.userId });
+
+  if (!seller) {
+    res.status(403).send({
+      message: "Complete your shop details before adding products"
+    });
+    return { allowed: false };
+  }
+
+  if (!hasRequiredSellerDetails(seller)) {
+    res.status(403).send({
+      message: "Add your shop details and verification documents before listing products"
+    });
+    return { allowed: false };
+  }
+
+  if (seller.verificationStatus !== "approved" || !seller.isApproved) {
+    res.status(403).send({
+      message: "Your seller profile must be approved before you can add products"
+    });
+    return { allowed: false };
+  }
+
+  req.seller = seller;
+  return { allowed: true };
+};
 // Create and Save a new Product
 // exports.create = (req, res) => {
 //   // Validate request
@@ -49,6 +115,15 @@ exports.create = async (req, res) => {
   console.log("Hello Aman");
 
   try {
+    if (!req.userId) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+
+    const productAccess = await canCreateProducts(req, res);
+    if (!productAccess.allowed) {
+      return;
+    }
+
     console.log(req.file);
 
     const categoryName = (req.body.category || "").trim();
@@ -67,7 +142,7 @@ exports.create = async (req, res) => {
     const imageUrl = req.file?.path || req.body.image || "";
 
     const data = await Product.create({
-      userId: req.body.userId,
+      userId: req.userId,
       name: req.body.name,
       category: categoryName,
       price: req.body.price,
@@ -94,6 +169,27 @@ exports.create = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).send(`Error when trying to upload image: ${error}`);
+  }
+};
+
+exports.findMyProducts = async (req, res) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+
+    const roles = await getUserRoles(req.userId);
+    if (roles.includes("admin")) {
+      const data = await Product.find().sort({ createdAt: -1 });
+      return res.send(data);
+    }
+
+    const data = await Product.find({ userId: req.userId }).sort({ createdAt: -1 });
+    return res.send(data);
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message || "Error retrieving seller products"
+    });
   }
 };
 

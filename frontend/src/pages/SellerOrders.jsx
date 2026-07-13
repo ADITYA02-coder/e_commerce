@@ -11,6 +11,7 @@ import { API_URL } from "../config/api";
 const SellerOrders = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const [rowdata, setrowData] = useState([]);
+  const [sellerProducts, setSellerProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
@@ -18,6 +19,10 @@ const SellerOrders = () => {
   const [orderStatusValue, setOrderStatusValue] = useState("Pending");
   const [paymentStatusValue, setPaymentStatusValue] = useState("Pending");
   const [orderNote, setOrderNote] = useState("");
+  const [sellerStatus, setSellerStatus] = useState("loading");
+  const [sellerMessage, setSellerMessage] = useState("");
+
+  const token = currentUser?.accessToken;
 
   // post the order update to the backend
   const updateOrder = async (orderId, updatedData) => {
@@ -28,6 +33,7 @@ const SellerOrders = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: JSON.stringify(updatedData),
         }
@@ -49,11 +55,57 @@ const SellerOrders = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(`${API_URL}/orders`);
-        if (!response.ok) {
-          throw new Error(`HHTP error! status: ${response.status}`);
+        if (!currentUser?.roles?.includes("ROLE_SELLER")) {
+          setSellerStatus("missing");
+          setLoading(false);
+          return;
         }
-        const jsonData = await response.json();
+
+        if (!token) {
+          setSellerStatus("missing");
+          setSellerMessage("Sign in again to view your orders.");
+          setLoading(false);
+          return;
+        }
+
+        const sellerResponse = await fetch(`${API_URL}/seller/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!sellerResponse.ok) {
+          setSellerStatus("missing");
+          setSellerMessage("Complete your seller profile before viewing orders.");
+          setLoading(false);
+          return;
+        }
+
+        const seller = await sellerResponse.json();
+        const status = seller.verificationStatus || (seller.isApproved ? "approved" : "pending");
+        setSellerStatus(status);
+
+        if (status !== "approved") {
+          setSellerMessage("Your seller application is waiting for admin approval.");
+          setLoading(false);
+          return;
+        }
+
+        const [ordersResponse, productsResponse] = await Promise.all([
+          fetch(`${API_URL}/orders`),
+          fetch(`${API_URL}/products/mine`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        if (!ordersResponse.ok) {
+          throw new Error(`HHTP error! status: ${ordersResponse.status}`);
+        }
+
+        if (productsResponse.ok) {
+          const sellerProductsData = await productsResponse.json();
+          setSellerProducts(Array.isArray(sellerProductsData) ? sellerProductsData : []);
+        }
+
+        const jsonData = await ordersResponse.json();
         setrowData(jsonData);
         console.log(jsonData);
       } catch (error) {
@@ -63,9 +115,22 @@ const SellerOrders = () => {
       }
     };
     fetchOrder();
-  }, []);
-  if (!currentUser || !currentUser.roles?.includes("ROLE_ADMIN")) {
+  }, [currentUser, token]);
+  if (!currentUser || !currentUser.roles?.includes("ROLE_SELLER")) {
     return <Navigate to="/" />;
+  }
+  if (sellerStatus !== "approved" && !loading) {
+    return (
+      <div className="seller-orders">
+        <div className="seller-orders__header">
+          <div>
+            <span className="seller-orders__badge">Seller Console</span>
+            <h1>Seller Orders</h1>
+            <p>{sellerMessage || "Complete and approve your seller profile before viewing orders."}</p>
+          </div>
+        </div>
+      </div>
+    );
   }
   if (loading) return <div>Loading.....</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -97,6 +162,11 @@ const SellerOrders = () => {
       setSelectedOrder(null);
     }
   };
+
+  const sellerProductIds = new Set(sellerProducts.map((product) => String(product.id)));
+  const visibleOrders = rowdata.filter((order) =>
+    (order.items || []).some((item) => sellerProductIds.has(String(item.productId)))
+  );
 
   const handleDeleteOrder = async (orderId) => {
     const confirmed = window.confirm(
@@ -131,7 +201,7 @@ const SellerOrders = () => {
         </div>
       </div>
       <div className="seller-orders__list">
-        {rowdata
+        {visibleOrders
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .map((data, idx) => (
           <div key={idx} className="seller-order-card">

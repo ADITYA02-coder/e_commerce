@@ -21,6 +21,36 @@ const sellerSchema = new mongoose.Schema(
 
     logo: String,
 
+    identityDocumentType: {
+      type: String,
+      enum: ["passport", "driver_license"],
+      default: "passport"
+    },
+
+    identityDocumentNumber: String,
+
+    identityDocumentUrl: String,
+
+    bankStatementUrl: String,
+
+    liveSelfieUrl: String,
+
+    authorizationLetterUrl: String,
+
+    invoiceUrl: String,
+
+    transparencyCode: String,
+
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "under_review", "approved", "rejected"],
+      default: "pending"
+    },
+
+    verificationNotes: String,
+
+    verifiedAt: Date,
+
     isApproved: {
       type: Boolean,
       default: false

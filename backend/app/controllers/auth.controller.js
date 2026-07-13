@@ -51,6 +51,12 @@ const formatUserResponse = (user) => {
 exports.signup = async (req, res) => {
   try {
     const normalizedRoles = (req.body.roles || (req.body.role ? [req.body.role] : [])).map(normalizeRoleName);
+    if (normalizedRoles.includes("admin")) {
+      return res.status(403).send({
+        message: "Admin accounts cannot be created from public signup."
+      });
+    }
+
     const roles = normalizedRoles.length ? normalizedRoles : ["customer"];
     const foundRoles = await ensureRoles(roles);
 

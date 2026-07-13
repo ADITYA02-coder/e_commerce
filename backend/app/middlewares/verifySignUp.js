@@ -24,6 +24,14 @@ const checkDuplicateUsernameOrEmail = async (req, res, next) => {
 
 const checkRolesExisted = (req, res, next) => {
   const requestedRoles = req.body.roles || (req.body.role ? [req.body.role] : []);
+  const normalizedRoles = requestedRoles.map((role) => role.toLowerCase());
+
+  if (normalizedRoles.includes("admin")) {
+    res.status(403).send({
+      message: "Admin accounts cannot be created from public signup."
+    });
+    return;
+  }
 
   if (requestedRoles.length > 0) {
     for (let i = 0; i < requestedRoles.length; i++) {

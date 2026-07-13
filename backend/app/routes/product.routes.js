@@ -1,13 +1,17 @@
 module.exports = app => {
   const products = require("../controllers/product.controller.js");
   const { createUploadMiddleware } = require("../config/upload.config.js");
+  const authJwt = require("../middlewares/authJwt");
 
   const uploadFile = createUploadMiddleware("product_uploads");
 
   var router = require("express").Router();
   
   // Create a new product with file upload
-  router.post("/", uploadFile.single("file"), products.create);
+  router.post("/", [authJwt.verifyToken], uploadFile.single("file"), products.create);
+
+  // Retrieve products owned by the authenticated seller
+  router.get("/mine", [authJwt.verifyToken], products.findMyProducts);
 
   // Retrieve all products (root endpoint for frontend compatibility)
   router.get("/", products.findAll);
