@@ -980,4 +980,31 @@
     align-items: start;
     flex-direction: column;
   }
+
+  .admin-hero__actions,
+  .detail-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-hero__actions .admin-btn,
+  .detail-card__actions .admin-btn,
+  .detail-card__actions .admin-link {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard__shell {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .admin-hero__copy h1 {
+    font-size: 1.7rem;
+  }
+
+  .admin-stat-card strong {
+    font-size: 1.45rem;
+  }
 }

@@ -305,6 +305,20 @@
   .empty-cart-icon {
     font-size: 3rem;
   }
+
+  .cart-header .row,
+  .cart-summary .row {
+    gap: 12px;
+  }
+
+  .cart-total-header {
+    width: 100%;
+  }
+
+  .cart-actions .btn,
+  .summary-card .btn {
+    width: 100%;
+  }
 }
 
 /* Loading and disabled states */

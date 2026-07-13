@@ -37,6 +37,7 @@ body {
   font-family: "Nunito Sans", "Trebuchet MS", sans-serif;
   color: var(--text);
   background: var(--bg);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -62,6 +63,7 @@ a:hover {
 img {
   max-width: 100%;
   display: block;
+  height: auto;
 }
 
 button,

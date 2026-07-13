@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config/api';
 
@@ -342,6 +342,7 @@ const QRCode = () => (
 const Payment = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState('debit');
+  const [isCompact, setIsCompact] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 576 : false));
   const pendingOrderId = localStorage.getItem('pendingOrderId') || '';
   const pendingOrderAmount = Number(localStorage.getItem('pendingOrderAmount') || 0);
   const checkoutCartId = localStorage.getItem('checkoutCartId') || '';
@@ -364,6 +365,16 @@ const Payment = () => {
 
   // Input focus state
   const [focusedInput, setFocusedInput] = useState(null);
+
+  useEffect(() => {
+    const updateViewport = () => {
+      setIsCompact(window.innerWidth <= 576);
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    return () => window.removeEventListener('resize', updateViewport);
+  }, []);
 
   const formatCardNumber = (val) => {
     const digits = val.replace(/\D/g, '').substring(0, 16);
@@ -438,6 +449,74 @@ const Payment = () => {
     boxShadow: focusedInput === id ? '0 0 0 3px rgba(24,95,165,0.1)' : 'none',
   });
 
+  const wrapStyle = {
+    ...styles.wrap,
+    alignItems: isCompact ? 'flex-start' : 'center',
+    padding: isCompact ? '1rem' : '1.5rem',
+  };
+
+  const cardStyle = {
+    ...styles.card,
+    padding: isCompact ? '1.25rem' : '1.75rem',
+    borderRadius: isCompact ? '14px' : '16px',
+    maxWidth: isCompact ? '100%' : '460px',
+  };
+
+  const headerStyle = {
+    ...styles.header,
+    gap: isCompact ? '10px' : '12px',
+    marginBottom: isCompact ? '1rem' : '1.5rem',
+  };
+
+  const amountRowStyle = {
+    ...styles.amountRow,
+    flexDirection: isCompact ? 'column' : 'row',
+    alignItems: isCompact ? 'flex-start' : 'center',
+    gap: isCompact ? '4px' : '0',
+  };
+
+  const tabRowStyle = {
+    ...styles.tabRow,
+    flexDirection: isCompact ? 'column' : 'row',
+  };
+
+  const tabStyle = (active) => ({
+    ...styles.tab(active),
+    width: isCompact ? '100%' : 'auto',
+  });
+
+  const fieldRowStyle = {
+    ...styles.fieldRow,
+    gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr',
+  };
+
+  const upiRowStyle = {
+    ...styles.upiRow,
+    flexDirection: isCompact ? 'column' : 'row',
+    alignItems: isCompact ? 'stretch' : 'flex-end',
+  };
+
+  const verifyBtnStyle = {
+    ...styles.verifyBtn,
+    width: isCompact ? '100%' : 'auto',
+  };
+
+  const qrBoxStyle = {
+    ...styles.qrBox,
+    width: isCompact ? '132px' : '160px',
+    height: isCompact ? '132px' : '160px',
+  };
+
+  const payBtnStyle = {
+    ...styles.payBtn(processing, success),
+    height: isCompact ? '48px' : '46px',
+  };
+
+  const amountValueStyle = {
+    ...styles.amountValue,
+    fontSize: isCompact ? '18px' : '20px',
+  };
+
   const btnLabel = success
     ? '✓ Payment successful!'
     : processing
@@ -447,10 +526,10 @@ const Payment = () => {
     : `Pay ₹${payableAmount.toFixed(2)}`;
 
   return (
-    <div style={styles.wrap}>
-      <div style={styles.card}>
+    <div style={wrapStyle}>
+      <div style={cardStyle}>
         {/* Header */}
-        <div style={styles.header}>
+        <div style={headerStyle}>
           <div style={styles.headerIcon}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#185FA5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -464,17 +543,17 @@ const Payment = () => {
         </div>
 
         {/* Amount */}
-        <div style={styles.amountRow}>
+        <div style={amountRowStyle}>
           <span style={styles.amountLabel}>Order total</span>
-          <span style={styles.amountValue}>₹{payableAmount.toFixed(2)}</span>
+          <span style={amountValueStyle}>₹{payableAmount.toFixed(2)}</span>
         </div>
 
         {/* Tabs */}
-        <div style={styles.tabRow}>
-          <button style={styles.tab(tab === 'debit')} onClick={() => setTab('debit')}>
+        <div style={tabRowStyle}>
+          <button type="button" style={tabStyle(tab === 'debit')} onClick={() => setTab('debit')}>
             💳 Debit card
           </button>
-          <button style={styles.tab(tab === 'upi')} onClick={() => setTab('upi')}>
+          <button type="button" style={tabStyle(tab === 'upi')} onClick={() => setTab('upi')}>
             📱 UPI
           </button>
         </div>
@@ -524,7 +603,7 @@ const Payment = () => {
               />
             </div>
 
-            <div style={styles.fieldRow}>
+            <div style={fieldRowStyle}>
               <div style={styles.field}>
                 <label style={styles.label}>Expiry date</label>
                 <input
@@ -558,7 +637,7 @@ const Payment = () => {
         {/* UPI Panel */}
         {tab === 'upi' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={styles.upiRow}>
+            <div style={upiRowStyle}>
               <div style={{ ...styles.field, flex: 1 }}>
                 <label style={styles.label}>UPI ID</label>
                 <input
@@ -571,7 +650,7 @@ const Payment = () => {
                   onBlur={() => setFocusedInput(null)}
                 />
               </div>
-              <button style={styles.verifyBtn} onClick={verifyUpi}>Verify</button>
+              <button type="button" style={verifyBtnStyle} onClick={verifyUpi}>Verify</button>
             </div>
 
             {upiStatus === 'error' && (
@@ -601,7 +680,7 @@ const Payment = () => {
             </div>
 
             <div style={styles.qrArea}>
-              <div style={styles.qrBox}>
+              <div style={qrBoxStyle}>
                 <QRCode />
               </div>
               <p style={styles.qrLabel}>
@@ -619,7 +698,7 @@ const Payment = () => {
 
         {/* Pay Button */}
         <button
-          style={styles.payBtn(processing, success)}
+          style={payBtnStyle}
           onClick={handlePay}
           disabled={processing || success}
         >

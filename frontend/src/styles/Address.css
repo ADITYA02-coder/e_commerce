@@ -325,6 +325,16 @@ form {
   }
 }
 
+@media (max-width: 360px) {
+  .address-title {
+    font-size: 1.35rem;
+  }
+
+  .modal-title {
+    font-size: 1.05rem;
+  }
+}
+
 /* Loading Animation */
 @keyframes pulse {
   0% { opacity: 1; }

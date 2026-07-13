@@ -185,3 +185,14 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 576px) {
+  .seller-order-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .seller-order-actions .btn,
+  .seller-order-actions .seller-order-link {
+    width: 100%;
+  }
+}

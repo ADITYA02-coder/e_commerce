@@ -13,21 +13,21 @@ export const Footer = () => {
       </div>
       <Container fluid>
         <Row>
-          <Col>
+          <Col xs={6} md={3}>
             <h5 className="footerTitle">Get to Know Us</h5>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <h5 className="footerTitle">Connect with Us</h5>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <h5 className="footerTitle">Make Money with Us</h5>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <h5 className="footerTitle">Let Us Help You</h5>
           </Col>
         </Row>
         <Row>
-          <Col>
+          <Col xs={6} md={3}>
             <ul className="footerlist">
               <li>About ShopEase</li>
               <li>Careers</li>
@@ -36,7 +36,7 @@ export const Footer = () => {
               <li>Investor Relations</li>
             </ul>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <ul className="footerlist">
               <li>Twitter</li>
               <li>Instagram</li>
@@ -44,7 +44,7 @@ export const Footer = () => {
               <li>LinkedIn</li>
             </ul>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <ul className="footerlist">
               <li>Sell on ShopEase</li>
               <li>Seller Accelerator</li>
@@ -57,7 +57,7 @@ export const Footer = () => {
               <li>Payments for Merchants</li>
             </ul>
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <ul className="footerlist">
               <li>Your Account</li>
               <li>Your Orders</li>

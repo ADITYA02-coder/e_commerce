@@ -145,3 +145,18 @@
     padding: 24px;
   }
 }
+
+@media (max-width: 576px) {
+  .product-form-container h2 {
+    font-size: 1.7rem;
+  }
+
+  .seller-form-meta {
+    padding: 12px 14px;
+  }
+
+  .product-form-container .btn-primary,
+  .product-form-container .btn-secondary {
+    width: 100%;
+  }
+}

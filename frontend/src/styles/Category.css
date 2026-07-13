@@ -261,3 +261,13 @@
     height: 180px;
   }
 }
+
+@media (max-width: 360px) {
+  .category-title {
+    font-size: 1.35rem;
+  }
+
+  .category-card__body {
+    padding: 14px;
+  }
+}

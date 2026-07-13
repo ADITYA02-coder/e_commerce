@@ -4,6 +4,11 @@
   padding: 10px 8px;
 }
 
+.seller-header .container-fluid {
+  gap: 12px;
+  align-items: center;
+}
+
 .seller-header .navbar-brand,
 .seller-header .nav-link,
 .seller-header a,
@@ -31,4 +36,37 @@
 
 .seller-header .navbar-toggler-icon {
   filter: invert(1);
+}
+
+@media (max-width: 992px) {
+  .seller-header .container-fluid {
+    flex-wrap: wrap;
+  }
+
+  .seller-brand {
+    width: 100%;
+  }
+
+  .seller-header .navbar-toggler {
+    margin-left: auto;
+  }
+
+  .seller-header .navbar-collapse {
+    width: 100%;
+  }
+
+  .seller-header .navbar-collapse .nav-link {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 576px) {
+  .seller-header {
+    padding: 8px;
+  }
+
+  .seller-brand {
+    font-size: 0.95rem;
+  }
 }

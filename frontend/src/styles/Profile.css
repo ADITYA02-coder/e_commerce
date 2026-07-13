@@ -107,3 +107,20 @@
     padding: 24px;
   }
 }
+
+@media (max-width: 480px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-details {
+    padding: 14px;
+  }
+
+  .profile-page .btn,
+  .profile-page .form-control,
+  .profile-page .form-select {
+    width: 100%;
+  }
+}

@@ -373,3 +373,27 @@
     padding: 16px;
   }
 }
+
+@media (max-width: 576px) {
+  .seller-hero__content h1,
+  .seller-card h2 {
+    font-size: 1.55rem;
+  }
+
+  .seller-grid {
+    gap: 12px;
+  }
+
+  .seller-link,
+  .seller-btn,
+  .seller-btn.subtle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .seller-panel__actions,
+  .seller-hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
