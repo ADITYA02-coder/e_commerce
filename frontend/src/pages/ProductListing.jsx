@@ -121,6 +121,36 @@ const ProductListing = () => {
     });
   };
 
+  const formatSpecLabel = (value) =>
+    String(value)
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (char) => char.toUpperCase());
+
+  const getProductSpecs = (product) => {
+    const fallbackSpecs = {
+      Category: product.category,
+      Brand: product.brand,
+      Condition: product.condition,
+      SKU: product.sku,
+      RAM: product.ram ? `${product.ram} GB` : "",
+      Storage: product.rom ? `${product.rom} GB` : "",
+      Camera: product.camera,
+      Screen: product.screenSize,
+      Processor: product.processor,
+      Battery: product.battery,
+      Colour: product.color
+    };
+
+    const attributeSpecs = Object.entries(product.attributes || {}).reduce((acc, [key, value]) => {
+      acc[formatSpecLabel(key)] = value;
+      return acc;
+    }, {});
+
+    return Object.entries({ ...fallbackSpecs, ...attributeSpecs })
+      .filter(([, value]) => String(value || "").trim())
+      .slice(0, 8);
+  };
+
   useEffect(() => {
     const loadSellerStatus = async () => {
       if (!currentUser?.roles?.includes("ROLE_SELLER")) {
@@ -315,70 +345,12 @@ const ProductListing = () => {
                       </Card.Title>
 
                       <div className="seller-listing__specs">
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Brand:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.brand}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            RAM:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.ram}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Storage:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.rom}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Camera:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.camera}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Screen:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.screenSize}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Processor:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.processor}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Battery:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.battery}
-                          </span>
-                        </div>
-                        <div className="seller-listing__spec-item">
-                          <span className="seller-listing__spec-label">
-                            Colour:
-                          </span>
-                          <span className="seller-listing__spec-value">
-                            {product.color}
-                          </span>
-                        </div>
+                        {getProductSpecs(product).map(([label, value]) => (
+                          <div className="seller-listing__spec-item" key={label}>
+                            <span className="seller-listing__spec-label">{label}:</span>
+                            <span className="seller-listing__spec-value">{value}</span>
+                          </div>
+                        ))}
                       </div>
 
                       <div className="seller-listing__price">

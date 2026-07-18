@@ -6,8 +6,12 @@ const schema = new mongoose.Schema(
     sku: { type: String, unique: true, sparse: true },
     name: { type: String, required: true },
     description: { type: String },
+    bulletPoints: [String],
+    searchKeywords: [String],
     category: String,
     brand: String,
+    condition: { type: String, default: "New" },
+    countryOfOrigin: String,
     price: { type: Number, required: true },
     discount: { type: Number, default: 0 }, // Discount percentage
     discountedPrice: Number,
@@ -21,6 +25,11 @@ const schema = new mongoose.Schema(
     processor: String,
     color: String,
     storage: [String], // Multiple storage variants
+    productType: String,
+    attributes: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {}
+    },
     
     // Ecommerce fields
     images: [String], // Array of image URLs
@@ -37,6 +46,8 @@ const schema = new mongoose.Schema(
     warranty: { type: String, default: "1 year" },
     returnPolicy: { type: Number, default: 30 }, // days
     shippingDays: { type: Number, default: 3 },
+    packageWeight: String,
+    packageDimensions: String,
     
     // Status
     active: { type: Boolean, default: true },

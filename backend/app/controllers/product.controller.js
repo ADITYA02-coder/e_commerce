@@ -10,6 +10,53 @@ const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   //http://localhost:8090/uploads/7acef58e-da7a-4986-803e-6e717de80577.jpg
   global.__basedir = __dirname;
 
+const parseAttributes = (value) => {
+  if (!value) return {};
+  if (typeof value === "object") return value;
+
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const cleanAttributes = (attributes) =>
+  Object.entries(attributes || {}).reduce((acc, [key, value]) => {
+    const cleanKey = String(key || "").trim();
+    const cleanValue = String(value || "").trim();
+    if (cleanKey && cleanValue) {
+      acc[cleanKey] = cleanValue;
+    }
+    return acc;
+  }, {});
+
+const parseList = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item || "").trim()).filter(Boolean);
+  }
+
+  return String(value)
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const toOptionalNumber = (value) => {
+  if (value === undefined || value === null || value === "") return undefined;
+  const match = String(value).match(/\d+(\.\d+)?/);
+  if (!match) return undefined;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const optionalText = (value) => {
+  const text = String(value || "").trim();
+  return text || undefined;
+};
+
 const requiredSellerFields = [
   "shopName",
   "phone",
@@ -140,17 +187,24 @@ exports.create = async (req, res) => {
     }
 
     const imageUrl = req.file?.path || req.body.image || "";
+    const attributes = cleanAttributes(parseAttributes(req.body.attributes));
 
     const data = await Product.create({
       userId: req.userId,
+      sku: optionalText(req.body.sku),
       name: req.body.name,
       description: req.body.description,
+      bulletPoints: parseList(req.body.bulletPoints),
+      searchKeywords: parseList(req.body.searchKeywords),
       category: categoryName,
+      productType: req.body.productType || categoryName,
       price: req.body.price,
       brand: req.body.brand,
+      condition: req.body.condition || "New",
+      countryOfOrigin: optionalText(req.body.countryOfOrigin),
       discount: req.body.discount,
-      ram: req.body.ram,
-      rom: req.body.rom,
+      ram: toOptionalNumber(req.body.ram),
+      rom: toOptionalNumber(req.body.rom),
       screenSize: req.body.screenSize,
       camera: req.body.camera,
       battery: req.body.battery,
@@ -160,6 +214,12 @@ exports.create = async (req, res) => {
       stock: req.body.stock,
       quantity: req.body.quantity,
       availability: req.body.availability,
+      attributes,
+      warranty: optionalText(req.body.warranty),
+      returnPolicy: toOptionalNumber(req.body.returnPolicy),
+      shippingDays: toOptionalNumber(req.body.shippingDays),
+      packageWeight: optionalText(req.body.packageWeight),
+      packageDimensions: optionalText(req.body.packageDimensions),
       active: req.body.active !== "false",
       isFeatured: req.body.isFeatured === "true",
       image: imageUrl,

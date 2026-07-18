@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "approve-test-seller": "node scripts/approve-test-seller.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

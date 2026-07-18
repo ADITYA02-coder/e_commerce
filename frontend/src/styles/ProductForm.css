@@ -86,6 +86,22 @@
   color: #7b5a4a !important;
 }
 
+.seller-form-section {
+  margin: 18px 0 24px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff3ea;
+  border: 1px solid rgba(194, 91, 51, 0.15);
+}
+
+.seller-form-section h3 {
+  margin: 0 0 16px;
+  color: #2c1e18;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
 .product-form-container .btn-primary {
   background: #c25b33;
   border-color: #c25b33;

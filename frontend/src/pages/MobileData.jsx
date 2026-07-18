@@ -76,6 +76,24 @@ const MobileData = () => {
   }
 
   const productId = mobile.id || mobile._id;
+  const fallbackSpecs = {
+    ram: mobile.ram ? `${mobile.ram} GB` : "",
+    rom: mobile.rom ? `${mobile.rom} GB` : "",
+    screenSize: mobile.screenSize,
+    camera: mobile.camera,
+    battery: mobile.battery,
+    processor: mobile.processor,
+    color: mobile.color
+  };
+  const specs = {
+    ...Object.fromEntries(Object.entries(fallbackSpecs).filter(([, value]) => value)),
+    ...(mobile.attributes || {})
+  };
+  const specRows = Object.entries(specs).filter(([, value]) => String(value || "").trim());
+  const formatSpecLabel = (value) =>
+    String(value)
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (char) => char.toUpperCase());
 
   return (
     <Container className="product-detail">
@@ -90,14 +108,26 @@ const MobileData = () => {
             <Card.Body>
               <Card.Title>{mobile.name}</Card.Title>
               <Card.Text>{mobile.brand}</Card.Text>
-              <Card.Text>RAM: {mobile.ram}</Card.Text>
-              <Card.Text>ROM: {mobile.rom}</Card.Text>
-              <Card.Text>Screen Size: {mobile.screenSize}</Card.Text>
-              <Card.Text>Camera: {mobile.camera}</Card.Text>
-              <Card.Text>Battery: {mobile.battery}</Card.Text>
-              <Card.Text>Processor: {mobile.processor}</Card.Text>
-              <Card.Text>Color: {mobile.color}</Card.Text>
+              <Card.Text>Category: {mobile.category}</Card.Text>
+              {mobile.description ? <Card.Text>{mobile.description}</Card.Text> : null}
+              {Array.isArray(mobile.bulletPoints) && mobile.bulletPoints.length > 0 ? (
+                <ul className="product-detail-bullets">
+                  {mobile.bulletPoints.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {specRows.map(([key, value]) => (
+                <Card.Text key={key}>{formatSpecLabel(key)}: {value}</Card.Text>
+              ))}
               <Card.Text>Price: Rs. {mobile.price}</Card.Text>
+              <Card.Text>Condition: {mobile.condition || "New"}</Card.Text>
+              <Card.Text>Warranty: {mobile.warranty || "1 year"}</Card.Text>
+              <Card.Text>Return Policy: {mobile.returnPolicy || 30} days</Card.Text>
+              <Card.Text>Shipping: {mobile.shippingDays || 3} days</Card.Text>
+              {mobile.countryOfOrigin ? <Card.Text>Country of Origin: {mobile.countryOfOrigin}</Card.Text> : null}
+              {mobile.packageWeight ? <Card.Text>Package Weight: {mobile.packageWeight}</Card.Text> : null}
+              {mobile.packageDimensions ? <Card.Text>Package Dimensions: {mobile.packageDimensions}</Card.Text> : null}
               <div className="buttons product-detail-actions">
                 <Button
                   variant="primary"
