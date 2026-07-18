@@ -7,7 +7,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { BackToTop } from "../components/BackToTop";
 import { getAssetUrl } from "../config/api";
-import { fetchProducts } from "../services/productCache";
 import { searchStorefrontProducts } from "../services/storefront.service";
 import "../styles/style.css";
 
@@ -35,7 +34,13 @@ export const Product = () => {
         });
         setAllProducts(result.items || []);
       } else {
-        setAllProducts(await fetchProducts(force));
+        const result = await searchStorefrontProducts({
+          sort: "popular",
+          page: 1,
+          limit: 60,
+          refresh: force ? Date.now() : undefined
+        });
+        setAllProducts(result.items || []);
       }
       setError(null);
     } catch {

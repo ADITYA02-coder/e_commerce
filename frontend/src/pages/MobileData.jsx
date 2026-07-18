@@ -36,30 +36,39 @@ const MobileData = () => {
     return false;
   };
 
-  const handleAddToCart = (item) => {
-    fetch(`${API_URL}/carts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(item),
-    })
-      .then((response) => response.json())
-      .then(() => setToast({ show: true, message: "Item added to cart", variant: "success" }))
-      .catch(() => setToast({ show: true, message: "Failed to add item", variant: "danger" }));
+  const handleAddToCart = async (item) => {
+    try {
+      const response = await fetch(`${API_URL}/carts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to add this product to your cart.");
+      }
+
+      setToast({ show: true, message: "Item added to cart", variant: "success" });
+      return true;
+    } catch {
+      setToast({ show: true, message: "Failed to add item", variant: "danger" });
+      return false;
+    }
   };
 
-  const buyNow = (product) => {
+  const buyNow = async (product) => {
     const updatedItems = [...selectedItems, product];
     setSelectedItems(updatedItems);
-    handleAddToCart({
+    const wasAdded = await handleAddToCart({
       userId: currentUser.id,
-      items: updatedItems.map((item) => ({
-        productId: item.id || item._id,
-        price: item.price,
+      items: [{
+        productId: product.id || product._id,
+        price: product.price,
         quantity: 1,
-      })),
+      }],
       active: true,
     });
-    navigate("/address");
+    if (wasAdded) navigate("/address");
   };
 
   if (!mobile) {
@@ -92,9 +101,9 @@ const MobileData = () => {
               <div className="buttons product-detail-actions">
                 <Button
                   variant="primary"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!requireLogin()) return;
-                    handleAddToCart({
+                    await handleAddToCart({
                       userId: currentUser.id,
                       items: [{ productId, price: mobile.price, quantity: 1 }],
                       active: true,
@@ -105,9 +114,9 @@ const MobileData = () => {
                 </Button>
                 <Button
                   variant="success"
-                  onClick={() => {
+                  onClick={async () => {
                     if (!requireLogin()) return;
-                    buyNow(mobile);
+                    await buyNow(mobile);
                   }}
                 >
                   <Cart /> Buy Now

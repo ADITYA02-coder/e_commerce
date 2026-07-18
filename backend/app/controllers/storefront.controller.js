@@ -230,3 +230,35 @@ exports.getDeals = async (req, res) => {
     });
   }
 };
+
+exports.getCategories = async (req, res) => {
+  try {
+    const categories = await Product.aggregate([
+      { $match: { active: true } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$category",
+          productCount: { $sum: 1 },
+          image: { $first: "$primaryImage" },
+          lowestPrice: { $min: "$price" }
+        }
+      },
+      { $match: { _id: { $nin: [null, ""] } } },
+      { $sort: { productCount: -1, _id: 1 } }
+    ]);
+
+    return res.send({
+      items: categories.map((category) => ({
+        name: category._id,
+        productCount: category.productCount,
+        image: category.image || "",
+        lowestPrice: toNumber(category.lowestPrice, 0)
+      }))
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: error.message || "Failed to fetch storefront categories"
+    });
+  }
+};

@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { BackToTop } from "../components/BackToTop";
 import { API_URL, getAssetUrl } from "../config/api";
-import { fetchProducts } from "../services/productCache";
+import { searchStorefrontProducts } from "../services/storefront.service";
 import "../styles/Category.css";
 
 const readBuyItems = () => {
@@ -29,17 +29,16 @@ const Category = () => {
   const [selectedItems, setSelectedItems] = useState(readBuyItems);
 
   useEffect(() => {
-    fetchProducts().then(setProducts).catch(() => setProducts([]));
-  }, []);
+    searchStorefrontProducts({ category: categoryName, limit: 60 })
+      .then((result) => setProducts(result.items || []))
+      .catch(() => setProducts([]));
+  }, [categoryName]);
 
   useEffect(() => {
     setFilterBrand(null);
   }, [categoryName]);
 
-  const categoryProducts = useMemo(
-    () => products.filter((product) => product.category === categoryName),
-    [categoryName, products]
-  );
+  const categoryProducts = products;
 
   const brands = useMemo(
     () => [...new Set(categoryProducts.map((product) => product.brand).filter(Boolean))],
@@ -62,12 +61,16 @@ const Category = () => {
     localStorage.setItem("BuyItems", JSON.stringify(updatedItems));
   };
 
-  const handleAddToCart = (item) => {
-    fetch(`${API_URL}/carts`, {
+  const handleAddToCart = async (item) => {
+    const response = await fetch(`${API_URL}/carts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item),
-    }).catch((error) => console.error("Error adding item to cart:", error));
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to add this product to your cart.");
+    }
   };
 
   return (
@@ -141,14 +144,18 @@ const Category = () => {
                       <Button
                         variant="primary"
                         className="category-btn category-btn--primary"
-                        onClick={(event) => {
+                        onClick={async (event) => {
                           event.stopPropagation();
                           if (!requireLogin() || stockValue <= 0) return;
-                          handleAddToCart({
-                            userId: currentUser.id,
-                            items: [{ productId, price: product.price, quantity: 1 }],
-                            active: true,
-                          });
+                          try {
+                            await handleAddToCart({
+                              userId: currentUser.id,
+                              items: [{ productId, price: product.price, quantity: 1 }],
+                              active: true,
+                            });
+                          } catch (error) {
+                            console.error("Error adding item to cart:", error);
+                          }
                         }}
                         disabled={stockValue <= 0}
                       >

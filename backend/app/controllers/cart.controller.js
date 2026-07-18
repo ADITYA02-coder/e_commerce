@@ -10,9 +10,16 @@ exports.create = async (req, res) => {
     return res.status(400).send({ message: "Missing required fields." });
   }
 
-  const { productId, quantity, price } = items[0]; // assume single item for now
+  const invalidItem = items.find(
+    ({ productId, quantity, price }) =>
+      !mongoose.Types.ObjectId.isValid(productId) ||
+      !Number.isFinite(Number(quantity)) ||
+      Number(quantity) <= 0 ||
+      !Number.isFinite(Number(price)) ||
+      Number(price) < 0
+  );
 
-  if (!productId || !quantity || !price) {
+  if (invalidItem) {
     return res.status(400).send({ message: "Missing required item fields." });
   }
 
@@ -20,19 +27,19 @@ exports.create = async (req, res) => {
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      cart = new Cart({
-        userId,
-        items: [{ productId, quantity, price }],
-        active: true
-      });
+      cart = new Cart({ userId, items, active: true });
     } else {
-      const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+      items.forEach(({ productId, quantity, price }) => {
+        const itemIndex = cart.items.findIndex(
+          (item) => item.productId.toString() === String(productId)
+        );
 
-      if (itemIndex > -1) {
-        cart.items[itemIndex].quantity += quantity;
-      } else {
-        cart.items.push({ productId, quantity, price });
-      }
+        if (itemIndex > -1) {
+          cart.items[itemIndex].quantity += Number(quantity);
+        } else {
+          cart.items.push({ productId, quantity, price });
+        }
+      });
     }
 
     const savedCart = await cart.save();

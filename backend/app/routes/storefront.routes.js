@@ -5,6 +5,9 @@ module.exports = (app) => {
   // Amazon-style storefront feed
   router.get("/home", storefront.getHomeFeed);
 
+  // Category discovery cards with live product counts and cover images
+  router.get("/categories", storefront.getCategories);
+
   // Marketplace search with filters, sort, and pagination
   router.get("/search", storefront.searchProducts);
 

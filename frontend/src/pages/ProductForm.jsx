@@ -14,6 +14,9 @@ const ProductForm = () => {
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [brand, setBrand] = useState("");
+  const [description, setDescription] = useState("");
+  const [stock, setStock] = useState("1");
+  const [discount, setDiscount] = useState("0");
   const [image, setImage] = useState(null);
   const [ram, setRam] = useState("");
   const [rom, setRom] = useState("");
@@ -107,6 +110,9 @@ const ProductForm = () => {
     setCategory("");
     setPrice("");
     setBrand("");
+    setDescription("");
+    setStock("1");
+    setDiscount("0");
     setImage(null);
     setRam("");
     setRom("");
@@ -147,6 +153,11 @@ const ProductForm = () => {
       formData.append("category", category);
       formData.append("price", price);
       formData.append("brand", brand);
+      formData.append("description", description);
+      formData.append("stock", stock);
+      formData.append("quantity", stock);
+      formData.append("availability", String(Number(stock) > 0));
+      formData.append("discount", discount);
 
       // Only append file if it exists
       if (image) {
@@ -261,32 +272,35 @@ const ProductForm = () => {
               />
             </Col>
             <Col>
-              <Form.Select
+              <Form.Control
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
+                placeholder="Brand * (e.g., Apple, Nike, LG)"
                 required
-              >
-                <option value="">Select Brand *</option>
-                <option value="google">Google</option>
-                <option value="samsung">Samsung</option>
-                <option value="apple">Apple</option>
-                <option value="motorola">Motorola</option>
-                <option value="nokia">Nokia</option>
-                <option value="iqoo">IQOO</option>
-                <option value="infinix">Infinix</option>
-                <option value="sony">Sony</option>
-                <option value="lava">Lava</option>
-                <option value="poco">Poco</option>
-                <option value="tecno">Tecno</option>
-                <option value="honor">Honor</option>
-                <option value="asus">Asus</option>
-                <option value="oneplus">OnePlus</option>
-                <option value="vivo">Vivo</option>
-                <option value="oppo">Oppo</option>
-                <option value="xiaomi">Xiaomi</option>
-                <option value="realme">Realme</option>
-                <option value="nothing">Nothing</option>
-              </Form.Select>
+              />
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
+            <Col>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Product description (features, size, material, compatibility)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
+            <Col>
+              <Form.Label>Available stock</Form.Label>
+              <Form.Control type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} required />
+            </Col>
+            <Col>
+              <Form.Label>Discount (%)</Form.Label>
+              <Form.Control type="number" min="0" max="90" value={discount} onChange={(e) => setDiscount(e.target.value)} />
             </Col>
           </Row>
 

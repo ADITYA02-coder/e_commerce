@@ -12,6 +12,7 @@ const OrderDetails = lazy(() => import('../pages/OrderDetails'));
 const Error = lazy(() => import('../pages/Error'));
 const MobileData = lazy(() => import('../pages/MobileData'));
 const Category = lazy(() => import('../pages/Category'));
+const Categories = lazy(() => import('../pages/Categories'));
 const Cart = lazy(() => import('../pages/Cart'));
 const ProductForm = lazy(() => import('../pages/ProductForm'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
@@ -49,6 +50,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/orderDetails" element={<OrderDetails />} />
             <Route path="/category/:categoryName" element={<Category />} />
+            <Route path="/categories" element={<Categories />} />
             <Route path="/mobiledata/:id" element={<MobileData />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/viewProducts" element={<ProductListing />} />

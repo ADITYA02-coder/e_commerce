@@ -86,3 +86,13 @@ export const searchStorefrontProducts = async (params = {}) => {
     };
   }
 };
+
+export const fetchStorefrontCategories = async () => {
+  const response = await fetch(`${API_URL}/storefront/categories`);
+  if (!response.ok) {
+    throw new Error(`Category request failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return normalizeItems(data.items);
+};

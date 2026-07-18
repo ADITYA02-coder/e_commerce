@@ -84,6 +84,8 @@ export const Header = () => {
                 <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
               )}
               <NavDropdown title="Category" id="navbarScrollingDropdown">
+                <NavDropdown.Item as={Link} to="/categories">All Categories</NavDropdown.Item>
+                <NavDropdown.Divider />
                 {categories.length ? (
                   categories.map((category) => (
                     <NavDropdown.Item key={category} as={Link} to={`/category/${encodeURIComponent(category)}`}>
@@ -120,6 +122,7 @@ export const Header = () => {
       <div className="header-subnav">
         <Container fluid>
           <div className="header-subnav-links">
+            <Link to="/categories">All Categories</Link>
             <Link to="/product">Today's Deals</Link>
             <Link to="/product">Customer Service</Link>
             <Link to="/seller">Sell</Link>
