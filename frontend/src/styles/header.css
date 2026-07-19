@@ -137,11 +137,18 @@ body, html, #root {
   border-radius: 4px;
   color: #ffffff;
   cursor: pointer;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 6px;
   flex-direction: column;
   line-height: 1.1;
   min-width: 84px;
   padding: 6px 8px;
+}
+
+.header-location svg {
+  grid-row: span 2;
+  margin-top: 4px;
 }
 
 .header-location small {
@@ -192,10 +199,21 @@ body, html, #root {
   min-width: 220px;
 }
 
+.header-search select {
+  background: #f3f3f3;
+  border: 0;
+  border-right: 1px solid #cdcdcd;
+  border-radius: 4px 0 0 4px;
+  color: #111827;
+  height: 42px;
+  max-width: 112px;
+  padding: 0 8px;
+}
+
 .header-search input {
   background: #ffffff;
   border: 0;
-  border-radius: 4px 0 0 4px;
+  border-radius: 0;
   color: var(--text);
   font-size: 0.95rem;
   height: 42px;
@@ -211,8 +229,13 @@ body, html, #root {
   border-radius: 0 4px 4px 0;
   color: #111827;
   font-weight: 700;
-  min-width: 92px;
+  min-width: 54px;
   padding: 0 18px;
+}
+
+.header-search button svg {
+  height: 19px;
+  width: 19px;
 }
 
 .header-search button:hover {
@@ -257,6 +280,9 @@ body, html, #root {
 }
 
 .header-subnav-links a {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
   color: #ffffff;
   font-size: 0.84rem;
   font-weight: 600;

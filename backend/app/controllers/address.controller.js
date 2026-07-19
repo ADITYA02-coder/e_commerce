@@ -2,12 +2,12 @@ const db = require("../models");
 const Address = db.addresses;
 
 exports.create = (req, res) => {
-  if (!req.body.userId) {
-    return res.status(400).send({ message: "Address must include userId." });
+  if (!req.userId) {
+    return res.status(401).send({ message: "Unauthorized" });
   }
 
   const address = new Address({
-    userId: req.body.userId,
+    userId: req.userId,
     addressLine1: req.body.addressLine1,
     addressLine2: req.body.addressLine2,
     city: req.body.city,
@@ -29,7 +29,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  const condition = req.query.userId ? { userId: req.query.userId } : {};
+  const condition = { userId: req.userId };
 
   Address.find(condition)
     .then(data => res.send(data))
@@ -40,50 +40,59 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.findOne = (req, res) => {
-  Address.findById(req.params.id)
-    .then(data => {
-      if (!data) {
-        return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
-      }
+exports.findOne = async (req, res) => {
+  try {
+    const data = await Address.findById(req.params.id);
+    if (!data) {
+      return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
+    }
+    if (String(data.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only access your own addresses" });
+    }
 
-      return res.send(data);
-    })
-    .catch(() => {
-      res.status(500).send({ message: `Error retrieving address with id=${req.params.id}` });
-    });
+    return res.send(data);
+  } catch {
+    return res.status(500).send({ message: `Error retrieving address with id=${req.params.id}` });
+  }
 };
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({ message: "Data to update can not be empty!" });
   }
 
-  Address.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    .then(data => {
-      if (!data) {
-        return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
-      }
+  try {
+    const address = await Address.findById(req.params.id);
+    if (!address) {
+      return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
+    }
+    if (String(address.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only update your own addresses" });
+    }
 
-      return res.send(data);
-    })
-    .catch(() => {
-      res.status(500).send({ message: `Error updating address with id=${req.params.id}` });
-    });
+    delete req.body.userId;
+    const data = await Address.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    return res.send(data);
+  } catch {
+    return res.status(500).send({ message: `Error updating address with id=${req.params.id}` });
+  }
 };
 
-exports.delete = (req, res) => {
-  Address.findByIdAndDelete(req.params.id)
-    .then(data => {
-      if (!data) {
-        return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
-      }
+exports.delete = async (req, res) => {
+  try {
+    const address = await Address.findById(req.params.id);
+    if (!address) {
+      return res.status(404).send({ message: `Address not found with id=${req.params.id}` });
+    }
+    if (String(address.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only delete your own addresses" });
+    }
 
-      return res.send({ message: "Address was deleted successfully!" });
-    })
-    .catch(() => {
-      res.status(500).send({ message: `Could not delete address with id=${req.params.id}` });
-    });
+    await Address.findByIdAndDelete(req.params.id);
+    return res.send({ message: "Address was deleted successfully!" });
+  } catch {
+    return res.status(500).send({ message: `Could not delete address with id=${req.params.id}` });
+  }
 };
 
 exports.deleteAll = (req, res) => {
@@ -99,7 +108,7 @@ exports.deleteAll = (req, res) => {
 };
 
 exports.findAllActive = (req, res) => {
-  Address.find({ active: true })
+  Address.find({ active: true, userId: req.userId })
     .then(data => res.send(data))
     .catch(err => {
       res.status(500).send({

@@ -17,11 +17,11 @@ module.exports = mongoose => {
       },
       currency: {
         type: String,
-        default: "USD"
+        default: "INR"
       },
       paymentMethod: {
         type: String,
-        enum: ["credit_card", "debit_card", "paypal", "stripe", "wallet"],
+        enum: ["credit_card", "debit_card", "net_banking", "upi", "upi_qr", "cod", "wallet"],
         required: true
       },
       transactionId: {
@@ -34,7 +34,10 @@ module.exports = mongoose => {
       },
       details: {
         last4: String,
-        brand: String
+        brand: String,
+        upiId: String,
+        payerName: String,
+        qrReference: String
       }
     },
     { timestamps: true }

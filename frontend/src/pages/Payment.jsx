@@ -1,722 +1,301 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../config/api';
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CheckCircle2, CreditCard, Landmark, QrCode, ShieldCheck, Smartphone, Truck } from "lucide-react";
+import { API_URL } from "../config/api";
+import authHeader from "../services/auth-header";
+import "../styles/Payment.css";
 
-const styles = {
-  wrap: {
-    minHeight: '100vh',
-    background: '#f5f5f5',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '1.5rem',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  },
-  card: {
-    background: '#fff',
-    borderRadius: '16px',
-    border: '1px solid #e5e5e5',
-    padding: '1.75rem',
-    width: '100%',
-    maxWidth: '460px',
-    boxSizing: 'border-box',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '1.5rem',
-    paddingBottom: '1rem',
-    borderBottom: '1px solid #f0f0f0',
-  },
-  headerIcon: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    background: '#EBF4FF',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  headerTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    color: '#111',
-    margin: 0,
-  },
-  headerSub: {
-    fontSize: '12px',
-    color: '#888',
-    margin: '2px 0 0',
-  },
-  amountRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 14px',
-    background: '#f8f9fa',
-    borderRadius: '10px',
-    marginBottom: '1.5rem',
-  },
-  amountLabel: {
-    fontSize: '13px',
-    color: '#666',
-  },
-  amountValue: {
-    fontSize: '20px',
-    fontWeight: 600,
-    color: '#111',
-  },
-  tabRow: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '1.5rem',
-  },
-  tab: (active) => ({
-    flex: 1,
-    padding: '10px 8px',
-    border: active ? '1.5px solid #185FA5' : '1px solid #e0e0e0',
-    borderRadius: '10px',
-    background: active ? '#EBF4FF' : 'transparent',
-    color: active ? '#185FA5' : '#666',
-    fontSize: '13px',
-    fontWeight: active ? 600 : 400,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-    transition: 'all 0.15s',
-  }),
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '14px',
-  },
-  fieldRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-  },
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5px',
-  },
-  label: {
-    fontSize: '12px',
-    fontWeight: 500,
-    color: '#666',
-    letterSpacing: '0.02em',
-  },
-  input: {
-    height: '42px',
-    border: '1px solid #e0e0e0',
-    borderRadius: '10px',
-    padding: '0 12px',
-    fontSize: '14px',
-    color: '#111',
-    background: '#fff',
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box',
-    transition: 'border-color 0.15s, box-shadow 0.15s',
-  },
-  chipRow: {
-    display: 'flex',
-    gap: '6px',
-    marginTop: '4px',
-  },
-  chip: {
-    height: '26px',
-    padding: '0 10px',
-    border: '1px solid #e0e0e0',
-    borderRadius: '999px',
-    fontSize: '11px',
-    color: '#555',
-    background: 'transparent',
-    cursor: 'pointer',
-  },
-  upiRow: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'flex-end',
-  },
-  verifyBtn: {
-    height: '42px',
-    padding: '0 16px',
-    border: '1px solid #e0e0e0',
-    borderRadius: '10px',
-    background: 'transparent',
-    fontSize: '13px',
-    color: '#444',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    flexShrink: 0,
-  },
-  dividerRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    margin: '4px 0',
-  },
-  dividerLine: {
-    flex: 1,
-    height: '1px',
-    background: '#f0f0f0',
-  },
-  dividerText: {
-    fontSize: '12px',
-    color: '#aaa',
-  },
-  qrArea: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '20px',
-    background: '#f8f9fa',
-    borderRadius: '12px',
-  },
-  qrBox: {
-    width: '160px',
-    height: '160px',
-    background: '#fff',
-    border: '1px solid #e0e0e0',
-    borderRadius: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px',
-    boxSizing: 'border-box',
-  },
-  qrLabel: {
-    fontSize: '12px',
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 1.6,
-    margin: 0,
-  },
-  appChipsRow: {
-    display: 'flex',
-    gap: '6px',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  appChip: {
-    padding: '4px 10px',
-    border: '1px solid #e0e0e0',
-    borderRadius: '999px',
-    fontSize: '11px',
-    color: '#555',
-    background: '#fff',
-  },
-  verifiedBox: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '10px 12px',
-    background: '#EDFAF4',
-    borderRadius: '10px',
-    border: '1px solid #A3E6C8',
-  },
-  verifiedName: {
-    fontSize: '13px',
-    fontWeight: 600,
-    color: '#0F6E56',
-    margin: 0,
-  },
-  verifiedId: {
-    fontSize: '11px',
-    color: '#3a9e7e',
-    margin: '2px 0 0',
-  },
-  verifiedBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '4px',
-    padding: '3px 10px',
-    borderRadius: '999px',
-    background: '#C5F0DF',
-    color: '#0F6E56',
-    fontSize: '11px',
-    fontWeight: 600,
-  },
-  errorBox: {
-    padding: '10px 12px',
-    background: '#FEF2F2',
-    borderRadius: '10px',
-    border: '1px solid #FECACA',
-    fontSize: '13px',
-    color: '#B91C1C',
-  },
-  payBtn: (processing, success) => ({
-    width: '100%',
-    height: '46px',
-    borderRadius: '12px',
-    background: success ? '#0F6E56' : '#185FA5',
-    border: 'none',
-    color: '#fff',
-    fontSize: '15px',
-    fontWeight: 600,
-    cursor: processing ? 'not-allowed' : 'pointer',
-    marginTop: '1.25rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    opacity: processing ? 0.75 : 1,
-    transition: 'background 0.3s, opacity 0.15s',
-  }),
-  secureNote: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '5px',
-    marginTop: '10px',
-    fontSize: '11px',
-    color: '#aaa',
-  },
-};
+const paymentOptions = [
+  { id: "debit_card", label: "Credit or debit card", icon: CreditCard },
+  { id: "upi", label: "UPI ID", icon: Smartphone },
+  { id: "upi_qr", label: "Scan QR code", icon: QrCode },
+  { id: "net_banking", label: "Net banking", icon: Landmark },
+  { id: "cod", label: "Cash on delivery", icon: Truck }
+];
 
-// QR Code SVG (static UPI QR pattern)
-const QRCode = () => (
-  <svg viewBox="0 0 144 144" width="144" height="144" xmlns="http://www.w3.org/2000/svg">
-    <rect width="144" height="144" fill="white" />
-    <g fill="#111">
-      {/* Finder top-left */}
-      <rect x="4" y="4" width="52" height="52" rx="2" />
-      <rect x="8" y="8" width="44" height="44" rx="1" fill="white" />
-      <rect x="14" y="14" width="32" height="32" rx="1" />
-      <rect x="18" y="18" width="8" height="8" fill="white" />
-      {/* Finder top-right */}
-      <rect x="88" y="4" width="52" height="52" rx="2" />
-      <rect x="92" y="8" width="44" height="44" rx="1" fill="white" />
-      <rect x="98" y="14" width="32" height="32" rx="1" />
-      <rect x="102" y="18" width="8" height="8" fill="white" />
-      {/* Finder bottom-left */}
-      <rect x="4" y="88" width="52" height="52" rx="2" />
-      <rect x="8" y="92" width="44" height="44" rx="1" fill="white" />
-      <rect x="14" y="98" width="32" height="32" rx="1" />
-      <rect x="18" y="102" width="8" height="8" fill="white" />
-      {/* Data modules */}
-      <rect x="62" y="4" width="8" height="8" /><rect x="74" y="4" width="8" height="8" />
-      <rect x="62" y="16" width="8" height="8" /><rect x="74" y="16" width="8" height="8" />
-      <rect x="62" y="28" width="8" height="8" />
-      <rect x="62" y="40" width="8" height="8" /><rect x="74" y="40" width="8" height="8" />
-      <rect x="62" y="52" width="8" height="8" /><rect x="74" y="52" width="8" height="8" />
-      <rect x="62" y="64" width="8" height="8" /><rect x="74" y="64" width="8" height="8" />
-      <rect x="4" y="62" width="8" height="8" /><rect x="16" y="62" width="8" height="8" />
-      <rect x="28" y="62" width="8" height="8" /><rect x="40" y="62" width="8" height="8" />
-      <rect x="52" y="62" width="8" height="8" />
-      <rect x="4" y="74" width="8" height="8" /><rect x="16" y="74" width="8" height="8" />
-      <rect x="40" y="74" width="8" height="8" />
-      <rect x="4" y="86" width="8" height="8" /><rect x="28" y="86" width="8" height="8" />
-      <rect x="40" y="86" width="8" height="8" /><rect x="52" y="86" width="8" height="8" />
-      <rect x="88" y="62" width="8" height="8" /><rect x="100" y="62" width="8" height="8" />
-      <rect x="112" y="62" width="8" height="8" /><rect x="124" y="62" width="8" height="8" />
-      <rect x="136" y="62" width="8" height="8" />
-      <rect x="88" y="74" width="8" height="8" /><rect x="112" y="74" width="8" height="8" />
-      <rect x="124" y="74" width="8" height="8" /><rect x="136" y="74" width="8" height="8" />
-      <rect x="88" y="86" width="8" height="8" /><rect x="100" y="86" width="8" height="8" />
-      <rect x="112" y="86" width="8" height="8" /><rect x="136" y="86" width="8" height="8" />
-      <rect x="62" y="88" width="8" height="8" /><rect x="74" y="88" width="8" height="8" />
-      <rect x="62" y="100" width="8" height="8" />
-      <rect x="74" y="112" width="8" height="8" />
-      <rect x="62" y="124" width="8" height="8" /><rect x="74" y="124" width="8" height="8" />
-      <rect x="62" y="136" width="8" height="8" /><rect x="74" y="136" width="8" height="8" />
-      <rect x="88" y="100" width="8" height="8" /><rect x="100" y="100" width="8" height="8" />
-      <rect x="112" y="100" width="8" height="8" /><rect x="124" y="100" width="8" height="8" />
-      <rect x="136" y="100" width="8" height="8" />
-      <rect x="88" y="112" width="8" height="8" /><rect x="100" y="112" width="8" height="8" />
-      <rect x="124" y="112" width="8" height="8" />
-      <rect x="88" y="124" width="8" height="8" /><rect x="112" y="124" width="8" height="8" />
-      <rect x="124" y="124" width="8" height="8" /><rect x="136" y="124" width="8" height="8" />
-      <rect x="100" y="136" width="8" height="8" /><rect x="112" y="136" width="8" height="8" />
-      <rect x="136" y="136" width="8" height="8" />
-    </g>
+const QRPattern = () => (
+  <svg viewBox="0 0 120 120" aria-label="UPI QR code">
+    <rect width="120" height="120" fill="#fff" />
+    <path d="M8 8h30v30H8zM82 8h30v30H82zM8 82h30v30H8z" fill="#111" />
+    <path d="M14 14h18v18H14zM88 14h18v18H88zM14 88h18v18H14z" fill="#fff" />
+    <path d="M20 20h6v6h-6zM94 20h6v6h-6zM20 94h6v6h-6zM46 10h8v8h-8zM62 10h8v8h-8zM46 26h8v8h-8zM62 34h8v8h-8zM46 50h8v8h-8zM62 50h8v8h-8zM78 50h8v8h-8zM94 50h8v8h-8zM110 50h8v8h-8zM10 50h8v8h-8zM26 50h8v8h-8zM42 66h8v8h-8zM58 66h8v8h-8zM74 66h8v8h-8zM90 66h8v8h-8zM106 66h8v8h-8zM50 82h8v8h-8zM66 82h8v8h-8zM82 82h8v8h-8zM98 82h8v8h-8zM50 98h8v8h-8zM66 106h8v8h-8zM82 98h8v8h-8zM106 98h8v8h-8z" fill="#111" />
   </svg>
 );
 
 const Payment = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState('debit');
-  const [isCompact, setIsCompact] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 576 : false));
-  const pendingOrderId = localStorage.getItem('pendingOrderId') || '';
-  const pendingOrderAmount = Number(localStorage.getItem('pendingOrderAmount') || 0);
-  const checkoutCartId = localStorage.getItem('checkoutCartId') || '';
-  const payableAmount = pendingOrderAmount > 0 ? pendingOrderAmount : 1499;
+  const pendingOrderId = localStorage.getItem("pendingOrderId") || "";
+  const pendingOrderAmount = Number(localStorage.getItem("pendingOrderAmount") || 0);
+  const checkoutCartId = localStorage.getItem("checkoutCartId") || "";
+  const payableAmount = pendingOrderAmount > 0 ? pendingOrderAmount : 0;
 
-  // Debit card fields
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
-
-  // UPI fields
-  const [upiId, setUpiId] = useState('');
-  const [upiStatus, setUpiStatus] = useState(null); // null | 'verifying' | 'verified' | 'error'
-  const [upiName, setUpiName] = useState('');
-
-  // Submit state
+  const [method, setMethod] = useState("debit_card");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [bank, setBank] = useState("State Bank of India");
+  const [status, setStatus] = useState({ type: "", message: "" });
   const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
 
-  // Input focus state
-  const [focusedInput, setFocusedInput] = useState(null);
+  const selectedOption = useMemo(
+    () => paymentOptions.find((option) => option.id === method) || paymentOptions[0],
+    [method]
+  );
 
-  useEffect(() => {
-    const updateViewport = () => {
-      setIsCompact(window.innerWidth <= 576);
-    };
+  const formatCardNumber = (value) =>
+    value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
 
-    updateViewport();
-    window.addEventListener('resize', updateViewport);
-    return () => window.removeEventListener('resize', updateViewport);
-  }, []);
-
-  const formatCardNumber = (val) => {
-    const digits = val.replace(/\D/g, '').substring(0, 16);
-    return digits.replace(/(.{4})/g, '$1 ').trim();
-  };
-
-  const formatExpiry = (val) => {
-    const digits = val.replace(/\D/g, '').substring(0, 4);
-    if (digits.length >= 2) return digits.substring(0, 2) + ' / ' + digits.substring(2);
-    return digits;
+  const formatExpiry = (value) => {
+    const digits = value.replace(/\D/g, "").slice(0, 4);
+    return digits.length > 2 ? `${digits.slice(0, 2)} / ${digits.slice(2)}` : digits;
   };
 
   const getCardBrand = () => {
-    const d = cardNumber.replace(/\s/g, '');
-    if (d.startsWith('4')) return 'VISA';
-    if (d.startsWith('5')) return 'MC';
-    if (d.startsWith('6')) return 'RuPay';
-    return '';
+    const digits = cardNumber.replace(/\s/g, "");
+    if (digits.startsWith("4")) return "VISA";
+    if (digits.startsWith("5")) return "Mastercard";
+    if (digits.startsWith("6")) return "RuPay";
+    return "Card";
   };
 
-  const verifyUpi = () => {
-    if (!upiId || !upiId.includes('@')) {
-      setUpiStatus('error');
+  const validatePayment = () => {
+    if (!pendingOrderId || payableAmount <= 0) {
+      return "No pending order found. Please place an order again.";
+    }
+
+    if (method === "debit_card") {
+      if (cardNumber.replace(/\s/g, "").length < 16 || !cardName.trim() || expiry.length < 7 || cvv.length < 3) {
+        return "Enter complete card details to continue.";
+      }
+    }
+
+    if (method === "upi" && !/^[\w.-]+@[\w.-]+$/.test(upiId.trim())) {
+      return "Enter a valid UPI ID, for example name@upi.";
+    }
+
+    return "";
+  };
+
+  const clearCheckoutState = async () => {
+    if (checkoutCartId) {
+      await fetch(`${API_URL}/carts/${checkoutCartId}`, {
+        method: "DELETE",
+        headers: authHeader()
+      }).catch(() => {});
+    }
+
+    localStorage.removeItem("pendingOrderId");
+    localStorage.removeItem("pendingOrderAmount");
+    localStorage.removeItem("checkoutCartId");
+  };
+
+  const handlePayment = async () => {
+    const validationError = validatePayment();
+    if (validationError) {
+      setStatus({ type: "error", message: validationError });
       return;
     }
-    setUpiStatus('verifying');
-    setTimeout(() => {
-      const name = upiId.split('@')[0]
-        .replace(/[._]/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase());
-      setUpiName(name);
-      setUpiStatus('verified');
-    }, 1200);
-  };
 
-  const handlePay = () => {
     setProcessing(true);
-    const finalizePayment = async () => {
-      try {
-        if (pendingOrderId) {
-          await fetch(`${API_URL}/orders/${pendingOrderId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentStatus: 'paid', orderStatus: 'processing' }),
-          });
-        }
+    setStatus({ type: "info", message: method === "cod" ? "Placing cash on delivery order..." : "Processing secure payment..." });
 
-        if (checkoutCartId) {
-          await fetch(`${API_URL}/carts/${checkoutCartId}`, { method: 'DELETE' });
-        }
+    try {
+      const paymentDetails = {
+        last4: cardNumber.replace(/\s/g, "").slice(-4),
+        brand: method === "debit_card" ? getCardBrand() : undefined,
+        upiId: method === "upi" ? upiId.trim() : undefined,
+        payerName: method === "upi" ? upiId.split("@")[0] : undefined,
+        qrReference: method === "upi_qr" ? `QR-${pendingOrderId}` : undefined,
+        bank: method === "net_banking" ? bank : undefined
+      };
 
-        localStorage.removeItem('pendingOrderId');
-        localStorage.removeItem('pendingOrderAmount');
-        localStorage.removeItem('checkoutCartId');
+      const createResponse = await fetch(`${API_URL}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader() },
+        body: JSON.stringify({
+          orderId: pendingOrderId,
+          amount: payableAmount,
+          currency: "INR",
+          paymentMethod: method,
+          status: method === "cod" ? "pending" : "completed",
+          details: paymentDetails
+        })
+      });
 
-        setProcessing(false);
-        setSuccess(true);
-        setTimeout(() => {
-          navigate('/order');
-        }, 1200);
-      } catch (error) {
-        setProcessing(false);
+      if (!createResponse.ok) {
+        const error = await createResponse.json().catch(() => ({}));
+        throw new Error(error.message || "Unable to process payment.");
       }
-    };
 
-    setTimeout(finalizePayment, 1300);
+      const payment = await createResponse.json();
+      await clearCheckoutState();
+
+      setStatus({
+        type: "success",
+        message:
+          method === "cod"
+            ? "Order placed with Cash on Delivery. Payment status is pending until delivery."
+            : `Payment successful. Transaction ID: ${payment.transactionId || payment.paymentId}`
+      });
+
+      setTimeout(() => navigate("/order"), 1300);
+    } catch (error) {
+      setStatus({ type: "error", message: error.message || "Payment failed. Please try again." });
+    } finally {
+      setProcessing(false);
+    }
   };
 
-  const inputStyle = (id) => ({
-    ...styles.input,
-    borderColor: focusedInput === id ? '#185FA5' : '#e0e0e0',
-    boxShadow: focusedInput === id ? '0 0 0 3px rgba(24,95,165,0.1)' : 'none',
-  });
-
-  const wrapStyle = {
-    ...styles.wrap,
-    alignItems: isCompact ? 'flex-start' : 'center',
-    padding: isCompact ? '1rem' : '1.5rem',
-  };
-
-  const cardStyle = {
-    ...styles.card,
-    padding: isCompact ? '1.25rem' : '1.75rem',
-    borderRadius: isCompact ? '14px' : '16px',
-    maxWidth: isCompact ? '100%' : '460px',
-  };
-
-  const headerStyle = {
-    ...styles.header,
-    gap: isCompact ? '10px' : '12px',
-    marginBottom: isCompact ? '1rem' : '1.5rem',
-  };
-
-  const amountRowStyle = {
-    ...styles.amountRow,
-    flexDirection: isCompact ? 'column' : 'row',
-    alignItems: isCompact ? 'flex-start' : 'center',
-    gap: isCompact ? '4px' : '0',
-  };
-
-  const tabRowStyle = {
-    ...styles.tabRow,
-    flexDirection: isCompact ? 'column' : 'row',
-  };
-
-  const tabStyle = (active) => ({
-    ...styles.tab(active),
-    width: isCompact ? '100%' : 'auto',
-  });
-
-  const fieldRowStyle = {
-    ...styles.fieldRow,
-    gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr',
-  };
-
-  const upiRowStyle = {
-    ...styles.upiRow,
-    flexDirection: isCompact ? 'column' : 'row',
-    alignItems: isCompact ? 'stretch' : 'flex-end',
-  };
-
-  const verifyBtnStyle = {
-    ...styles.verifyBtn,
-    width: isCompact ? '100%' : 'auto',
-  };
-
-  const qrBoxStyle = {
-    ...styles.qrBox,
-    width: isCompact ? '132px' : '160px',
-    height: isCompact ? '132px' : '160px',
-  };
-
-  const payBtnStyle = {
-    ...styles.payBtn(processing, success),
-    height: isCompact ? '48px' : '46px',
-  };
-
-  const amountValueStyle = {
-    ...styles.amountValue,
-    fontSize: isCompact ? '18px' : '20px',
-  };
-
-  const btnLabel = success
-    ? '✓ Payment successful!'
-    : processing
-    ? 'Processing…'
-    : tab === 'upi' && upiStatus === 'verified'
-    ? `Pay ₹${payableAmount.toFixed(2)} via UPI`
-    : `Pay ₹${payableAmount.toFixed(2)}`;
+  const SelectedIcon = selectedOption.icon;
 
   return (
-    <div style={wrapStyle}>
-      <div style={cardStyle}>
-        {/* Header */}
-        <div style={headerStyle}>
-          <div style={styles.headerIcon}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#185FA5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </div>
+    <div className="payment-page">
+      <div className="payment-shell">
+        <header className="payment-header">
           <div>
-            <p style={styles.headerTitle}>Secure checkout</p>
-            <p style={styles.headerSub}>256-bit SSL encrypted</p>
+            <span>Checkout</span>
+            <h1>Select a payment method</h1>
           </div>
-        </div>
-
-        {/* Amount */}
-        <div style={amountRowStyle}>
-          <span style={styles.amountLabel}>Order total</span>
-          <span style={amountValueStyle}>₹{payableAmount.toFixed(2)}</span>
-        </div>
-
-        {/* Tabs */}
-        <div style={tabRowStyle}>
-          <button type="button" style={tabStyle(tab === 'debit')} onClick={() => setTab('debit')}>
-            💳 Debit card
-          </button>
-          <button type="button" style={tabStyle(tab === 'upi')} onClick={() => setTab('upi')}>
-            📱 UPI
-          </button>
-        </div>
-
-        {/* Debit Card Panel */}
-        {tab === 'debit' && (
-          <div style={styles.fieldGroup}>
-            <div style={styles.field}>
-              <label style={styles.label}>Card number</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  style={{ ...inputStyle('card'), paddingRight: '52px' }}
-                  type="text"
-                  placeholder="0000  0000  0000  0000"
-                  value={cardNumber}
-                  maxLength={19}
-                  onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                  onFocus={() => setFocusedInput('card')}
-                  onBlur={() => setFocusedInput(null)}
-                />
-                {getCardBrand() && (
-                  <span style={{
-                    position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                    fontSize: '10px', fontWeight: 700, color: '#185FA5', background: '#EBF4FF',
-                    padding: '2px 6px', borderRadius: '4px',
-                  }}>
-                    {getCardBrand()}
-                  </span>
-                )}
-              </div>
-              <div style={styles.chipRow}>
-                <button style={styles.chip} onClick={() => setCardNumber('4111 1111 1111 1111')}>Demo Visa</button>
-                <button style={styles.chip} onClick={() => setCardNumber('5500 0000 0000 0004')}>Demo MC</button>
-              </div>
-            </div>
-
-            <div style={styles.field}>
-              <label style={styles.label}>Cardholder name</label>
-              <input
-                style={inputStyle('name')}
-                type="text"
-                placeholder="As printed on card"
-                value={cardHolder}
-                onChange={(e) => setCardHolder(e.target.value)}
-                onFocus={() => setFocusedInput('name')}
-                onBlur={() => setFocusedInput(null)}
-              />
-            </div>
-
-            <div style={fieldRowStyle}>
-              <div style={styles.field}>
-                <label style={styles.label}>Expiry date</label>
-                <input
-                  style={inputStyle('expiry')}
-                  type="text"
-                  placeholder="MM / YY"
-                  value={expiry}
-                  maxLength={7}
-                  onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                  onFocus={() => setFocusedInput('expiry')}
-                  onBlur={() => setFocusedInput(null)}
-                />
-              </div>
-              <div style={styles.field}>
-                <label style={styles.label}>CVC</label>
-                <input
-                  style={inputStyle('cvc')}
-                  type="password"
-                  placeholder="•••"
-                  value={cvc}
-                  maxLength={4}
-                  onChange={(e) => setCvc(e.target.value)}
-                  onFocus={() => setFocusedInput('cvc')}
-                  onBlur={() => setFocusedInput(null)}
-                />
-              </div>
-            </div>
+          <div className="payment-secure">
+            <ShieldCheck size={18} />
+            Secure payment
           </div>
-        )}
+        </header>
 
-        {/* UPI Panel */}
-        {tab === 'upi' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={upiRowStyle}>
-              <div style={{ ...styles.field, flex: 1 }}>
-                <label style={styles.label}>UPI ID</label>
-                <input
-                  style={inputStyle('upi')}
-                  type="text"
-                  placeholder="yourname@upi"
-                  value={upiId}
-                  onChange={(e) => { setUpiId(e.target.value); setUpiStatus(null); }}
-                  onFocus={() => setFocusedInput('upi')}
-                  onBlur={() => setFocusedInput(null)}
-                />
-              </div>
-              <button type="button" style={verifyBtnStyle} onClick={verifyUpi}>Verify</button>
+        <div className="payment-grid">
+          <section className="payment-methods">
+            <div className="payment-step">
+              <strong>1</strong>
+              <span>Payment method</span>
             </div>
 
-            {upiStatus === 'error' && (
-              <div style={styles.errorBox}>
-                ⚠ Enter a valid UPI ID (e.g. name@upi)
+            <div className="payment-option-list">
+              {paymentOptions.map((option) => {
+                const Icon = option.icon;
+                return (
+                  <button
+                    type="button"
+                    className={`payment-option ${method === option.id ? "is-active" : ""}`}
+                    onClick={() => setMethod(option.id)}
+                    key={option.id}
+                  >
+                    <Icon size={19} />
+                    <span>{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="payment-panel">
+              <div className="payment-panel__title">
+                <SelectedIcon size={20} />
+                <h2>{selectedOption.label}</h2>
               </div>
-            )}
-            {upiStatus === 'verifying' && (
-              <div style={{ ...styles.errorBox, background: '#f8f9fa', border: '1px solid #e0e0e0', color: '#666' }}>
-                Verifying…
-              </div>
-            )}
-            {upiStatus === 'verified' && (
-              <div style={styles.verifiedBox}>
-                <div>
-                  <p style={styles.verifiedName}>{upiName}</p>
-                  <p style={styles.verifiedId}>{upiId}</p>
+
+              {method === "debit_card" && (
+                <div className="payment-fields">
+                  <label>
+                    Card number
+                    <input value={cardNumber} onChange={(event) => setCardNumber(formatCardNumber(event.target.value))} placeholder="0000 0000 0000 0000" />
+                  </label>
+                  <label>
+                    Name on card
+                    <input value={cardName} onChange={(event) => setCardName(event.target.value)} placeholder="As printed on card" />
+                  </label>
+                  <div className="payment-field-row">
+                    <label>
+                      Expiry
+                      <input value={expiry} onChange={(event) => setExpiry(formatExpiry(event.target.value))} placeholder="MM / YY" />
+                    </label>
+                    <label>
+                      CVV
+                      <input value={cvv} onChange={(event) => setCvv(event.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="123" type="password" />
+                    </label>
+                  </div>
+                  <div className="payment-card-brand">{getCardBrand()} accepted</div>
                 </div>
-                <span style={styles.verifiedBadge}>✓ Verified</span>
-              </div>
-            )}
+              )}
 
-            <div style={styles.dividerRow}>
-              <div style={styles.dividerLine} />
-              <span style={styles.dividerText}>or scan QR code</span>
-              <div style={styles.dividerLine} />
+              {method === "upi" && (
+                <div className="payment-fields">
+                  <label>
+                    UPI ID
+                    <input value={upiId} onChange={(event) => setUpiId(event.target.value)} placeholder="yourname@upi" />
+                  </label>
+                  <div className="payment-help">Works with BHIM, GPay, PhonePe, Paytm, and other UPI apps.</div>
+                </div>
+              )}
+
+              {method === "upi_qr" && (
+                <div className="payment-qr-box">
+                  <QRPattern />
+                  <p>Scan this QR code using any UPI app and approve the payment for Rs. {payableAmount.toLocaleString("en-IN")}.</p>
+                </div>
+              )}
+
+              {method === "net_banking" && (
+                <div className="payment-fields">
+                  <label>
+                    Select bank
+                    <select value={bank} onChange={(event) => setBank(event.target.value)}>
+                      <option>State Bank of India</option>
+                      <option>HDFC Bank</option>
+                      <option>ICICI Bank</option>
+                      <option>Axis Bank</option>
+                      <option>Kotak Mahindra Bank</option>
+                    </select>
+                  </label>
+                  <div className="payment-help">You will be redirected to your bank to authorize the payment.</div>
+                </div>
+              )}
+
+              {method === "cod" && (
+                <div className="payment-cod">
+                  <Truck size={26} />
+                  <div>
+                    <strong>Pay with cash when your order is delivered.</strong>
+                    <p>Payment status will remain pending until delivery collection is confirmed.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <aside className="payment-summary">
+            <div className="payment-step">
+              <strong>2</strong>
+              <span>Order summary</span>
+            </div>
+            <div className="summary-row">
+              <span>Items total</span>
+              <strong>Rs. {payableAmount.toLocaleString("en-IN")}</strong>
+            </div>
+            <div className="summary-row">
+              <span>Delivery</span>
+              <strong>FREE</strong>
+            </div>
+            <div className="summary-total">
+              <span>Order total</span>
+              <strong>Rs. {payableAmount.toLocaleString("en-IN")}</strong>
             </div>
 
-            <div style={styles.qrArea}>
-              <div style={qrBoxStyle}>
-                <QRCode />
+            {status.message ? (
+              <div className={`payment-status payment-status--${status.type}`}>
+                {status.type === "success" ? <CheckCircle2 size={18} /> : null}
+                <span>{status.message}</span>
               </div>
-              <p style={styles.qrLabel}>
-                Open any UPI app, tap "Scan QR"<br />
-                and pay ₹{payableAmount.toFixed(2)}
-              </p>
-              <div style={styles.appChipsRow}>
-                {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => (
-                  <span key={app} style={styles.appChip}>{app}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+            ) : null}
 
-        {/* Pay Button */}
-        <button
-          style={payBtnStyle}
-          onClick={handlePay}
-          disabled={processing || success}
-        >
-          {!processing && !success && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          )}
-          {btnLabel}
-        </button>
+            <button type="button" className="payment-place-order" onClick={handlePayment} disabled={processing}>
+              {processing ? "Processing..." : method === "cod" ? "Place your order" : `Pay Rs. ${payableAmount.toLocaleString("en-IN")}`}
+            </button>
 
-        {/* Secure note */}
-        <div style={styles.secureNote}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          Secured by Razorpay · PCI DSS compliant
+            <p className="payment-note">
+              By placing your order, you agree that the payment status will be saved against this order.
+            </p>
+          </aside>
         </div>
       </div>
     </div>

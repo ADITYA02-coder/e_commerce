@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 // const Product = require("../models/product.model");
 // Create or update Cart (add items)
 exports.create = async (req, res) => {
-  const { userId, items } = req.body;
+  const { items } = req.body;
+  const userId = req.userId;
 
   if (!userId || !items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).send({ message: "Missing required fields." });
@@ -63,17 +64,19 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single cart by ID
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
 
-  Cart.findById(id)
-    .then(data => {
-      if (!data) res.status(404).send({ message: `Cart not found with id=${id}` });
-      else res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({ message: "Error retrieving cart with id=" + id });
-    });
+  try {
+    const data = await Cart.findById(id);
+    if (!data) return res.status(404).send({ message: `Cart not found with id=${id}` });
+    if (String(data.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only access your own cart" });
+    }
+    return res.send(data);
+  } catch (err) {
+    return res.status(500).send({ message: "Error retrieving cart with id=" + id });
+  }
 };
 
 
@@ -83,6 +86,10 @@ const Product = require("../models/product.model"); // adjust path as needed
 
 exports.findByUserId = async (req, res) => {
   const userId = req.params.userId;
+
+  if (String(userId) !== String(req.userId)) {
+    return res.status(403).send({ message: "You can only access your own cart" });
+  }
 
   // Validate userId format
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -130,37 +137,41 @@ exports.findByUserId = async (req, res) => {
 };
 
 // Update a cart
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
 
-  Cart.findByIdAndUpdate(id, req.body, { new: true })
-    .then(data => {
-      if (!data) {
-        res.status(404).send({ message: `Cannot update cart with id=${id}. Not found!` });
-      } else {
-        res.send(data);
-      }
-    })
-    .catch(err => {
-      res.status(500).send({ message: "Error updating cart with id=" + id });
-    });
+  try {
+    const cart = await Cart.findById(id);
+    if (!cart) {
+      return res.status(404).send({ message: `Cannot update cart with id=${id}. Not found!` });
+    }
+    if (String(cart.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only update your own cart" });
+    }
+    const data = await Cart.findByIdAndUpdate(id, req.body, { new: true });
+    return res.send(data);
+  } catch (err) {
+    return res.status(500).send({ message: "Error updating cart with id=" + id });
+  }
 };
 
 // Delete a cart
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
 
-  Cart.findByIdAndDelete(id)
-    .then(data => {
-      if (!data) {
-        res.status(404).send({ message: `Cannot delete cart with id=${id}. Not found!` });
-      } else {
-        res.send({ message: "Cart was deleted successfully!" });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({ message: "Could not delete cart with id=" + id });
-    });
+  try {
+    const cart = await Cart.findById(id);
+    if (!cart) {
+      return res.status(404).send({ message: `Cannot delete cart with id=${id}. Not found!` });
+    }
+    if (String(cart.userId) !== String(req.userId)) {
+      return res.status(403).send({ message: "You can only delete your own cart" });
+    }
+    await Cart.findByIdAndDelete(id);
+    return res.send({ message: "Cart was deleted successfully!" });
+  } catch (err) {
+    return res.status(500).send({ message: "Could not delete cart with id=" + id });
+  }
 };
 
 // Delete all carts

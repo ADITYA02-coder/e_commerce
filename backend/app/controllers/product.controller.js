@@ -22,6 +22,13 @@ const parseAttributes = (value) => {
   }
 };
 
+const normalizeCategoryKey = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || "general";
+
 const cleanAttributes = (attributes) =>
   Object.entries(attributes || {}).reduce((acc, [key, value]) => {
     const cleanKey = String(key || "").trim();
@@ -119,6 +126,32 @@ const canCreateProducts = async (req, res) => {
   req.seller = seller;
   return { allowed: true };
 };
+
+const canManageProduct = async (req, res, product) => {
+  const roles = await getUserRoles(req.userId);
+
+  if (roles.includes("admin")) {
+    return true;
+  }
+
+  if (!roles.includes("seller")) {
+    res.status(403).send({ message: "Seller role required" });
+    return false;
+  }
+
+  const seller = await Seller.findOne({ user: req.userId });
+  if (!seller?.isApproved || seller.verificationStatus !== "approved") {
+    res.status(403).send({ message: "Seller approval required" });
+    return false;
+  }
+
+  if (String(product.userId || "") !== String(req.userId)) {
+    res.status(403).send({ message: "You can only manage your own products" });
+    return false;
+  }
+
+  return true;
+};
 // Create and Save a new Product
 // exports.create = (req, res) => {
 //   // Validate request
@@ -197,7 +230,7 @@ exports.create = async (req, res) => {
       bulletPoints: parseList(req.body.bulletPoints),
       searchKeywords: parseList(req.body.searchKeywords),
       category: categoryName,
-      productType: req.body.productType || categoryName,
+      productType: normalizeCategoryKey(req.body.productType || categoryName),
       price: req.body.price,
       brand: req.body.brand,
       condition: req.body.condition || "New",
@@ -258,10 +291,35 @@ exports.findMyProducts = async (req, res) => {
 
 // Retrieve all products from the database.
 exports.findAll = (req, res) => {
-  const name = req.query.name;
-  var condition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
+  const query = String(req.query.q || req.query.name || "").trim();
+  const category = String(req.query.category || "").trim();
+  const brand = String(req.query.brand || "").trim();
+  const condition = {};
+
+  if (query) {
+    const safeQuery = escapeRegex(query);
+    condition.$or = [
+      { name: { $regex: safeQuery, $options: "i" } },
+      { brand: { $regex: safeQuery, $options: "i" } },
+      { category: { $regex: safeQuery, $options: "i" } },
+      { description: { $regex: safeQuery, $options: "i" } },
+      { searchKeywords: { $elemMatch: { $regex: safeQuery, $options: "i" } } },
+      { "attributes.model": { $regex: safeQuery, $options: "i" } },
+      { "attributes.material": { $regex: safeQuery, $options: "i" } },
+      { "attributes.author": { $regex: safeQuery, $options: "i" } }
+    ];
+  }
+
+  if (category) {
+    condition.category = { $regex: `^${escapeRegex(category)}$`, $options: "i" };
+  }
+
+  if (brand) {
+    condition.brand = { $regex: `^${escapeRegex(brand)}$`, $options: "i" };
+  }
 
   Product.find(condition)
+    .sort({ createdAt: -1 })
     .then(data => {
       res.send(data);
     })
@@ -291,7 +349,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Product by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!"
@@ -300,42 +358,53 @@ exports.update = (req, res) => {
 
   const id = req.params.id;
 
-  Product.findByIdAndUpdate(id, req.body)
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot update Product with id=${id}. Maybe Product was not found!`
-        });
-      } else res.send({ message: "Product was updated successfully." });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Product with id=" + id
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).send({
+        message: `Cannot update Product with id=${id}. Maybe Product was not found!`
       });
+    }
+
+    const allowed = await canManageProduct(req, res, product);
+    if (!allowed) return;
+
+    const forbiddenFields = ["_id", "id", "userId", "createdAt", "updatedAt"];
+    forbiddenFields.forEach((field) => delete req.body[field]);
+
+    const data = await Product.findByIdAndUpdate(id, req.body, { new: true });
+    return res.send(data);
+  } catch (err) {
+    return res.status(500).send({
+      message: "Error updating Product with id=" + id
     });
+  }
 };
 
 // Delete a Product with the specified id in the request
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
 
-  Product.findByIdAndDelete(id)
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot delete Product with id=${id}. Maybe Product was not found!`
-        });
-      } else {
-        res.send({
-          message: "Product was deleted successfully!"
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete Product with id=" + id
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).send({
+        message: `Cannot delete Product with id=${id}. Maybe Product was not found!`
       });
+    }
+
+    const allowed = await canManageProduct(req, res, product);
+    if (!allowed) return;
+
+    await Product.findByIdAndDelete(id);
+    return res.send({
+      message: "Product was deleted successfully!"
     });
+  } catch (err) {
+    return res.status(500).send({
+      message: "Could not delete Product with id=" + id
+    });
+  }
 };
 
 // Delete all Product from the database.
@@ -368,7 +437,7 @@ exports.findAllActive = (req, res) => {
     });
 };
 
-// Search and filter phones by specifications
+// Search and filter products by common marketplace fields and category attributes
 exports.filterBySpecs = (req, res) => {
   try {
     const filters = {};
@@ -385,7 +454,15 @@ exports.filterBySpecs = (req, res) => {
       filters.brand = { $in: req.query.brand.split(",") };
     }
 
-    // RAM
+    if (req.query.category) {
+      filters.category = { $regex: `^${escapeRegex(req.query.category)}$`, $options: "i" };
+    }
+
+    if (req.query.productType) {
+      filters.productType = normalizeCategoryKey(req.query.productType);
+    }
+
+    // Mobile-specific fields remain available for mobile categories.
     if (req.query.minRam || req.query.maxRam) {
       filters.ram = {};
       if (req.query.minRam) filters.ram.$gte = parseInt(req.query.minRam);
@@ -408,6 +485,12 @@ exports.filterBySpecs = (req, res) => {
     if (req.query.processor) {
       filters.processor = new RegExp(req.query.processor, "i");
     }
+
+    ["author", "publisher", "language", "format", "material", "size", "model", "warranty", "connectivity", "skinType", "sport"].forEach((key) => {
+      if (req.query[key]) {
+        filters[`attributes.${key}`] = { $regex: escapeRegex(req.query[key]), $options: "i" };
+      }
+    });
 
     // Rating (minimum rating)
     if (req.query.minRating) {
@@ -497,27 +580,28 @@ exports.getBestSelling = (req, res) => {
 };
 
 // Update product stock
-exports.updateStock = (req, res) => {
+exports.updateStock = async (req, res) => {
   const id = req.params.id;
   const quantity = req.body.quantity;
 
-  Product.findByIdAndUpdate(
-    id,
-    { 
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    const allowed = await canManageProduct(req, res, product);
+    if (!allowed) return;
+
+    await Product.findByIdAndUpdate(id, {
       stock: quantity,
       availability: quantity > 0
-    }
-  )
-    .then(data => {
-      if (!data) {
-        res.status(404).send({ message: "Product not found" });
-      } else {
-        res.send({ message: "Stock updated successfully" });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Error updating stock"
-      });
     });
+
+    return res.send({ message: "Stock updated successfully" });
+  } catch (err) {
+    return res.status(500).send({
+      message: err.message || "Error updating stock"
+    });
+  }
 };

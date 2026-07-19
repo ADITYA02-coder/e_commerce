@@ -152,9 +152,10 @@ const ProductForm = () => {
   const [sellerProfileLoading, setSellerProfileLoading] = useState(false);
   const [sellerProfileMessage, setSellerProfileMessage] = useState("");
 
-  const canManageProducts = currentUser?.roles?.includes("ROLE_SELLER");
+  const canManageProducts = currentUser?.roles?.some((role) => ["ROLE_SELLER", "ROLE_ADMIN"].includes(role));
+  const canCreateWithoutSellerApproval = currentUser?.roles?.includes("ROLE_ADMIN");
   const token = JSON.parse(localStorage.getItem("user") || "{}").accessToken;
-  const sellerNeedsApproval = currentUser?.roles?.includes("ROLE_SELLER");
+  const sellerNeedsApproval = currentUser?.roles?.includes("ROLE_SELLER") && !canCreateWithoutSellerApproval;
   const sellerCanSubmit = !sellerNeedsApproval || sellerProfileStatus === "approved";
   const selectedCategoryKey = getCategoryKey(category);
   const selectedFields = CATEGORY_FIELD_SETS[selectedCategoryKey] || CATEGORY_FIELD_SETS.general;
@@ -261,6 +262,15 @@ const ProductForm = () => {
     setProcessor("");
     setColor("");
     setAttributeValues({});
+  };
+
+  const handleCategoryChange = (value) => {
+    if (value === "__custom__") {
+      setCategory("");
+      return;
+    }
+
+    setCategory(value);
   };
 
   const updateAttribute = (fieldName, value) => {
@@ -402,14 +412,21 @@ const ProductForm = () => {
               <Form.Control
                 as="select"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
+                onChange={(e) => handleCategoryChange(e.target.value)}
               >
                 <option value="">Select Category *</option>
                 {categoryChoices.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
+                <option value="__custom__">Add another category...</option>
               </Form.Control>
+              <Form.Control
+                className="mt-2"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="Or type a new category, e.g., Kitchen, Toys, Appliances"
+                required
+              />
             </Col>
           </Row>
 

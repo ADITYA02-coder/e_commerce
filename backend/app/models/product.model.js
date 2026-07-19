@@ -32,6 +32,7 @@ const schema = new mongoose.Schema(
     },
     
     // Ecommerce fields
+    image: String,
     images: [String], // Array of image URLs
     primaryImage: String,
     rating: { type: Number, default: 0, min: 0, max: 5 },

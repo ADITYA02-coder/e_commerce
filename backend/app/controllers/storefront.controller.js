@@ -149,7 +149,14 @@ exports.searchProducts = async (req, res) => {
         { name: { $regex: safeQuery, $options: "i" } },
         { brand: { $regex: safeQuery, $options: "i" } },
         { category: { $regex: safeQuery, $options: "i" } },
-        { description: { $regex: safeQuery, $options: "i" } }
+        { description: { $regex: safeQuery, $options: "i" } },
+        { searchKeywords: { $elemMatch: { $regex: safeQuery, $options: "i" } } },
+        { "attributes.model": { $regex: safeQuery, $options: "i" } },
+        { "attributes.material": { $regex: safeQuery, $options: "i" } },
+        { "attributes.author": { $regex: safeQuery, $options: "i" } },
+        { "attributes.publisher": { $regex: safeQuery, $options: "i" } },
+        { "attributes.connectivity": { $regex: safeQuery, $options: "i" } },
+        { "attributes.sport": { $regex: safeQuery, $options: "i" } }
       ];
     }
 

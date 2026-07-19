@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { API_URL, getAssetUrl } from "../config/api";
+import authHeader from "../services/auth-header";
+import "../styles/style.css";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
@@ -11,16 +13,37 @@ const Order = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!currentUser) return; // ✅ avoid API call if user is not logged in
+    if (!currentUser) return;
+
+    const fetchAllProducts = async (orderData) => {
+      const uniqueProductIds = new Set();
+      orderData.forEach((order) => {
+        (order.items || []).forEach((item) => uniqueProductIds.add(item.productId));
+      });
+
+      const productEntries = await Promise.all(
+        Array.from(uniqueProductIds).map(async (id) => {
+          try {
+            const res = await fetch(`${API_URL}/products/${id}`);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            return [id, data];
+          } catch {
+            return [id, { name: "Unknown Product", image: "" }];
+          }
+        })
+      );
+
+      setProducts(Object.fromEntries(productEntries));
+    };
 
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`${API_URL}/orders`);
+        const res = await fetch(`${API_URL}/orders`, { headers: authHeader() });
         if (!res.ok) throw new Error("Failed to fetch orders");
         const data = await res.json();
-
         setOrders(data);
-        fetchAllProducts(data); // fetch products after orders
+        await fetchAllProducts(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -31,132 +54,76 @@ const Order = () => {
     fetchOrders();
   }, [currentUser]);
 
-  const fetchAllProducts = async (orders) => {
-    const uniqueProductIds = new Set();
-    orders.forEach((order) => {
-      (order.items || []).forEach((item) =>
-        uniqueProductIds.add(item.productId)
-      );
-    });
-
-    const productEntries = await Promise.all(
-      Array.from(uniqueProductIds).map(async (id) => {
-        console.log("id ",id);
-        try {
-          const res = await fetch(`${API_URL}/products/${id}`);
-          if (!res.ok) throw new Error();
-          const data = await res.json();
-          return [id, data];
-        } catch {
-          return [id, { name: "Unknown Product", image: "" }];
-        }
-      })
-    );
-
-    setProducts(Object.fromEntries(productEntries));
-  };
-
-  if (!currentUser) return <div>Please log in to view orders.</div>;
-  if (loading) return <div>Loading orders...</div>;
-  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
+  if (!currentUser) return <div className="order-page">Please log in to view orders.</div>;
+  if (loading) return <div className="order-page">Loading orders...</div>;
+  if (error) return <div className="order-page order-error">Error: {error}</div>;
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h2>Order History</h2>
+    <div className="order-page">
+      <div className="order-page__header">
+        <span>Your marketplace activity</span>
+        <h2>Order History</h2>
+        <p>Track purchases, payments, and delivery progress in one place.</p>
+      </div>
+
       {orders.length === 0 ? (
-        <p>No orders found.</p>
+        <div className="order-empty">No orders found.</div>
       ) : (
-        //sort orders by date, most recent first
-        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((order, index) => (
-          <div
-            key={order.id}
-            style={{
-              border: "1px solid #ddd",
-              padding: "1rem",
-              marginBottom: "1.5rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h4>Order #{index + 1}</h4>
-            <p>
-              <strong>User ID:</strong> {currentUser?.id}
-            </p>
-            <p>
-              <strong>Order ID:</strong> {order.id}
-            </p>
-            <p>
-              <strong>Order placed on:</strong>{" "}
-              {new Date(order.createdAt).toLocaleString()}
-            </p>
-            <p>
-              <strong>Status:</strong> {order.orderStatus}
-            </p>
-            <p>
-              <strong>Payment:</strong> {order.paymentStatus}
-            </p>
-            <p>
-              <strong>Total:</strong> ₹{order.totalAmount}
-            </p>
+        orders
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((order, index) => (
+            <div key={order.id} className="order-card">
+              <div className="order-card__top">
+                <div>
+                  <h4>Order #{index + 1}</h4>
+                  <p>Order ID: {order.id}</p>
+                  <p>Placed: {new Date(order.createdAt).toLocaleString()}</p>
+                </div>
+                <div className="order-card__badges">
+                  <span>{order.orderStatus}</span>
+                  <span>{order.paymentStatus}</span>
+                </div>
+              </div>
 
-            {order.addressLine1 && (
-              <>
-                <h5>Delivery Address:</h5>
-                <p>
-                  {order.addressLine1}, {order.addressLine2}
-                </p>
-                <p>
-                  {order.district}, {order.state} - {order.pin}
-                </p>
-                <p>Mobile: {order.mobile}</p>
-              </>
-            )}
+              <div className="order-total">
+                Total: Rs. {Number(order.totalAmount || 0).toLocaleString("en-IN")}
+              </div>
 
-            <h5>Items:</h5>
-            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-              {(order.items || []).map((item, idx) => {
-                const product = products[item.productId] || {
-                  name: "Loading...",
-                  image: "",
-                };
+              {order.addressLine1 ? (
+                <div className="order-address">
+                  <h5>Delivery Address</h5>
+                  <p>{order.addressLine1}, {order.addressLine2}</p>
+                  <p>{order.district}, {order.state} - {order.pin}</p>
+                  <p>Mobile: {order.mobile}</p>
+                </div>
+              ) : null}
 
-                return (
-                  <li
-                    key={item._id || idx}
-                    style={{
-                      marginBottom: "1rem",
-                      display: "flex",
-                      alignItems: "center",
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "0.5rem",
-                    }}
-                  >
-                    {(product.primaryImage || product.image) && (
-                      <img
-                        src={getAssetUrl(product.primaryImage || product.image)}
-                        alt={product.name}
-                        style={{
-                          width: 50,
-                          height: 50,
-                          marginRight: 10,
-                          objectFit: "cover",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    )}
-                    <div>
-                      <p>
-                        <strong>{product.name}</strong>
-                      </p>
-                      <p>
-                        Quantity: {item.quantity} | Price: ₹{item.price}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))
+              <h5>Items</h5>
+              <ul className="order-items">
+                {(order.items || []).map((item, idx) => {
+                  const product = products[item.productId] || {
+                    name: "Loading...",
+                    image: "",
+                  };
+
+                  return (
+                    <li key={item._id || idx}>
+                      {(product.primaryImage || product.image) && (
+                        <img
+                          src={getAssetUrl(product.primaryImage || product.image)}
+                          alt={product.name}
+                        />
+                      )}
+                      <div>
+                        <p><strong>{product.name}</strong></p>
+                        <p>Quantity: {item.quantity} | Price: Rs. {item.price}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))
       )}
     </div>
   );

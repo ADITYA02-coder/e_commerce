@@ -5,6 +5,7 @@ import { Button, Card, Col, Container, Row, Toast, ToastContainer } from "react-
 import { Cart, Plus } from "react-bootstrap-icons";
 import { API_URL, getAssetUrl } from "../config/api";
 import { fetchProductById } from "../services/productCache";
+import authHeader from "../services/auth-header";
 import "../styles/style.css";
 
 const MobileData = () => {
@@ -40,7 +41,7 @@ const MobileData = () => {
     try {
       const response = await fetch(`${API_URL}/carts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader() },
         body: JSON.stringify(item),
       });
 

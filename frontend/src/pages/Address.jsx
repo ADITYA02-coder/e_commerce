@@ -7,6 +7,7 @@ import { Modal, Button, Form as BootstrapForm } from "react-bootstrap";
 import "../styles/Address.css";
 import { Trash3 } from "react-bootstrap-icons";
 import { API_URL } from "../config/api";
+import authHeader from "../services/auth-header";
 
 const Address = () => {
   const [address, setAddress] = useState([]);
@@ -22,7 +23,9 @@ const Address = () => {
 
   async function handleAddress() {
     try {
-      const response = await fetch(`${API_URL}/addresses?userId=${currentUser.id}`);
+      const response = await fetch(`${API_URL}/addresses?userId=${currentUser.id}`, {
+        headers: authHeader(),
+      });
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -39,7 +42,8 @@ const Address = () => {
       setError(null);
 
       const cartResponse = await fetch(
-        `${API_URL}/carts/user/${currentUser.id}`
+        `${API_URL}/carts/user/${currentUser.id}`,
+        { headers: authHeader() }
       );
       if (!cartResponse.ok) {
         throw new Error(`Failed to fetch cart: ${cartResponse.status}`);
@@ -76,7 +80,7 @@ const Address = () => {
 
       const res = await fetch(`${API_URL}/orders`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader() },
         body: JSON.stringify({
           userId: currentUser.id,
           items: cartItems,
@@ -145,7 +149,7 @@ const Address = () => {
     try {
       const response = await fetch(`${API_URL}/addresses`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader() },
         body: JSON.stringify({ ...values, userId: currentUser.id }),
       });
 
@@ -173,6 +177,7 @@ const Address = () => {
         `${API_URL}/addresses/${id}`,
         {
           method: "DELETE",
+          headers: authHeader(),
         }
       );
 

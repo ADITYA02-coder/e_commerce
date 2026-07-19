@@ -1,342 +1,264 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
-
 .seller-dashboard {
   min-height: 100vh;
-  padding: 48px 6vw 64px;
-  background: linear-gradient(180deg, #f6f9ff 0%, #fefaf4 100%);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  padding: 28px 4vw 48px;
+  background: #eaeded;
+  color: #0f1111;
 }
 
 .seller-dashboard h1,
 .seller-dashboard h2,
 .seller-dashboard h3 {
-  font-family: "Fraunces", "Times New Roman", serif;
-  margin: 0 0 12px;
-  color: var(--brand);
-}
-
-.seller-dashboard p,
-.seller-dashboard li,
-.seller-dashboard a,
-.seller-dashboard span {
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  margin: 0 0 10px;
+  color: #0f1111;
+  font-weight: 800;
 }
 
 .seller-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: 32px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.seller-hero__content,
+.seller-panel,
+.seller-card {
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 17, 17, 0.08);
 }
 
 .seller-hero__content {
-  background: linear-gradient(135deg, #fdfefe 0%, #fff5e8 100%);
-  border: 1px solid rgba(29, 78, 216, 0.12);
-  border-radius: 24px;
-  padding: 36px;
-  box-shadow: var(--shadow);
-  position: relative;
-  overflow: hidden;
-  animation: sellerRise 0.7s ease both;
+  padding: 24px;
+  background: #232f3e;
 }
 
-.seller-hero__content::after {
-  content: "";
-  position: absolute;
-  right: -80px;
-  top: -60px;
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle, rgba(251, 100, 27, 0.24), transparent 70%);
+.seller-hero__content h1 {
+  color: #ffffff;
+  font-size: clamp(2rem, 3.3vw, 3.2rem);
+}
+
+.seller-hero__content p {
+  max-width: 62ch;
+  color: #d5dbdb;
+  line-height: 1.55;
 }
 
 .seller-badge {
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(29, 78, 216, 0.12);
-  color: var(--link);
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  background: #37475a;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 6px 10px;
   text-transform: uppercase;
-  font-size: 12px;
-}
-
-.seller-hero__content p {
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--muted);
-  max-width: 520px;
 }
 
 .seller-status-banner {
   display: grid;
-  gap: 6px;
-  padding: 18px 18px 16px;
-  border-radius: 18px;
+  gap: 5px;
   margin-top: 18px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(29, 78, 216, 0.12);
-  background: linear-gradient(135deg, #ffffff 0%, #f7faff 100%);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #131921;
+  padding: 14px;
 }
 
 .seller-status-banner strong {
-  font-size: 14px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--link);
 }
 
 .seller-status-banner span,
 .seller-status-banner p {
   margin: 0;
-  color: var(--muted);
-  line-height: 1.5;
+  color: #d5dbdb;
 }
 
 .seller-status-banner--approved {
-  border-color: rgba(6, 125, 98, 0.18);
-  background: linear-gradient(135deg, rgba(6, 125, 98, 0.08) 0%, #ffffff 100%);
+  border-left: 5px solid #067d62;
 }
 
-.seller-status-banner--pending {
-  border-color: rgba(240, 136, 4, 0.18);
-  background: linear-gradient(135deg, rgba(240, 136, 4, 0.08) 0%, #ffffff 100%);
+.seller-status-banner--pending,
+.seller-status-banner--loading,
+.seller-status-banner--missing {
+  border-left: 5px solid #ff9900;
 }
 
 .seller-status-banner--rejected {
-  border-color: rgba(177, 39, 4, 0.18);
-  background: linear-gradient(135deg, rgba(177, 39, 4, 0.08) 0%, #ffffff 100%);
-}
-
-.seller-status-banner--rejected strong {
-  color: var(--danger);
+  border-left: 5px solid #b12704;
 }
 
 .seller-status-banner__note {
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(177, 39, 4, 0.08);
-  color: var(--danger);
-  font-weight: 600;
+  border-radius: 6px;
+  background: rgba(177, 39, 4, 0.16);
+  padding: 8px 10px;
 }
 
 .seller-hero__actions {
   display: flex;
-  gap: 14px;
   flex-wrap: wrap;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .seller-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-weight: 600;
-  border: 1px solid transparent;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  min-height: 40px;
+  border: 1px solid #adb1b8;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: #0f1111;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .seller-btn.primary {
-  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
-  color: #ffffff;
-  box-shadow: 0 12px 22px rgba(251, 100, 27, 0.24);
+  background: #ffd814;
+  border-color: #fcd200;
 }
 
 .seller-btn.primary:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  background: #f7ca00;
+  color: #0f1111;
 }
 
-.seller-btn.ghost {
-  background: var(--surface);
-  color: var(--accent-2);
-  border-color: rgba(251, 100, 27, 0.24);
-}
-
-.seller-btn.ghost:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
-}
-
+.seller-btn.ghost,
 .seller-btn.subtle {
-  background: #f7faff;
-  color: var(--link);
-  border-color: rgba(29, 78, 216, 0.18);
+  background: #f7fafa;
+}
+
+.seller-btn.ghost:hover,
+.seller-btn.subtle:hover {
+  background: #edf7f7;
+  color: #0f1111;
 }
 
 .seller-btn.subtle.is-disabled {
-  pointer-events: none;
-  opacity: 0.75;
-}
-
-.seller-hero__panel {
-  display: flex;
+  opacity: 0.72;
 }
 
 .seller-panel {
-  background: var(--surface);
-  border-radius: 24px;
-  padding: 28px;
-  width: 100%;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  animation: sellerRise 0.8s ease both;
-  animation-delay: 0.1s;
+  height: 100%;
+  padding: 20px;
 }
 
 .seller-panel__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .seller-chip {
-  font-size: 12px;
-  background: #eef5ff;
-  color: var(--link);
-  padding: 6px 12px;
   border-radius: 999px;
-  font-weight: 600;
+  background: #e7f4f5;
+  color: #007185;
+  font-size: 0.76rem;
+  font-weight: 900;
+  padding: 6px 10px;
+  text-transform: capitalize;
 }
 
-.seller-links {
+.seller-muted {
+  color: #565959;
+  font-weight: 700;
+}
+
+.seller-links,
+.seller-checklist {
+  display: grid;
+  gap: 10px;
   list-style: none;
-  padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 0;
 }
 
 .seller-links li {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: #fcfdff;
-  border: 1px solid rgba(29, 78, 216, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.seller-links li:hover {
-  transform: translateX(4px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  border: 1px solid #e3e6e6;
+  border-radius: 8px;
+  background: #f7fafa;
+  padding: 12px;
 }
 
 .seller-links li.is-locked {
-  opacity: 0.78;
-  background: linear-gradient(135deg, #fbfdff 0%, #fff8f0 100%);
+  opacity: 0.75;
 }
 
+.seller-links a,
 .seller-links__locked-label {
   display: block;
-  font-weight: 600;
-  color: var(--text);
+  color: #007185;
+  font-weight: 800;
   margin-bottom: 4px;
-}
-
-.seller-links a {
-  display: block;
-  font-weight: 600;
-  color: var(--accent-2);
-  margin-bottom: 4px;
+  text-decoration: none;
 }
 
 .seller-links span {
-  color: var(--muted);
-  font-size: 14px;
+  color: #565959;
+  font-size: 0.9rem;
 }
 
 .seller-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 16px;
 }
 
 .seller-card {
-  background: var(--surface);
-  border-radius: 22px;
-  padding: 26px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-height: 178px;
+  padding: 18px;
 }
 
 .seller-card.highlight {
-  background: linear-gradient(135deg, #f7faff 0%, #fff6e8 100%);
-  border-color: transparent;
+  border-top: 4px solid #ff9900;
 }
 
-.seller-card p {
-  color: var(--muted);
-  line-height: 1.6;
+.seller-card p,
+.seller-checklist li {
+  color: #565959;
+  line-height: 1.5;
 }
 
 .seller-card__actions {
-  margin-top: 16px;
-}
-
-.seller-checklist {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
+  margin-top: 14px;
 }
 
 .seller-checklist li {
   position: relative;
-  padding-left: 28px;
-  color: var(--text);
-  line-height: 1.5;
+  padding-left: 22px;
 }
 
 .seller-checklist li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 7px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent-2);
-  box-shadow: 0 0 0 4px rgba(251, 100, 27, 0.16);
-}
-
-.seller-muted {
-  color: var(--accent-2);
-  font-weight: 600;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ff9900;
 }
 
 .seller-footer {
+  margin-top: 18px;
+  color: #565959;
+  font-weight: 800;
   text-align: center;
-  font-size: 16px;
-  color: var(--brand);
-  font-weight: 600;
-}
-
-@keyframes sellerRise {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 1100px) {
@@ -351,7 +273,7 @@
 
 @media (max-width: 720px) {
   .seller-dashboard {
-    padding: 36px 20px 48px;
+    padding: 18px 10px 36px;
   }
 
   .seller-grid {
@@ -361,39 +283,14 @@
   .seller-hero__content,
   .seller-panel,
   .seller-card {
-    padding: 22px;
-  }
-
-  .seller-hero__actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .seller-status-banner {
     padding: 16px;
   }
-}
 
-@media (max-width: 576px) {
-  .seller-hero__content h1,
-  .seller-card h2 {
-    font-size: 1.55rem;
-  }
-
-  .seller-grid {
-    gap: 12px;
-  }
-
-  .seller-link,
-  .seller-btn,
-  .seller-btn.subtle {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .seller-panel__actions,
   .seller-hero__actions {
     flex-direction: column;
-    align-items: stretch;
+  }
+
+  .seller-btn {
+    width: 100%;
   }
 }

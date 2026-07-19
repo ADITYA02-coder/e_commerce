@@ -12,6 +12,7 @@ import { BackToTop } from "../components/BackToTop";
 import { useSelector } from "react-redux";
 import "../styles/Cart.css";
 import { API_URL, getAssetUrl } from "../config/api";
+import authHeader from "../services/auth-header";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -35,7 +36,9 @@ const Cart = () => {
         setError(null);
         
         // Step 1: Fetch cart
-        const cartResponse = await fetch(`${API_URL}/carts/user/${currentUser.id}`);
+        const cartResponse = await fetch(`${API_URL}/carts/user/${currentUser.id}`, {
+          headers: authHeader(),
+        });
         if (!cartResponse.ok) {
           throw new Error(`Failed to fetch cart: ${cartResponse.status}`);
         }

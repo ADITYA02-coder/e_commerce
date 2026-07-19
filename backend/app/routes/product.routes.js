@@ -11,7 +11,7 @@ module.exports = app => {
   router.post("/", [authJwt.verifyToken], uploadFile.single("file"), products.create);
 
   // Retrieve products owned by the authenticated seller
-  router.get("/mine", [authJwt.verifyToken], products.findMyProducts);
+  router.get("/mine", [authJwt.verifyToken, authJwt.isSeller], products.findMyProducts);
 
   // Retrieve all products (root endpoint for frontend compatibility)
   router.get("/", products.findAll);
@@ -38,16 +38,16 @@ module.exports = app => {
   router.get("/:id", products.findOne);
 
   // Update a product with id
-  router.put("/:id", products.update);
+  router.put("/:id", [authJwt.verifyToken], products.update);
 
   // Update product stock
-  router.put("/:id/stock", products.updateStock);
+  router.put("/:id/stock", [authJwt.verifyToken], products.updateStock);
 
   // Delete a product with id
-  router.delete("/:id", products.delete);
+  router.delete("/:id", [authJwt.verifyToken], products.delete);
 
   // Delete all products
-  router.delete("/", products.deleteAll);
+  router.delete("/", [authJwt.verifyToken, authJwt.isAdmin], products.deleteAll);
 
   app.use("/api/products", router);
 };

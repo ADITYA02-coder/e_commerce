@@ -1,129 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Input, Card, Row, Col, Spin, message, Button } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Card, Col, Layout, Row, Spin, message } from "antd";
+import { ArrowRight, BadgePercent, ShieldCheck, Truck, Undo2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { getAssetUrl } from "../config/api";
 import { fetchStorefrontHome, searchStorefrontProducts } from "../services/storefront.service";
 
 const { Content } = Layout;
 const { Meta } = Card;
-const { Search } = Input;
+
+const money = (value) => `Rs. ${Number(value || 0).toLocaleString("en-IN")}`;
+
+const ProductCard = ({ item, navigate }) => {
+  const id = item.id || item._id;
+  return (
+    <Card
+      hoverable
+      className="home-card"
+      onClick={() => navigate(`/mobiledata/${id}`)}
+      cover={<img src={getAssetUrl(item.primaryImage || item.image)} alt={item.name || "Product"} className="home-card-image" />}
+    >
+      <Meta title={item.name || item.model || "Product"} description={item.brand || item.category || "Marketplace pick"} />
+      <div className="home-price-row">
+        <strong>{money(item.discountedPrice || item.price)}</strong>
+        {Number(item.discount || 0) > 0 && <span>{item.discount}% off</span>}
+      </div>
+      <div className="home-card-cta">View details</div>
+    </Card>
+  );
+};
 
 const Home = () => {
-  const [phones, setPhones] = useState([]);
+  const [products, setProducts] = useState([]);
   const [feed, setFeed] = useState({
     hero: null,
     topDeals: [],
     bestSellers: [],
+    trending: [],
     topCategories: [],
     topBrands: [],
     stats: { totalProducts: 0, inStockProducts: 0 }
   });
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchPhones = async () => {
-    setLoading(true);
-    try {
-      const homeFeed = await fetchStorefrontHome({ limit: 12 });
-      const recentProducts = homeFeed.recentlyAdded || [];
-      setPhones(recentProducts);
-      setFeed(homeFeed);
-    } catch (error) {
-      message.error("Failed to load products");
-      setPhones([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const searchPhones = async (keyword) => {
-    setLoading(true);
-    try {
-      const result = await searchStorefrontProducts({
-        q: keyword,
-        page: 1,
-        limit: 24,
-        sort: "popular"
-      });
-      setPhones(result.items || []);
-    } catch {
-      message.error('Search failed');
-      setPhones([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchPhones();
+    const loadHome = async () => {
+      try {
+        const homeFeed = await fetchStorefrontHome({ limit: 12 });
+        setFeed(homeFeed);
+        setProducts(homeFeed.recentlyAdded || []);
+      } catch {
+        message.error("Failed to load storefront");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHome();
   }, []);
 
-  const onSearch = (value) => {
-    setSearchTerm(value);
-    if (!value || value.trim() === '') {
-      fetchPhones();
-    } else {
-      searchPhones(value.trim());
+  const categories = useMemo(
+    () =>
+      (feed.topCategories || []).length
+        ? feed.topCategories.slice(0, 8)
+        : Array.from(new Set(products.map((product) => product.category).filter(Boolean)))
+            .slice(0, 8)
+            .map((name) => ({ name, count: 0 })),
+    [feed.topCategories, products]
+  );
+
+  const brands = useMemo(
+    () =>
+      (feed.topBrands || []).length
+        ? feed.topBrands.slice(0, 10)
+        : Array.from(new Set(products.map((product) => product.brand).filter(Boolean)))
+            .slice(0, 10)
+            .map((name) => ({ name, count: 0 })),
+    [feed.topBrands, products]
+  );
+
+  const hero = feed.hero || products[0] || {};
+  const topDeals = (feed.topDeals?.length ? feed.topDeals : products).slice(0, 4);
+  const bestSellers = (feed.bestSellers?.length ? feed.bestSellers : products).slice(0, 8);
+  const trending = (feed.trending?.length ? feed.trending : products).slice(0, 6);
+
+  const quickSearch = async (brand) => {
+    setLoading(true);
+    try {
+      const result = await searchStorefrontProducts({ q: brand, sort: "popular", page: 1, limit: 12 });
+      setProducts(result.items || []);
+    } catch {
+      message.error("Search failed");
+    } finally {
+      setLoading(false);
     }
   };
-  
-
-  const brands = (feed.topBrands || []).length
-    ? feed.topBrands.map((brand) => brand.name).filter(Boolean).slice(0, 8)
-    : Array.from(new Set(phones.map((p) => p.brand).filter(Boolean))).slice(0, 8);
-  const featuredPhones = phones.slice(0, 6);
-  const topDeals = (feed.topDeals || []).length
-    ? feed.topDeals.slice(0, 4)
-    : phones
-        .filter((phone) => Number(phone.price || 0) > 0)
-        .sort((a, b) => Number(a.price || 0) - Number(b.price || 0))
-        .slice(0, 4);
-  const bestSellers = (feed.bestSellers || []).length ? feed.bestSellers.slice(0, 8) : phones.slice(0, 8);
-  const byCategory = (feed.topCategories || []).length
-    ? feed.topCategories.map((cat) => cat.name).filter(Boolean).slice(0, 4)
-    : Array.from(new Set(phones.map((p) => p.category).filter(Boolean))).slice(0, 4);
 
   return (
     <Layout className="home-layout">
       <Content className="home-content">
         <section className="home-hero">
-          <div className="home-hero-text">
-            <span className="home-eyebrow">Great deals. Fast delivery. Trusted sellers.</span>
-            <h1>Your everyday store for mobiles, electronics and more.</h1>
-            <p>
-              ShopEase brings daily offers, curated brands, and quick checkout in one place.
-            </p>
+          <div className="home-hero-copy">
+            <span className="home-eyebrow">Launch-ready marketplace</span>
+            <h1>ShopEase</h1>
+            <p>Discover phones, electronics, daily essentials, trusted sellers, secure checkout, and fast delivery from one modern storefront.</p>
             <div className="home-hero-actions">
-              <Button type="primary" size="large" onClick={() => navigate('/product')}>
-                Start Shopping
-              </Button>
-              <Button size="large" onClick={() => navigate('/cart')}>
-                See Cart
-              </Button>
+              <Button type="primary" size="large" onClick={() => navigate("/product")}>Shop deals</Button>
+              <Button size="large" onClick={() => navigate("/seller")}>Start selling</Button>
             </div>
-            <div className="home-stats">
-              <div>
-                <strong>{feed.stats?.totalProducts || phones.length || '150+'}</strong>
-                <span>Products</span>
-              </div>
-              <div>
-                <strong>100%</strong>
-                <span>Secure Checkout</span>
-              </div>
-              <div>
-                <strong>Easy</strong>
-                <span>Returns</span>
-              </div>
+            <div className="home-service-row">
+              <span><Truck size={18} /> Fast dispatch</span>
+              <span><ShieldCheck size={18} /> Secure payments</span>
+              <span><Undo2 size={18} /> Easy returns</span>
             </div>
           </div>
-          <div className="home-hero-card">
-            <div className="hero-card-inner">
-              <h3>Deal of the day</h3>
-              <p>Extra discounts on selected picks. Limited-time prices.</p>
-              <Button onClick={() => navigate('/product')}>View Deals</Button>
+          <div className="home-hero-product" onClick={() => hero._id && navigate(`/mobiledata/${hero._id}`)}>
+            <div>
+              <span className="deal-label">Deal of the day</span>
+              <h2>{hero.name || "Fresh deals are waiting"}</h2>
+              <p>{hero.brand || hero.category || "Curated picks from approved sellers"}</p>
+              <strong>{hero.price ? money(hero.discountedPrice || hero.price) : "Explore today's offers"}</strong>
             </div>
+            {hero.primaryImage || hero.image ? <img src={getAssetUrl(hero.primaryImage || hero.image)} alt={hero.name} /> : null}
           </div>
         </section>
 
@@ -132,130 +130,65 @@ const Home = () => {
             <article key={item.id || item._id} className="home-deal-tile" onClick={() => navigate(`/mobiledata/${item.id || item._id}`)}>
               <img src={getAssetUrl(item.primaryImage || item.image)} alt={item.name} />
               <div>
-                <span className="deal-label">Deal</span>
+                <span className="deal-label"><BadgePercent size={13} /> Deal</span>
                 <h4>{item.name}</h4>
-                <p>Rs. {item.price}</p>
+                <p>{money(item.discountedPrice || item.price)}</p>
               </div>
             </article>
           ))}
         </section>
 
-        <section className="home-search-section">
-          <div className="home-search">
-            <Search
-              placeholder="Search by brand, model, or feature..."
-              enterButton={<SearchOutlined />}
-              onSearch={onSearch}
-              allowClear
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              size="large"
-            />
+        <section className="home-categories-block">
+          <div className="section-header">
+            <h2>Shop by category</h2>
+            <Button type="link" onClick={() => navigate("/categories")}>All categories <ArrowRight size={15} /></Button>
+          </div>
+          <div className="home-category-grid">
+            {categories.map((category) => (
+              <button key={category.name} className="home-category-card" onClick={() => navigate(`/category/${encodeURIComponent(category.name)}`)}>
+                <h4>{category.name}</h4>
+                <span>{category.count ? `${category.count} products` : "View products"}</span>
+              </button>
+            ))}
           </div>
         </section>
 
         <section className="home-brands">
-          <h2>Top Brands</h2>
+          <h2>Popular brands</h2>
           <div className="brand-grid">
-            {brands.length > 0 ? (
-              brands.map((brand) => (
-                <button
-                  key={brand}
-                  className="brand-chip"
-                  onClick={() => onSearch(brand)}
-                >
-                  {brand}
-                </button>
-              ))
-            ) : (
-              <div className="home-empty">No brands available.</div>
-            )}
-          </div>
-        </section>
-
-        <section className="home-categories-block">
-          <div className="section-header">
-            <h2>Shop by Category</h2>
-            <Button type="link" onClick={() => navigate('/product')}>Explore all</Button>
-          </div>
-          <div className="home-category-grid">
-            {byCategory.map((category) => (
-              <button key={category} className="home-category-card" onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}>
-                <h4>{category}</h4>
-                <span>View products</span>
-              </button>
+            {brands.map((brand) => (
+              <button key={brand.name} className="brand-chip" onClick={() => quickSearch(brand.name)}>{brand.name}</button>
             ))}
           </div>
         </section>
 
         <section className="home-featured">
           <div className="section-header">
-            <h2>Featured Phones</h2>
-            <Button type="link" onClick={() => navigate('/product')}>View all</Button>
+            <h2>Best sellers</h2>
+            <Button type="link" onClick={() => navigate("/product?sort=popular")}>See more <ArrowRight size={15} /></Button>
           </div>
           {loading ? (
-            <div className="home-loading">
-              <Spin size="large" />
-            </div>
+            <div className="home-loading"><Spin size="large" /></div>
           ) : (
-            <Row gutter={[16, 16]} justify="center" className="home-grid">
-              {featuredPhones.length > 0 ? (
-                featuredPhones.map((phone) => (
-                  <Col xs={24} sm={12} md={8} key={phone.id || phone._id}>
-                    <Card
-                      hoverable
-                      className="home-card"
-                      onClick={() => navigate(`/mobiledata/${phone.id || phone._id}`)}
-                      cover={
-                        <img
-                          src={getAssetUrl(phone.primaryImage || phone.image)}
-                          alt={phone.name || phone.model || 'Phone'}
-                          className="home-card-image"
-                        />
-                      }
-                    >
-                      <Meta
-                        title={phone.name || phone.model}
-                        description={`Brand: ${phone.brand || 'N/A'} - Price: Rs. ${phone.price || 'N/A'}`}
-                      />
-                      <div className="home-card-cta">View Details</div>
-                    </Card>
-                  </Col>
-                ))
-              ) : (
-                <div className="home-empty">
-                  No phones found.
-                </div>
-              )}
+            <Row gutter={[14, 14]} className="home-grid">
+              {bestSellers.map((item) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={item.id || item._id}>
+                  <ProductCard item={item} navigate={navigate} />
+                </Col>
+              ))}
             </Row>
           )}
         </section>
 
         <section className="home-featured">
           <div className="section-header">
-            <h2>Best Sellers</h2>
-            <Button type="link" onClick={() => navigate('/product')}>See more</Button>
+            <h2>Trending now</h2>
+            <Button type="link" onClick={() => navigate("/product?sort=rating")}>Top rated <ArrowRight size={15} /></Button>
           </div>
-          <Row gutter={[16, 16]} justify="center" className="home-grid">
-            {bestSellers.map((phone) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={`best-${phone.id || phone._id}`}>
-                <Card
-                  hoverable
-                  className="home-card"
-                  onClick={() => navigate(`/mobiledata/${phone.id || phone._id}`)}
-                  cover={
-                    <img
-                      src={getAssetUrl(phone.primaryImage || phone.image)}
-                      alt={phone.name || phone.model || 'Phone'}
-                      className="home-card-image"
-                    />
-                  }
-                >
-                  <Meta
-                    title={phone.name || phone.model}
-                    description={`Brand: ${phone.brand || 'N/A'} - Price: Rs. ${phone.price || 'N/A'}`}
-                  />
-                </Card>
+          <Row gutter={[14, 14]} className="home-grid">
+            {trending.map((item) => (
+              <Col xs={24} sm={12} md={8} lg={4} key={`trend-${item.id || item._id}`}>
+                <ProductCard item={item} navigate={navigate} />
               </Col>
             ))}
           </Row>

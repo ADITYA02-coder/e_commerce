@@ -5,6 +5,7 @@ import '../styles/style.css';
 import { Header } from '../components/Header';
 import { SellerHeader } from '../components/SellerHeader';
 import { Footer } from '../components/Footer';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
 const Account = lazy(() => import('../pages/Account'));
@@ -45,22 +46,22 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<LoginPage />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/product" element={<Product />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/orderDetails" element={<OrderDetails />} />
+            <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+            <Route path="/orderDetails" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
             <Route path="/category/:categoryName" element={<Category />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/mobiledata/:id" element={<MobileData />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/viewProducts" element={<ProductListing />} />
-            <Route path="/addProduct" element={<ProductForm />} />
-            <Route path="/seller" element={<SellerDashboard />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/sellerOrders" element={<SellerOrders />} />
-            <Route path="/address" element={<Address />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/order" element={<Order />} />
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+            <Route path="/viewProducts" element={<ProtectedRoute roles={["ROLE_SELLER", "ROLE_ADMIN"]}><ProductListing /></ProtectedRoute>} />
+            <Route path="/addProduct" element={<ProtectedRoute roles={["ROLE_SELLER", "ROLE_ADMIN"]}><ProductForm /></ProtectedRoute>} />
+            <Route path="/seller" element={<ProtectedRoute roles={["ROLE_SELLER", "ROLE_ADMIN"]}><SellerDashboard /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute roles={["ROLE_ADMIN"]}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/sellerOrders" element={<ProtectedRoute roles={["ROLE_SELLER", "ROLE_ADMIN"]}><SellerOrders /></ProtectedRoute>} />
+            <Route path="/address" element={<ProtectedRoute><Address /></ProtectedRoute>} />
+            <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+            <Route path="/order" element={<ProtectedRoute><Order /></ProtectedRoute>} />
             <Route path="/view" element={<ViewProduct />} />
             <Route path="*" element={<Error />} />
           </Routes>

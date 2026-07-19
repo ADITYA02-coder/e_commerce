@@ -106,6 +106,10 @@ const Category = () => {
             const productId = product.id || product._id;
             const ratingValue = Number(product.rating || product.ratings || product.ratingValue || 0);
             const stockValue = Number(product.stock || product.quantity || product.available || 0);
+            const displayPrice = Number(product.discountedPrice || product.price || 0);
+            const attributes = Object.entries(product.attributes || {})
+              .filter(([, value]) => String(value || "").trim())
+              .slice(0, 3);
             return (
               <Col sm={12} md={6} lg={4} xl={3} key={productId} className="mb-4">
                 <Card
@@ -125,6 +129,13 @@ const Category = () => {
                   </div>
                   <Card.Body>
                     <Card.Title className="category-card__title">{product.name}</Card.Title>
+                    {attributes.length > 0 ? (
+                      <div className="product-attributes">
+                        {attributes.map(([key, value]) => (
+                          <span key={`${productId}-${key}`}>{value}</span>
+                        ))}
+                      </div>
+                    ) : null}
                     <div className="category-card__meta-row">
                       <span className="category-card__rating">
                         {"*".repeat(Math.max(0, Math.min(5, Math.round(ratingValue || 4))))}
@@ -137,7 +148,7 @@ const Category = () => {
                     <div className="category-card__meta">
                       <span>{product.brand}</span>
                       <span className="category-card__price">
-                        Rs. {product.price >= 100 ? product.price - (product.price * 20) / 100 : product.price}
+                        Rs. {displayPrice.toLocaleString("en-IN")}
                       </span>
                     </div>
                     <div className="category-card__actions">

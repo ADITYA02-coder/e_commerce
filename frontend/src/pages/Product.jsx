@@ -15,33 +15,35 @@ export const Product = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filterCategory, setFilterCategory] = useState(null);
   const [filterBrand, setFilterBrand] = useState(null);
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [minRating, setMinRating] = useState(0);
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [sort, setSort] = useState("popular");
 
   const loadProducts = async (force = false) => {
-    const query = new URLSearchParams(location.search).get("q") || "";
+    const params = new URLSearchParams(location.search);
+    const query = params.get("q") || "";
+    const urlCategory = params.get("category") || "";
+    const urlSort = params.get("sort") || sort;
+    const urlInStock = params.get("inStock") === "true";
 
     try {
       setLoading(true);
-      if (query.trim()) {
-        const result = await searchStorefrontProducts({
-          q: query.trim(),
-          sort: "popular",
-          page: 1,
-          limit: 60
-        });
-        setAllProducts(result.items || []);
-      } else {
-        const result = await searchStorefrontProducts({
-          sort: "popular",
-          page: 1,
-          limit: 60,
-          refresh: force ? Date.now() : undefined
-        });
-        setAllProducts(result.items || []);
-      }
+      setSort(urlSort);
+      setInStockOnly((current) => current || urlInStock);
+      const result = await searchStorefrontProducts({
+        q: query.trim() || undefined,
+        category: urlCategory.trim() || undefined,
+        sort: urlSort,
+        page: 1,
+        limit: 60,
+        inStock: urlInStock || undefined,
+        refresh: force ? Date.now() : undefined
+      });
+      setAllProducts(result.items || []);
+      setFilterCategory(urlCategory || null);
       setError(null);
     } catch {
       setAllProducts([]);
@@ -60,6 +62,11 @@ export const Product = () => {
     [allProducts]
   );
 
+  const categories = useMemo(
+    () => [...new Set(allProducts.map((product) => product.category).filter(Boolean))],
+    [allProducts]
+  );
+
   const filteredProducts = useMemo(
     () =>
       allProducts.filter((product) => {
@@ -68,14 +75,29 @@ export const Product = () => {
         const stock = Number(product.stock || product.quantity || product.available || 1);
         return (
           (!filterBrand || product.brand === filterBrand) &&
+          (!filterCategory || product.category === filterCategory) &&
           (priceRange.min === "" || price >= Number(priceRange.min)) &&
           (priceRange.max === "" || price <= Number(priceRange.max)) &&
           (!minRating || rating >= minRating) &&
           (!inStockOnly || stock > 0)
         );
       }),
-    [allProducts, filterBrand, inStockOnly, minRating, priceRange]
+    [allProducts, filterBrand, filterCategory, inStockOnly, minRating, priceRange]
   );
+
+  const sortedProducts = useMemo(() => {
+    const items = [...filteredProducts];
+    if (sort === "price_asc") return items.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    if (sort === "price_desc") return items.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    if (sort === "rating") {
+      return items.sort(
+        (a, b) =>
+          Number(b.rating || b.ratings || b.ratingValue || 0) -
+          Number(a.rating || a.ratings || a.ratingValue || 0)
+      );
+    }
+    return items;
+  }, [filteredProducts, sort]);
 
   const renderBody = () => {
     if (loading) {
@@ -91,7 +113,7 @@ export const Product = () => {
       );
     }
 
-    if (!filteredProducts.length) {
+    if (!sortedProducts.length) {
       return (
         <div className="text-center py-5">
           <h5>No products available right now.</h5>
@@ -105,6 +127,18 @@ export const Product = () => {
         <Row className="product-grid">
           <Col lg={3} md={4} sm={12} className="product-filters">
             <div className="filters-panel">
+              <div className="filters-kicker">ShopEase catalog</div>
+              <div className="filters-header"><h5>Department</h5></div>
+              <div className="filters-body">
+                <Button className="filter-chip" variant="secondary" size="sm" onClick={() => setFilterCategory(null)} active={!filterCategory}>
+                  All Departments
+                </Button>
+                {categories.map((category) => (
+                  <Button key={category} className="filter-chip" variant="outline-primary" size="sm" onClick={() => setFilterCategory(category)} active={filterCategory === category}>
+                    {category}
+                  </Button>
+                ))}
+              </div>
               <div className="filters-header"><h5>Filter by Brand</h5></div>
               <div className="filters-body">
                 <Button className="filter-chip" variant="secondary" size="sm" onClick={() => setFilterBrand(null)} active={!filterBrand}>
@@ -142,9 +176,31 @@ export const Product = () => {
           </Col>
 
           <Col lg={9} md={8} sm={12} className="product-list">
+            <div className="product-toolbar">
+              <div>
+                <h1>Products</h1>
+                <p>{sortedProducts.length} results from approved marketplace sellers</p>
+              </div>
+              <label>
+                Sort by
+                <select value={sort} onChange={(event) => setSort(event.target.value)}>
+                  <option value="popular">Featured</option>
+                  <option value="rating">Customer rating</option>
+                  <option value="price_asc">Price: low to high</option>
+                  <option value="price_desc">Price: high to low</option>
+                  <option value="newest">Newest arrivals</option>
+                </select>
+              </label>
+            </div>
             <Row className="g-3">
-              {filteredProducts.map((product) => {
+              {sortedProducts.map((product) => {
                 const productId = product.id || product._id;
+                const rating = Number(product.rating || product.ratings || product.ratingValue || 4.3);
+                const stars = "★".repeat(Math.min(5, Math.max(1, Math.round(rating))));
+                const discount = Number(product.discount || 0);
+                const attributes = Object.entries(product.attributes || {})
+                  .filter(([, value]) => String(value || "").trim())
+                  .slice(0, 3);
                 return (
                   <Col sm={12} md={6} lg={4} key={productId}>
                     <Link to={`/mobiledata/${productId}`} className="product-card-link">
@@ -152,9 +208,19 @@ export const Product = () => {
                         <Card.Img variant="top" src={getAssetUrl(product.primaryImage || product.image)} className="item product-image" />
                         <Card.Body>
                           <Card.Title className="product-title">{product.name}</Card.Title>
-                          <Card.Text className="product-brand">{product.brand}</Card.Text>
-                          <Card.Text className="product-price">Price: Rs. {product.price}</Card.Text>
-                          <div className="product-card-cta">View Details</div>
+                          <Card.Text className="product-brand">{product.brand || "Marketplace"} | {product.category || "General"}</Card.Text>
+                          {attributes.length > 0 ? (
+                            <div className="product-attributes">
+                              {attributes.map(([key, value]) => (
+                                <span key={`${productId}-${key}`}>{value}</span>
+                              ))}
+                            </div>
+                          ) : null}
+                          <div className="product-rating">{stars} <span>{rating.toFixed(1)}</span></div>
+                          <Card.Text className="product-price">Rs. {Number(product.discountedPrice || product.price || 0).toLocaleString("en-IN")}</Card.Text>
+                          {discount > 0 && <div className="product-savings">{discount}% off limited deal</div>}
+                          <div className="product-delivery">FREE delivery available</div>
+                          <div className="product-card-cta">View details</div>
                         </Card.Body>
                       </Card>
                     </Link>

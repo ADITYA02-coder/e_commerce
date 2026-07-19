@@ -1,149 +1,183 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap");
-
 .seller-form-page {
   min-height: 100vh;
-  padding: 48px 6vw 64px;
-  background: radial-gradient(circle at top, #f8efe6 0%, #f3e6da 35%, #efe1d4 100%);
-  color: #2f241f;
+  padding: 28px 4vw 48px;
+  background: #eaeded;
+  color: #0f1111;
 }
 
 .product-form-container {
-  max-width: 980px;
+  max-width: 1180px;
   margin: 0 auto;
-  background: #fff7ef;
-  border-radius: 24px;
-  padding: 36px;
-  box-shadow: 0 18px 40px rgba(62, 38, 24, 0.16);
-  border: 1px solid rgba(143, 63, 40, 0.12);
-  animation: sellerFormRise 0.7s ease both;
+  background: #ffffff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 17, 17, 0.08);
+  padding: 0;
+  overflow: hidden;
 }
 
 .seller-form-header {
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
   align-items: center;
-  margin-bottom: 28px;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  background: #232f3e;
+  color: #ffffff;
 }
 
 .seller-form-badge {
   display: inline-flex;
   align-items: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(194, 91, 51, 0.15);
-  color: #8f3f28;
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  background: #37475a;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 6px 10px;
   text-transform: uppercase;
-  font-size: 12px;
-  margin-bottom: 12px;
 }
 
 .product-form-container h2 {
-  font-family: "Fraunces", "Times New Roman", serif;
-  margin: 0 0 8px;
-  color: #2c1e18;
+  margin: 0 0 6px;
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 800;
 }
 
 .product-form-container p {
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
   margin: 0;
-  color: #50372c;
+  color: #d5dbdb;
 }
 
 .seller-form-meta {
-  background: #fff3ea;
-  border-radius: 16px;
-  padding: 14px 18px;
+  min-width: 150px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #131921;
+  padding: 12px 14px;
   text-align: right;
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
-  color: #6a4b3b;
-  box-shadow: inset 0 0 0 1px rgba(194, 91, 51, 0.15);
+}
+
+.seller-form-meta span {
+  display: block;
+  color: #d5dbdb;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .seller-form-meta strong {
-  display: block;
-  font-size: 18px;
-  color: #2f241f;
+  color: #ffffff;
+  font-size: 1.15rem;
+}
+
+.product-form-container form {
+  padding: 24px;
+}
+
+.product-form-container .alert {
+  margin: 18px 24px 0;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.product-form-container .row {
+  align-items: start;
+}
+
+.product-form-container .form-label {
+  color: #0f1111;
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin-bottom: 6px;
 }
 
 .product-form-container .form-control,
-.product-form-container .form-select,
-.product-form-container .form-range {
-  border-radius: 12px;
-  border: 1px solid rgba(143, 63, 40, 0.2);
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+.product-form-container .form-select {
+  min-height: 42px;
+  border: 1px solid #a6a6a6;
+  border-radius: 4px;
+  color: #0f1111;
+  box-shadow: inset 0 1px 2px rgba(15, 17, 17, 0.08);
+}
+
+.product-form-container textarea.form-control {
+  min-height: 108px;
 }
 
 .product-form-container .form-control:focus,
 .product-form-container .form-select:focus {
-  border-color: #c25b33;
-  box-shadow: 0 0 0 0.2rem rgba(194, 91, 51, 0.2);
+  border-color: #ff9900;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.22), inset 0 1px 2px rgba(15, 17, 17, 0.08);
+}
+
+.product-form-container .form-range {
+  accent-color: #ff9900;
 }
 
 .product-form-container .form-text {
-  color: #7b5a4a !important;
+  color: #565959 !important;
 }
 
 .seller-form-section {
-  margin: 18px 0 24px;
-  padding: 20px;
-  border-radius: 16px;
-  background: #fff3ea;
-  border: 1px solid rgba(194, 91, 51, 0.15);
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  background: #ffffff;
 }
 
 .seller-form-section h3 {
-  margin: 0 0 16px;
-  color: #2c1e18;
-  font-size: 1.1rem;
-  font-weight: 700;
+  margin: -18px -18px 18px;
+  padding: 13px 18px;
+  border-bottom: 1px solid #d5d9d9;
+  border-radius: 8px 8px 0 0;
+  background: #f7fafa;
+  color: #0f1111;
+  font-size: 1rem;
+  font-weight: 800;
   text-transform: capitalize;
 }
 
-.product-form-container .btn-primary {
-  background: #c25b33;
-  border-color: #c25b33;
-  font-weight: 600;
-  padding: 10px 18px;
-  border-radius: 999px;
+.product-form-container .btn {
+  min-height: 40px;
+  border-radius: 8px;
+  font-weight: 800;
+  padding: 8px 16px;
 }
 
-.product-form-container .btn-primary:hover {
-  background: #b24e2a;
-  border-color: #b24e2a;
+.product-form-container .btn-primary {
+  background: #ffd814;
+  border-color: #fcd200;
+  color: #0f1111;
+}
+
+.product-form-container .btn-primary:hover,
+.product-form-container .btn-primary:focus {
+  background: #f7ca00;
+  border-color: #f2c200;
+  color: #0f1111;
 }
 
 .product-form-container .btn-secondary {
-  background: #fff5ee;
-  border-color: rgba(194, 91, 51, 0.3);
-  color: #8f3f28;
-  font-weight: 600;
-  padding: 10px 18px;
-  border-radius: 999px;
+  background: #f7fafa;
+  border-color: #d5d9d9;
+  color: #0f1111;
 }
 
-.product-form-container .btn-secondary:hover {
-  background: #f6e2d2;
-  color: #8f3f28;
-}
-
-@keyframes sellerFormRise {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.product-form-container .btn-secondary:hover,
+.product-form-container .btn-secondary:focus {
+  background: #edf7f7;
+  color: #0f1111;
 }
 
 @media (max-width: 900px) {
   .seller-form-header {
-    flex-direction: column;
     align-items: flex-start;
+    flex-direction: column;
   }
 
   .seller-form-meta {
@@ -154,21 +188,27 @@
 
 @media (max-width: 720px) {
   .seller-form-page {
-    padding: 36px 20px 48px;
+    padding: 18px 10px 36px;
   }
 
-  .product-form-container {
-    padding: 24px;
+  .seller-form-header,
+  .product-form-container form {
+    padding: 18px;
+  }
+
+  .product-form-container .alert {
+    margin-left: 18px;
+    margin-right: 18px;
   }
 }
 
 @media (max-width: 576px) {
   .product-form-container h2 {
-    font-size: 1.7rem;
+    font-size: 1.45rem;
   }
 
-  .seller-form-meta {
-    padding: 12px 14px;
+  .product-form-container .d-flex {
+    flex-direction: column;
   }
 
   .product-form-container .btn-primary,

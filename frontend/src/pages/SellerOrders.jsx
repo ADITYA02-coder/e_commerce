@@ -17,7 +17,6 @@ const SellerOrders = () => {
   const [show, setShow] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderStatusValue, setOrderStatusValue] = useState("Pending");
-  const [paymentStatusValue, setPaymentStatusValue] = useState("Pending");
   const [orderNote, setOrderNote] = useState("");
   const [sellerStatus, setSellerStatus] = useState("loading");
   const [sellerMessage, setSellerMessage] = useState("");
@@ -90,7 +89,9 @@ const SellerOrders = () => {
         }
 
         const [ordersResponse, productsResponse] = await Promise.all([
-          fetch(`${API_URL}/orders`),
+          fetch(`${API_URL}/orders`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           fetch(`${API_URL}/products/mine`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -138,20 +139,17 @@ const SellerOrders = () => {
     setShow(false);
     setSelectedOrder(null);
     setOrderStatusValue("Pending");
-    setPaymentStatusValue("Pending");
     setOrderNote("");
   };
   const handleShow = (order) => {
     setSelectedOrder(order);
     setOrderStatusValue(order?.orderStatus || "Pending");
-    setPaymentStatusValue(order?.paymentStatus || "Pending");
     setOrderNote("");
     setShow(true);
   };
   const handleChange = () => {
     const updatedData = {
       orderStatus: orderStatusValue,
-      paymentStatus: paymentStatusValue,
       note: orderNote || undefined,
     };
     if (selectedOrder) {
@@ -163,33 +161,10 @@ const SellerOrders = () => {
     }
   };
 
-  const sellerProductIds = new Set(sellerProducts.map((product) => String(product.id)));
+  const sellerProductIds = new Set(sellerProducts.map((product) => String(product.id || product._id)));
   const visibleOrders = rowdata.filter((order) =>
     (order.items || []).some((item) => sellerProductIds.has(String(item.productId)))
   );
-
-  const handleDeleteOrder = async (orderId) => {
-    const confirmed = window.confirm(
-      "Delete this delivered order? This action cannot be undone."
-    );
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(
-        `${API_URL}/orders/${orderId}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      setrowData((prev) => prev.filter((item) => item.id !== orderId));
-    } catch (err) {
-      setError(err);
-      alert(`Failed to delete order: ${err.message}`);
-    }
-  };
 
   return (
     <div className="seller-orders">
@@ -259,15 +234,6 @@ const SellerOrders = () => {
               >
               Update Status
             </Button>
-            {data.orderStatus === "Delivered" && (
-              <Button
-                variant="danger"
-                className="seller-order-btn"
-                onClick={() => handleDeleteOrder(data.id)}
-              >
-                Delete Order
-              </Button>
-            )}
             </div>
             <Modal
               show={show && selectedOrder && selectedOrder.id === data.id}
@@ -285,9 +251,10 @@ const SellerOrders = () => {
                   value={orderStatusValue}
                   onChange={(e) => setOrderStatusValue(e.target.value)}
                 >
-                  <option value="Pending">Pending</option>
-                  <option value="Shipped">Shipped</option>
-                  <option value="Delivered">Delivered</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
                 </select>
                 <p>Order Update::</p>
                 <textarea
@@ -297,19 +264,6 @@ const SellerOrders = () => {
                   placeholder="Optional note for internal tracking"
                 />
 
-                {/* update payment status too */}
-                <p>
-                  Payment Status:{" "}
-                  {selectedOrder ? selectedOrder.paymentStatus : ""}
-                </p>
-                <select
-                  value={paymentStatusValue}
-                  onChange={(e) => setPaymentStatusValue(e.target.value)}
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Failed">Failed</option>
-                </select>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>

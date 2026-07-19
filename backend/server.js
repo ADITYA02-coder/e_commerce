@@ -1,6 +1,4 @@
 require("dotenv").config({ path: require('path').join(__dirname, '.env') });
-console.log('Loaded .env from', require('path').join(__dirname, '.env'));
-console.log('process.env.MONGODB_URI:', process.env.MONGODB_URI);
 const express = require("express");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
@@ -83,8 +81,7 @@ const hasFrontendBuild = fs.existsSync(path.join(frontendDistPath, "index.html")
 
 const db = require("./app/models");
 const Role = db.role;
-console.log('Loaded models, DB URL present:', !!db.url);
-console.log('db.url (models):', db.url);
+console.log("Backend configuration loaded. Database URL present:", Boolean(db.url));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -102,7 +99,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.json({ status: "ok", service: "shopease-api" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", service: "shopease-api" });
 });
 
 // Function to serve all static files inside public directory.
@@ -243,4 +244,3 @@ function initial() {
       console.log("error", err);
     });
 }
-

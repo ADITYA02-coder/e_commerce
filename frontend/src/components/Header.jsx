@@ -5,8 +5,7 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Amazon } from "react-bootstrap-icons";
-import { Cart } from "react-bootstrap-icons";
+import { Cart3, GeoAlt, Grid3x3GapFill, Search, Shop } from "react-bootstrap-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../slices/auth";
 import { API_URL } from "../config/api";
@@ -51,21 +50,30 @@ export const Header = () => {
       <Navbar expand="lg" className="header">
         <Container fluid>
           <Navbar.Brand className="header-brand" onClick={() => navigate("/")}>
-            <Amazon className="header-brand-icon" />
+            <Shop className="header-brand-icon" />
             <span>ShopEase</span>
           </Navbar.Brand>
           <div className="header-location" role="button" onClick={() => navigate("/address")}>
+            <GeoAlt aria-hidden="true" />
             <small>Deliver to</small>
             <strong>India</strong>
           </div>
           <form className="header-search" onSubmit={handleSearch}>
+            <select aria-label="Search category" onChange={(event) => event.target.value && navigate(`/category/${encodeURIComponent(event.target.value)}`)}>
+              <option value="">All</option>
+              {categories.slice(0, 8).map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
             <input
               type="search"
               placeholder="Search for products, brands and more"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
-            <button type="submit">Search</button>
+            <button type="submit" aria-label="Search">
+              <Search />
+            </button>
           </form>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
@@ -98,9 +106,9 @@ export const Header = () => {
                   </NavDropdown.Item>
                 )}
               </NavDropdown>
-              <Nav.Link disabled>Prime</Nav.Link>
+              <Nav.Link as={Link} to="/product">New Releases</Nav.Link>
               <Nav.Link as={Link} to="/cart" className="header-cart">
-                <Cart /> Cart
+                <Cart3 /> Cart
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -122,9 +130,10 @@ export const Header = () => {
       <div className="header-subnav">
         <Container fluid>
           <div className="header-subnav-links">
-            <Link to="/categories">All Categories</Link>
+            <Link to="/categories"><Grid3x3GapFill /> All Categories</Link>
             <Link to="/product">Today's Deals</Link>
-            <Link to="/product">Customer Service</Link>
+            <Link to="/product?sort=rating">Top Rated</Link>
+            <Link to="/product?inStock=true">Fast Delivery</Link>
             <Link to="/seller">Sell</Link>
             {categories.slice(0, 6).map((category) => (
               <Link key={category} to={`/category/${encodeURIComponent(category)}`}>
